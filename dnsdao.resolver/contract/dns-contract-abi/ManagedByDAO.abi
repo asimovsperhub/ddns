@@ -1,0 +1,1 @@
+[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"newDao","type":"address"}],"name":"ChangeDAO","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"DAOAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]

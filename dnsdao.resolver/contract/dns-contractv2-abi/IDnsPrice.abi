@@ -1,0 +1,1 @@
+[{"inputs":[{"internalType":"bytes32","name":"hash_","type":"bytes32"},{"internalType":"address","name":"erc20Addr_","type":"address"},{"internalType":"uint256","name":"len_","type":"uint256"}],"name":"Price","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]
