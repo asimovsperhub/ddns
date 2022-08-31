@@ -111,8 +111,7 @@ func BatchNewSub(start, end uint64) {
 				c := strings.Split(ev.EntireName, ".")
 				rootname := c[len(c)-1]
 				rootnamehash := hex.EncodeToString(crypto.Keccak256([]byte(rootname)))
-				// nameStore.TokenId 不知道为啥这个取出来是过期时间
-				// log.Println("mintiter", nameHashStr, ev.EntireName, owner.DnsOwner, owner.TokenId, nameStore.ExpireTime, rootname, rootnamehash)
+
 				rnf, _ := db.GetRootName(rootnamehash)
 				if len(rnf) > 0 {
 					Rootname := new(RootNameInfo)
@@ -146,6 +145,7 @@ func BatchNewSub(start, end uint64) {
 							fmt.Println("ChargeDnsName update ExpireTime ", "save to db error")
 							continue
 						}
+
 					}
 					// root收益
 					addrkey := strings.ToLower(Rootname.Owner.String())
@@ -180,6 +180,27 @@ func BatchNewSub(start, end uint64) {
 							log.Println("SaveRootEarnings err", errsave)
 						}
 					}
+
+					// coinbase:[namehash]
+					addrnamehash := strings.ToLower(Rootname.Owner.String())
+					addrL, _ := db.GetAddressList(addrnamehash)
+					if addrL == nil {
+						log.Println("BatchNewSub New Sub AddressList ", addrnamehash, ev.EntireName)
+						err = db.SaveAddressList(addrnamehash, []string{fmt.Sprintf("snH_1_%s", nameHashStr)})
+						if err != nil {
+							fmt.Println("BatchNewRoot SaveAddressList", "save to db error")
+							continue
+						}
+					} else {
+						log.Println("BatchNewSub Append Sub AddressList ", addrnamehash, ev.EntireName)
+						addrL = append(addrL, fmt.Sprintf("snH_1_%s", nameHashStr))
+						err = db.SaveAddressList(addrnamehash, addrL)
+						if err != nil {
+							fmt.Println("BatchNewRoot SaveAddressList", "save to db error")
+							continue
+						}
+					}
+
 				}
 
 				// subname
@@ -197,24 +218,21 @@ func BatchNewSub(start, end uint64) {
 					log.Println("BatchNewSub save err", "save to db error")
 					continue
 				}
-				// coinbase:[namehash]
-				addrkey := strings.ToLower(Subname.Owner.String())
-				addrL, _ := db.GetAddressList(addrkey)
-				if addrL == nil {
-					log.Println("BatchNewSub New Sub AddressList ", addrL)
-					err = db.SaveAddressList(addrkey, []string{fmt.Sprintf("snH_1_%s", Subname.Hash)})
-					if err != nil {
-						fmt.Println("BatchNewRoot SaveAddressList", "save to db error")
-						continue
+				// SaveContractTokenIdName
+				contractkey := strings.ToLower(contract)
+				tokenIdName, _ := db.GetContractTokenIdName(contractkey)
+				if tokenIdName == nil {
+					tokenIdName = &ldb.ContractTokenIdName{
+						TokenName: map[string]string{owner.TokenId.String(): ev.EntireName},
 					}
 				} else {
-					log.Println("BatchNewSub Append Sub AddressList ", addrL)
-					addrL = append(addrL, fmt.Sprintf("snH_1_%s", Subname.Hash))
-					err = db.SaveAddressList(addrkey, addrL)
-					if err != nil {
-						fmt.Println("BatchNewRoot SaveAddressList", "save to db error")
-						continue
-					}
+					tokenIdName.TokenName[owner.TokenId.String()] = ev.EntireName
+				}
+				log.Println("BatchNewSub SaveContractTokenIdName ", owner.TokenId.String(), ev.EntireName)
+				err = db.SaveContractTokenIdName(contractkey, tokenIdName)
+				if err != nil {
+					log.Println("BatchNewSub SaveContractTokenIdName", "save to db error")
+					continue
 				}
 			}
 		}

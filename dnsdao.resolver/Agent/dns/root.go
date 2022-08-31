@@ -135,55 +135,24 @@ func BatchNewRoot(start, end uint64) {
 					continue
 				}
 			}
-
-		}
-	}
-	for mintiter.Next() {
-		ev := mintiter.Event
-		nameHash := byte32(crypto.Keccak256([]byte(ev.EntireName)))
-		nameHashStr := hex.EncodeToString(nameHash[:])
-		owner, err1 := dnsowner.DnsOwners(nil, *nameHash)
-		if err1 != nil {
-			log.Println("BatchNewRoot DnsOwners", err1)
-		}
-		// log.Println(nameHashStr, ev.EntireName, owner.DnsOwner, owner.TokenId)
-		nameStore, _ := rootC.NameStore(nil, *nameHash)
-		rn := &RootNameInfo{
-			Name:       ev.EntireName,
-			Hash:       nameHashStr,
-			TokenId:    owner.TokenId,
-			Owner:      owner.DnsOwner,
-			ExpireTime: nameStore.ExpireTime,
-			OpenToReg:  nameStore.OpenToReg,
-		}
-		j, _ := json.Marshal(rn)
-
-		err = db.SaveRootName(rn.Hash, string(j))
-		if err != nil {
-			log.Println("BatchNewRoot", "save to db error")
-			continue
-		}
-		// coinbase:[namehash]
-		addrkey := strings.ToLower(rn.Owner.String())
-		addrL, _ := db.GetAddressList(addrkey)
-
-		if addrL == nil {
-			log.Println("BatchNewRoot New Root AddressList ", addrL)
-			err = db.SaveAddressList(addrkey, []string{fmt.Sprintf("rnH_1_%s", rn.Hash)})
+			// SaveContractTokenIdName
+			contractkey := strings.ToLower(config.GetRConf().Cconf.DnsName)
+			tokenIdName, _ := db.GetContractTokenIdName(contractkey)
+			if tokenIdName == nil {
+				tokenIdName = &ldb.ContractTokenIdName{
+					TokenName: map[string]string{owner.TokenId.String(): ev.EntireName},
+				}
+			} else {
+				tokenIdName.TokenName[owner.TokenId.String()] = ev.EntireName
+			}
+			log.Println("BatchNewRoot SaveContractTokenIdName ", owner.TokenId.String(), ev.EntireName)
+			err = db.SaveContractTokenIdName(contractkey, tokenIdName)
 			if err != nil {
-				log.Println("BatchNewRoot SaveAddressList", "save to db error")
+				log.Println("BatchNewRoot SaveContractTokenIdName", "save to db error")
 				continue
 			}
-		} else {
-			addrL = append(addrL, fmt.Sprintf("rnH_1_%s", rn.Hash))
-			log.Println("BatchNewRoot Append Root AddressList ", addrL)
-			err = db.SaveAddressList(addrkey, addrL)
-			if err != nil {
-				log.Println("BatchNewRoot SaveAddressList", "save to db error")
-				continue
-			}
-		}
 
+		}
 	}
 	// 开启子域名注册记录 添加合约地址
 	var newsubname *udidc.DnsNameEvNewSubNameIterator

@@ -37,6 +37,7 @@ const (
 	GetQuerySignTldList         = "/dns/querysign"
 	ConfResolve                 = "/dns/confresolve"
 	AddrDomainsResolve          = "/dns/resolve"
+	DnsTokenId                  = "/opensea"
 )
 
 func Cors(f http.HandlerFunc) http.HandlerFunc {
@@ -119,6 +120,7 @@ func (ws *WebProxyServer) init() *WebProxyServer {
 	rh.HandleFunc(GetQuerySignTldList, Cors(wapi.GetQuerySignTldList))
 	rh.HandleFunc(ConfResolve, Cors(wapi.ConfResolve))
 	rh.HandleFunc(AddrDomainsResolve, Cors(wapi.AddrDomainsResolve))
+	rh.HandleFunc(DnsTokenId, Cors(wapi.DnsTokenId))
 	server := &http.Server{
 		Handler: rh,
 	}

@@ -714,11 +714,11 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 	pageNumber := ""
 	pageSize := ""
 	addrtype := ""
-	addr := ""
+	// addr := ""
 	query := request.URL.Query()
 	log.Println("AddrDomainsResolve query ", query)
 
-	notfoundRes := &AddrDomainsResolveRes{Code: 200, Message: "not found", TotalCount: 0, Data: []string{}, Type: addrtype, Addr: addr}
+	notfoundRes := &AddrDomainsResolveRes{Code: 200, Message: "not found", TotalCount: 0, Data: []*AddrDomains{}}
 	notfoundresbyte, _ := json.Marshal(notfoundRes)
 	msg := string(notfoundresbyte)
 
@@ -740,20 +740,20 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 		fmt.Fprintf(writer, "not a valid request")
 		return
 	}
-	if v, ok = query["addr"]; ok {
-		addr = v[0]
-	} else {
-		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
-		return
-	}
+	//if v, ok = query["addr"]; ok {
+	//	addr = v[0]
+	//} else {
+	//	writer.WriteHeader(200)
+	//	fmt.Fprintf(writer, "not a valid request")
+	//	return
+	//}
 	db := ldb.GetLdb()
-	val, err := db.GetConfNameHashList(strings.ToLower(addrtype) + "_" + addr)
+	val, err := db.GetConfNameHashList(strings.ToLower(addrtype))
 	log.Println("GetConfNameHashList", val)
 	if err == nil {
 		number, _ := strconv.Atoi(pageNumber)
 		size, _ := strconv.Atoi(pageSize)
-		var data []string
+		var data []*AddrDomains
 		hasharr := Paging(number, size, val)
 		for _, v := range hasharr {
 			in, _ := db.GetKey(v)
@@ -763,7 +763,9 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 				if errun != nil {
 					log.Println("AddrDomainsResolve Json.Unmarshal err", errun)
 				} else {
-					data = append(data, root.Name)
+					data = append(data, &AddrDomains{
+						Name: root.Name, ConfType: addrtype, ConfValue: root.Conf[addrtype],
+					})
 				}
 
 			} else {
@@ -772,11 +774,13 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 				if errun != nil {
 					log.Println("AddrDomainsResolve Json.Unmarshal err", errun)
 				} else {
-					data = append(data, sub.Name)
+					data = append(data, &AddrDomains{
+						Name: sub.Name, ConfType: addrtype, ConfValue: sub.Conf[addrtype],
+					})
 				}
 			}
 		}
-		res := &AddrDomainsResolveRes{Code: 200, Message: "ok", TotalCount: len(val), Data: data, Type: addrtype, Addr: addr}
+		res := &AddrDomainsResolveRes{Code: 200, Message: "ok", TotalCount: len(val), Data: data}
 		resbyte, _ := json.Marshal(res)
 		if err == nil {
 			msg = string(resbyte)

@@ -34,3 +34,11 @@ type AddressCash struct {
 	Amount  float64               `json:"amount"`
 	Details []*AddressCashDetails `json:"details"`
 }
+
+type ContractTokenIdName struct {
+	TokenName map[string]string `json:"token_name"`
+}
+
+type S3 struct {
+	Upload map[string]string `json:"upload"`
+}

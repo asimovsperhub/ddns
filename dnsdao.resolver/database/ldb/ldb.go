@@ -12,16 +12,17 @@ import (
 )
 
 const (
-	dnsResolveBlKnumber = "dnsResolveBlKnumber"
-	dnsResolveTypes     = "dnsResolveTypes"
-	dnsRootNameHead     = "rnH_1_%s"
-	dnsSubNameHead      = "snH_1_%s"
-	dnsContract         = "dnsOpenContract"
-	dnsAddress          = "dnsAddress"
-	dnsRootEarnings     = "dnsRootEarnings"
-	dnsAddressCash      = "dnsAddressCash"
-	dnsContractAddr     = "dnsContractAddr"
-	dnsConf             = "dnsConf"
+	dnsResolveBlKnumber    = "dnsResolveBlKnumber"
+	dnsResolveTypes        = "dnsResolveTypes"
+	dnsRootNameHead        = "rnH_1_%s"
+	dnsSubNameHead         = "snH_1_%s"
+	dnsContract            = "dnsOpenContract"
+	dnsAddress             = "dnsAddress"
+	dnsRootEarnings        = "dnsRootEarnings"
+	dnsAddressCash         = "dnsAddressCash"
+	dnsContractAddr        = "dnsContractAddr"
+	dnsConf                = "dnsConf"
+	dnsContractTokenIdName = "dnsContractTokenIdName"
 )
 
 type Ldb struct {
@@ -324,6 +325,54 @@ func (db *Ldb) GetConfNameHashList(conftype string) ([]string, error) {
 func (db *Ldb) SaveConfNameHashList(conftype string, ct []string) error {
 	v, _ := json.Marshal(ct)
 	k := fmt.Sprintf(dnsConf, conftype)
+	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (db *Ldb) GetContractTokenIdName(contract string) (*ContractTokenIdName, error) {
+	var ret *ContractTokenIdName
+	k := fmt.Sprintf(dnsContractTokenIdName, contract)
+	if v, err := db.db.Get([]byte(k), nil); err != nil {
+		return nil, err
+	} else {
+		err = json.Unmarshal(v, &ret)
+		if err != nil {
+			return nil, err
+		}
+
+		return ret, nil
+	}
+}
+
+func (db *Ldb) SaveContractTokenIdName(contract string, ct *ContractTokenIdName) error {
+	v, _ := json.Marshal(ct)
+	k := fmt.Sprintf(dnsContractTokenIdName, contract)
+	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (db *Ldb) GetS3() (*S3, error) {
+	var ret *S3
+	k := fmt.Sprintf("S3")
+	if v, err := db.db.Get([]byte(k), nil); err != nil {
+		return nil, err
+	} else {
+		err = json.Unmarshal(v, &ret)
+		if err != nil {
+			return nil, err
+		}
+
+		return ret, nil
+	}
+}
+
+func (db *Ldb) SaveS3(ct *S3) error {
+	v, _ := json.Marshal(ct)
+	k := fmt.Sprintf("S3")
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}

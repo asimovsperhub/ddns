@@ -44,15 +44,15 @@ type QuerySignTldList struct {
 	Data    []*Sign `json:"data"`
 }
 
-//type AddrDomains struct {
-//	Name string `json:"name"`
-//}
+type AddrDomains struct {
+	Name      string `json:"name"`
+	ConfType  string `json:"conf_type"`
+	ConfValue string `json:"conf_value"`
+}
 
 type AddrDomainsResolveRes struct {
-	Code       int      `json:"code"`
-	Message    string   `json:"message"`
-	Type       string   `json:"type"`
-	Addr       string   `json:"addr"`
-	TotalCount int      `json:"total_count"`
-	Data       []string `json:"data"`
+	Code       int            `json:"code"`
+	Message    string         `json:"message"`
+	TotalCount int            `json:"total_count"`
+	Data       []*AddrDomains `json:"data"`
 }
