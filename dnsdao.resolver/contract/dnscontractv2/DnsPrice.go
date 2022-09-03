@@ -27,7 +27,7 @@ var (
 )
 
 // DnsPriceABI is the input ABI used to generate the binding from.
-const DnsPriceABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"paymentC_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"defaultPrice\",\"type\":\"uint256\"}],\"name\":\"EvAddPrice\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"len\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"EvAddPriceLen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"defaultPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"len\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"EvAddPriceLenArray\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"len\",\"type\":\"uint256\"}],\"name\":\"EvDelPriceLen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"}],\"name\":\"EvRemovePrice\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"defaultPrice_\",\"type\":\"uint256\"}],\"name\":\"AddPrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"len_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"price_\",\"type\":\"uint256\"}],\"name\":\"AddPriceLen\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"defaultPrice_\",\"type\":\"uint256\"},{\"internalType\":\"uint256[]\",\"name\":\"lenArr_\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"priceArr_\",\"type\":\"uint256[]\"}],\"name\":\"AddPriceLenArray\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"len_\",\"type\":\"uint256\"}],\"name\":\"DelPriceLen\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"len_\",\"type\":\"uint256\"}],\"name\":\"Price\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"}],\"name\":\"RemovePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"namePrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"defaultPrice\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paymentC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner_\",\"type\":\"address\"}],\"name\":\"transferDaoOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const DnsPriceABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"paymentC_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"defaultPrice\",\"type\":\"uint256\"}],\"name\":\"EvAddPrice\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"len\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"EvAddPriceLen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"defaultPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"len\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"EvAddPriceLenArray\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"len\",\"type\":\"uint256\"}],\"name\":\"EvDelPriceLen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"}],\"name\":\"EvRemovePrice\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"defaultPrice_\",\"type\":\"uint256\"}],\"name\":\"AddPrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"len_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"price_\",\"type\":\"uint256\"}],\"name\":\"AddPriceLen\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"defaultPrice_\",\"type\":\"uint256\"},{\"internalType\":\"uint256[]\",\"name\":\"lenArr_\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"priceArr_\",\"type\":\"uint256[]\"}],\"name\":\"AddPriceLenArray\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"len_\",\"type\":\"uint256\"}],\"name\":\"DelPriceLen\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"}],\"name\":\"Erc20IsSupport\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"len_\",\"type\":\"uint256\"}],\"name\":\"Price\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256[8]\",\"name\":\"lenArr_\",\"type\":\"uint256[8]\"}],\"name\":\"PriceGet\",\"outputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"\",\"type\":\"uint256[8]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"len_\",\"type\":\"uint256\"}],\"name\":\"PriceGetOne\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"}],\"name\":\"PriceInit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"}],\"name\":\"RemovePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"namePrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"defaultPrice\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paymentC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner_\",\"type\":\"address\"}],\"name\":\"transferDaoOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // DnsPrice is an auto generated Go binding around an Ethereum contract.
 type DnsPrice struct {
@@ -171,6 +171,37 @@ func (_DnsPrice *DnsPriceTransactorRaw) Transact(opts *bind.TransactOpts, method
 	return _DnsPrice.Contract.contract.Transact(opts, method, params...)
 }
 
+// Erc20IsSupport is a free data retrieval call binding the contract method 0x2a61750f.
+//
+// Solidity: function Erc20IsSupport(bytes32 hash_, address erc20Addr_) view returns(bool)
+func (_DnsPrice *DnsPriceCaller) Erc20IsSupport(opts *bind.CallOpts, hash_ [32]byte, erc20Addr_ common.Address) (bool, error) {
+	var out []interface{}
+	err := _DnsPrice.contract.Call(opts, &out, "Erc20IsSupport", hash_, erc20Addr_)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// Erc20IsSupport is a free data retrieval call binding the contract method 0x2a61750f.
+//
+// Solidity: function Erc20IsSupport(bytes32 hash_, address erc20Addr_) view returns(bool)
+func (_DnsPrice *DnsPriceSession) Erc20IsSupport(hash_ [32]byte, erc20Addr_ common.Address) (bool, error) {
+	return _DnsPrice.Contract.Erc20IsSupport(&_DnsPrice.CallOpts, hash_, erc20Addr_)
+}
+
+// Erc20IsSupport is a free data retrieval call binding the contract method 0x2a61750f.
+//
+// Solidity: function Erc20IsSupport(bytes32 hash_, address erc20Addr_) view returns(bool)
+func (_DnsPrice *DnsPriceCallerSession) Erc20IsSupport(hash_ [32]byte, erc20Addr_ common.Address) (bool, error) {
+	return _DnsPrice.Contract.Erc20IsSupport(&_DnsPrice.CallOpts, hash_, erc20Addr_)
+}
+
 // Price is a free data retrieval call binding the contract method 0x18ddc403.
 //
 // Solidity: function Price(bytes32 hash_, address erc20Addr_, uint256 len_) view returns(uint256)
@@ -200,6 +231,69 @@ func (_DnsPrice *DnsPriceSession) Price(hash_ [32]byte, erc20Addr_ common.Addres
 // Solidity: function Price(bytes32 hash_, address erc20Addr_, uint256 len_) view returns(uint256)
 func (_DnsPrice *DnsPriceCallerSession) Price(hash_ [32]byte, erc20Addr_ common.Address, len_ *big.Int) (*big.Int, error) {
 	return _DnsPrice.Contract.Price(&_DnsPrice.CallOpts, hash_, erc20Addr_, len_)
+}
+
+// PriceGet is a free data retrieval call binding the contract method 0xe7ff0d15.
+//
+// Solidity: function PriceGet(bytes32 hash_, address erc20Addr_, uint256[8] lenArr_) view returns(uint256[8])
+func (_DnsPrice *DnsPriceCaller) PriceGet(opts *bind.CallOpts, hash_ [32]byte, erc20Addr_ common.Address, lenArr_ [8]*big.Int) ([8]*big.Int, error) {
+	var out []interface{}
+	err := _DnsPrice.contract.Call(opts, &out, "PriceGet", hash_, erc20Addr_, lenArr_)
+
+	if err != nil {
+		return *new([8]*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([8]*big.Int)).(*[8]*big.Int)
+
+	return out0, err
+
+}
+
+// PriceGet is a free data retrieval call binding the contract method 0xe7ff0d15.
+//
+// Solidity: function PriceGet(bytes32 hash_, address erc20Addr_, uint256[8] lenArr_) view returns(uint256[8])
+func (_DnsPrice *DnsPriceSession) PriceGet(hash_ [32]byte, erc20Addr_ common.Address, lenArr_ [8]*big.Int) ([8]*big.Int, error) {
+	return _DnsPrice.Contract.PriceGet(&_DnsPrice.CallOpts, hash_, erc20Addr_, lenArr_)
+}
+
+// PriceGet is a free data retrieval call binding the contract method 0xe7ff0d15.
+//
+// Solidity: function PriceGet(bytes32 hash_, address erc20Addr_, uint256[8] lenArr_) view returns(uint256[8])
+func (_DnsPrice *DnsPriceCallerSession) PriceGet(hash_ [32]byte, erc20Addr_ common.Address, lenArr_ [8]*big.Int) ([8]*big.Int, error) {
+	return _DnsPrice.Contract.PriceGet(&_DnsPrice.CallOpts, hash_, erc20Addr_, lenArr_)
+}
+
+// PriceGetOne is a free data retrieval call binding the contract method 0xaa13993d.
+//
+// Solidity: function PriceGetOne(bytes32 hash_, address erc20Addr_, uint256 len_) view returns(bool, uint256)
+func (_DnsPrice *DnsPriceCaller) PriceGetOne(opts *bind.CallOpts, hash_ [32]byte, erc20Addr_ common.Address, len_ *big.Int) (bool, *big.Int, error) {
+	var out []interface{}
+	err := _DnsPrice.contract.Call(opts, &out, "PriceGetOne", hash_, erc20Addr_, len_)
+
+	if err != nil {
+		return *new(bool), *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return out0, out1, err
+
+}
+
+// PriceGetOne is a free data retrieval call binding the contract method 0xaa13993d.
+//
+// Solidity: function PriceGetOne(bytes32 hash_, address erc20Addr_, uint256 len_) view returns(bool, uint256)
+func (_DnsPrice *DnsPriceSession) PriceGetOne(hash_ [32]byte, erc20Addr_ common.Address, len_ *big.Int) (bool, *big.Int, error) {
+	return _DnsPrice.Contract.PriceGetOne(&_DnsPrice.CallOpts, hash_, erc20Addr_, len_)
+}
+
+// PriceGetOne is a free data retrieval call binding the contract method 0xaa13993d.
+//
+// Solidity: function PriceGetOne(bytes32 hash_, address erc20Addr_, uint256 len_) view returns(bool, uint256)
+func (_DnsPrice *DnsPriceCallerSession) PriceGetOne(hash_ [32]byte, erc20Addr_ common.Address, len_ *big.Int) (bool, *big.Int, error) {
+	return _DnsPrice.Contract.PriceGetOne(&_DnsPrice.CallOpts, hash_, erc20Addr_, len_)
 }
 
 // NamePrice is a free data retrieval call binding the contract method 0x691ac382.
@@ -377,6 +471,27 @@ func (_DnsPrice *DnsPriceSession) DelPriceLen(hash_ [32]byte, erc20Addr_ common.
 // Solidity: function DelPriceLen(bytes32 hash_, address erc20Addr_, uint256 len_) returns()
 func (_DnsPrice *DnsPriceTransactorSession) DelPriceLen(hash_ [32]byte, erc20Addr_ common.Address, len_ *big.Int) (*types.Transaction, error) {
 	return _DnsPrice.Contract.DelPriceLen(&_DnsPrice.TransactOpts, hash_, erc20Addr_, len_)
+}
+
+// PriceInit is a paid mutator transaction binding the contract method 0x31dbec04.
+//
+// Solidity: function PriceInit(bytes32 hash_) returns()
+func (_DnsPrice *DnsPriceTransactor) PriceInit(opts *bind.TransactOpts, hash_ [32]byte) (*types.Transaction, error) {
+	return _DnsPrice.contract.Transact(opts, "PriceInit", hash_)
+}
+
+// PriceInit is a paid mutator transaction binding the contract method 0x31dbec04.
+//
+// Solidity: function PriceInit(bytes32 hash_) returns()
+func (_DnsPrice *DnsPriceSession) PriceInit(hash_ [32]byte) (*types.Transaction, error) {
+	return _DnsPrice.Contract.PriceInit(&_DnsPrice.TransactOpts, hash_)
+}
+
+// PriceInit is a paid mutator transaction binding the contract method 0x31dbec04.
+//
+// Solidity: function PriceInit(bytes32 hash_) returns()
+func (_DnsPrice *DnsPriceTransactorSession) PriceInit(hash_ [32]byte) (*types.Transaction, error) {
+	return _DnsPrice.Contract.PriceInit(&_DnsPrice.TransactOpts, hash_)
 }
 
 // RemovePrice is a paid mutator transaction binding the contract method 0x071ba617.

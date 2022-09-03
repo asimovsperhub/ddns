@@ -182,7 +182,7 @@ func BatchNewSub(start, end uint64) {
 					}
 
 					// coinbase:[namehash]
-					addrnamehash := strings.ToLower(Rootname.Owner.String())
+					addrnamehash := strings.ToLower(owner.DnsOwner.String())
 					addrL, _ := db.GetAddressList(addrnamehash)
 					if addrL == nil {
 						log.Println("BatchNewSub New Sub AddressList ", addrnamehash, ev.EntireName)
@@ -196,11 +196,10 @@ func BatchNewSub(start, end uint64) {
 						addrL = append(addrL, fmt.Sprintf("snH_1_%s", nameHashStr))
 						err = db.SaveAddressList(addrnamehash, addrL)
 						if err != nil {
-							fmt.Println("BatchNewRoot SaveAddressList", "save to db error")
+							fmt.Println("BatchNewSub SaveAddressList", "save to db error")
 							continue
 						}
 					}
-
 				}
 
 				// subname

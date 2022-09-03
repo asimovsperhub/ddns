@@ -57,16 +57,18 @@ func BatchNewOwner(start, end uint64) {
 		End:     &e,
 		Context: context.TODO(),
 	}
-	rootname := new(RootNameInfo)
-	subname := new(SubNameInfo)
+	//rootname := new(RootNameInfo)
+	//subname := new(SubNameInfo)
 	var updateowner *udidc.DnsOwnersEvUpdateOwnerIterator
 	updateowner, _ = dnsowner.FilterEvUpdateOwner(op)
 	if updateowner != nil {
 		defer updateowner.Close()
 		for updateowner.Next() {
+			rootname := new(RootNameInfo)
+			subname := new(SubNameInfo)
 			ev := updateowner.Event
 			nameHashStr := hex.EncodeToString(ev.NameHash[:])
-			log.Println("BatchNewOwner Update", nameHashStr, ev.NameOwner)
+			// log.Println("BatchNewOwner Update", nameHashStr, ev.NameOwner, ev.ContractAddr)
 			rootinfo, _ := db.GetRootName(nameHashStr)
 			// 是否root的更新
 			if rootinfo != "" {
@@ -76,8 +78,9 @@ func BatchNewOwner(start, end uint64) {
 					continue
 				} else {
 					// 当owner改变的时候去更新
-					log.Println("BatchNewOwner Root Owner is ", rootname.Owner, ev.NameOwner)
+					// log.Println("BatchNewOwner Root Owner is ", rootname.Owner, ev.NameOwner)
 					if rootname.Owner != ev.NameOwner {
+						log.Println(rootname.Owner, ev.NameOwner)
 						//  更新old owner 数据
 						addressL, _ := db.GetAddressList(strings.ToLower(rootname.Owner.String()))
 						if addressL != nil {
@@ -122,9 +125,10 @@ func BatchNewOwner(start, end uint64) {
 						log.Println("json Unmarshal ", err)
 						continue
 					} else {
-						log.Println("BatchNewOwner SubName Owner is ", rootname.Owner, ev.NameOwner)
+						// log.Println("BatchNewOwner SubName Owner is ", subname.Owner, ev.NameOwner)
 						// Old
 						if subname.Owner != ev.NameOwner {
+							log.Println(subname.Owner, ev.NameOwner)
 							addressL, _ := db.GetAddressList(strings.ToLower(subname.Owner.String()))
 							if addressL != nil {
 								newNameHashList := []string{}

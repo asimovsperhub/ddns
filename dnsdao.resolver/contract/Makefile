@@ -23,7 +23,7 @@ all:
 	abigen --abi dns-contract-abi/ContractReceiver.abi --pkg dnscontract --type ContractReceiver --out ./dnscontract/ContractReceiver.go
 	abigen --abi dns-contract-abi/HasRelations.abi --pkg dnscontract --type HasRelations --out ./dnscontract/HasRelations.go
 	abigen --abi dns-contract-abi/ManagedByDAO.abi --pkg dnscontract --type ManagedByDAO --out ./dnscontract/ManagedByDAO.go
-	abigen --abi dns-contract-abi/WhiteListContract.abi --pkg dnscontract --type ManagedByDAO --out ./dnscontract/WhiteList.go
+	abigen --abi dns-contract-abi/WhiteListContract.abi --pkg dnscontract --type WhiteList --out ./dnscontract/WhiteList.go
 	abigen --abi dns-contractv2-abi/ColdBoot.abi --pkg udidc --type ColdBoot --out ./dnscontractv2/ColdBoot.go
 	abigen --abi dns-contractv2-abi/SimpleWhiteList.abi --pkg udidc --type SimpleWhiteList --out ./dnscontractv2/SimpleWhiteList.go
 	abigen --abi dns-contractv2-abi/DaoTax.abi --pkg udidc --type DaoTax --out ./dnscontractv2/DaoTax.go

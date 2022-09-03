@@ -87,21 +87,6 @@ contract DnsName is ERC721,owned{
         return super.supportsInterface(interfaceId);
     }
 
-    //    function ownerOf(uint256 tokenId) public view override returns (address){
-    //        return super.ownerOf(tokenId);
-    //    }
-
-    //    function balanceOf(address owner) public view override returns (uint256){
-    //        return super.balanceOf(owner);
-    //    }
-    //    function name() public view override returns (string memory){
-    //        return super.name();
-    //    }
-    //
-    //    function symbol() public view override returns (string memory){
-    //        return super.symbol();
-    //    }
-
     function _baseURI() internal view override returns (string memory){
         return string(baseUri);
     }
@@ -181,13 +166,6 @@ contract DnsName is ERC721,owned{
             IDnsAccountant(accountantC).deposit(erc20Addr_,cost);
             IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),cost);
         }
-//
-//
-//        if(erc20Addr_ != address(0)){
-//
-//        }else{
-//
-//        }
     }
 
     function ChargeName(address erc20Addr_, bytes32 nameHash_,uint8 year_, bool transfer_) external payable{
@@ -223,14 +201,6 @@ contract DnsName is ERC721,owned{
             IDnsAccountant(accountantC).deposit(erc20Addr_,cost);
             IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),cost);
         }
-//
-////        IDnsAccountant(accountantC).deposit(erc20Addr_,cost);
-//
-//        if(erc20Addr_ != address(0)){
-//
-//        }else{
-//
-//        }
     }
 
     function MintName(address erc20Addr_, string memory entireName_,uint8 year_) external payable{

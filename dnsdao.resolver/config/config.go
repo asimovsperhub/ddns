@@ -33,6 +33,7 @@ func defaultConf() *RConfig {
 			BasTradableOwnership: "0x39e981f08f3c917e49669649a61720d5cf555ddc",
 			BasDomainConf:        "0x68d3aa73d9479cb3b162d279234fdbfd45a1f9b6",
 			RpcEndPoint:          "https://rinkeby.infura.io/v3/",
+			RpcMainEndPoint:      "https://mainnet.infura.io/v3/",
 			WsRPCEndPoint:        "wss://ropsten.infura.io/ws/v3/",
 			RpcEndPointID:        "ced16671f5894b2796224e49062999ca",
 			DnsName:              "0x3Bb534461b700A752aac8dCe9363E16910d5F66a",
@@ -40,6 +41,7 @@ func defaultConf() *RConfig {
 			DnsPrice:             "0x39f8817db77Fc26C0B2EE1C8f841868e811d4375",
 			DnsConf:              "0xa8764D4109607955dA14bfEc62bbD9a76339db52",
 			DnsAccountant:        "0xB9E7ECCfb7f48f9bCd10BC8F768ca3ab43E46E37",
+			ColdBoot:             "0x22871b977AAe43d44FE50dF03f632134c3e3e490",
 		},
 		SConf: &SysConf{
 			DBPath: "ldb",
@@ -53,6 +55,9 @@ func (rc *RConfig) GetDBPath() string {
 
 func (rc *RConfig) GetRPCEndPoint() string {
 	return rc.Cconf.RpcEndPoint + rc.Cconf.RpcEndPointID
+}
+func (rc *RConfig) GetMainRPCEndPoint() string {
+	return rc.Cconf.RpcMainEndPoint + rc.Cconf.RpcEndPointID
 }
 
 func (rc *RConfig) GetWsRPCENDPoint() string {
@@ -135,6 +140,7 @@ type ContractConf struct {
 	RpcEndPoint          string
 	WsRPCEndPoint        string
 	RpcEndPointID        string
+	RpcMainEndPoint      string
 	OANNContract         string
 	BasRootContract      string
 	BasTradableOwnership string
@@ -145,6 +151,7 @@ type ContractConf struct {
 	DnsPrice             string
 	DnsConf              string
 	DnsAccountant        string
+	ColdBoot             string
 }
 
 type SysConf struct {

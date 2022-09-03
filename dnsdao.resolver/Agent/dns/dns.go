@@ -31,15 +31,37 @@ func GetDNSAgent() *DNSAgent {
 	return dnsAgent
 }
 
-func currentBlk() (uint64, error) {
+//func currentBlk() (uint64, error) {
+//	var (
+//		cli *ethclient.Client
+//		err error
+//	)
+//
+//	cli, err = ethclient.Dial(config.GetRConf().GetRPCEndPoint())
+//	if err != nil {
+//		return 0, err
+//	}
+//
+//	defer cli.Close()
+//
+//	return cli.BlockNumber(context.TODO())
+//}
+
+func currentBlk(network string) (uint64, error) {
 	var (
 		cli *ethclient.Client
 		err error
 	)
-
-	cli, err = ethclient.Dial(config.GetRConf().GetRPCEndPoint())
-	if err != nil {
-		return 0, err
+	if network == "mainnet" {
+		cli, err = ethclient.Dial(config.GetRConf().GetMainRPCEndPoint())
+		if err != nil {
+			return 0, err
+		}
+	} else {
+		cli, err = ethclient.Dial(config.GetRConf().GetRPCEndPoint())
+		if err != nil {
+			return 0, err
+		}
 	}
 
 	defer cli.Close()
@@ -50,13 +72,12 @@ func currentBlk() (uint64, error) {
 func loopForNewName() {
 	var err error
 	db := ldb.GetLdb()
-	dbblk := db.GetLatestBlkNum()
+	dbblk := db.GetLatestBlkNum("rinkeby")
 
-	currentBlkNumber, err = currentBlk()
+	currentBlkNumber, err = currentBlk("rinkeby")
 	if err != nil {
 		return
 	}
-
 	// GetTypesName()
 	//BatchNewRootName(dbblk, currentBlkNumber)
 	//BatchNewSubName(dbblk, currentBlkNumber)
@@ -69,8 +90,15 @@ func loopForNewName() {
 	BatchNewConf(dbblk, currentBlkNumber)
 	BatchNewAccountant(dbblk, currentBlkNumber)
 	//defer db.CloseLdb()
-	db.SaveLatestBlkNum(currentBlkNumber)
+	db.SaveLatestBlkNum("rinkeby", currentBlkNumber)
 
+	currentBlkMainNumber, err := currentBlk("mainnet")
+	if err != nil {
+		return
+	}
+	mdbblk := db.GetLatestBlkNum("mainnet")
+	BatchNewColdBootClient(mdbblk, currentBlkMainNumber)
+	db.SaveLatestBlkNum("mainnet", currentBlkMainNumber)
 }
 
 func (ag *DNSAgent) DNSLoopEvent() {

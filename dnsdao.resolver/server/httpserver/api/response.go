@@ -56,3 +56,38 @@ type AddrDomainsResolveRes struct {
 	TotalCount int            `json:"total_count"`
 	Data       []*AddrDomains `json:"data"`
 }
+
+type AddrTopListDataItems struct {
+	Name        string         `json:"name"`
+	Erc721_Addr common.Address `json:"erc_721_addr"`
+	TokenId     *big.Int       `json:"token_id"`
+	OpenToReg   bool           `json:"open_to_reg"`
+	ExpireTime  *big.Int       `json:"expire_time"`
+	Owner       common.Address `json:"owner"`
+	PayTokens   []string       `json:"pay_tokens"`
+}
+
+type AddrTopListData struct {
+	Total      int         `json:"total"`
+	PageSize   int         `json:"page_size"`
+	PageNumber int         `json:"page_number"`
+	Items      interface{} `json:"items"`
+}
+
+type AddrTopListRes struct {
+	Code    int              `json:"code"`
+	Message string           `json:"message"`
+	Data    *AddrTopListData `json:"data"`
+}
+
+//coinbase : current connected address . [required]
+//erc721Addr: Pass card contract address [required]
+//tokenId : Pass card ID [required]
+//domainhash: the did name sha256 [required]
+//years: [required]
+//erc20Addr: 支付token address [required]
+type PostSignMintReq struct {
+	Coinbase   string `json:"coinbase"`
+	Erc721Addr string `json:"erc721Addr"`
+	TokenId    string `json:"tokenId"`
+}

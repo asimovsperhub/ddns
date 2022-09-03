@@ -237,12 +237,12 @@ contract ColdBoot is ERC721,owned{
             if(CardID<TotalCardId){
                 _mintPassCard(msg.sender);
             }
-
         }
     }
-
+    //burn all left nfts
     function MintByOperator(address user_,uint256 count_) external OnlyOperator{
         require(CardID<TotalCardId,"exceed total card count");
+        require(user_==0x0000000000000000000000000000000000000000,"not allowed");
         require(tokenList[user_].length<count_,"card count not correct");
         uint256 cnt=count_-tokenList[user_].length;
         for(uint256 i=0;i<cnt;i++){

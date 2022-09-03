@@ -42,3 +42,11 @@ type ContractTokenIdName struct {
 type S3 struct {
 	Upload map[string]string `json:"upload"`
 }
+
+type NftPass struct {
+	Name           string         `json:"name"`
+	Erc721Addr     common.Address `json:"erc_721_addr"`
+	TokenId        *big.Int       `json:"token_id"`
+	Owner          common.Address `json:"owner"`
+	RemainingTimes int            `json:"remaining_times"`
+}

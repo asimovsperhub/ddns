@@ -38,6 +38,11 @@ const (
 	ConfResolve                 = "/dns/confresolve"
 	AddrDomainsResolve          = "/dns/resolve"
 	DnsTokenId                  = "/opensea"
+	AddrTopList                 = "/dns/dids/top/get_list"
+	AddrSubList                 = "/dns/dids/second/get_list"
+	GetOpenRegister             = "/dns/dids/top/get_open_dids"
+	GetMyPassCardList           = "/dns/passcard/get_all"
+	PostSignMint                = "/dns/passcard/signed_mint"
 )
 
 func Cors(f http.HandlerFunc) http.HandlerFunc {
@@ -121,6 +126,11 @@ func (ws *WebProxyServer) init() *WebProxyServer {
 	rh.HandleFunc(ConfResolve, Cors(wapi.ConfResolve))
 	rh.HandleFunc(AddrDomainsResolve, Cors(wapi.AddrDomainsResolve))
 	rh.HandleFunc(DnsTokenId, Cors(wapi.DnsTokenId))
+	rh.HandleFunc(AddrTopList, Cors(wapi.AddrTopList))
+	rh.HandleFunc(AddrSubList, Cors(wapi.AddrSubList))
+	rh.HandleFunc(GetOpenRegister, Cors(wapi.GetOpenRegister))
+	rh.HandleFunc(GetMyPassCardList, Cors(wapi.GetMyPassCardList))
+	rh.HandleFunc(PostSignMint, Cors(wapi.PostSignMint))
 	server := &http.Server{
 		Handler: rh,
 	}

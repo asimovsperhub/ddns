@@ -23,6 +23,7 @@ const (
 	dnsContractAddr        = "dnsContractAddr"
 	dnsConf                = "dnsConf"
 	dnsContractTokenIdName = "dnsContractTokenIdName"
+	dnsNftPass             = "dnsNftPass"
 )
 
 type Ldb struct {
@@ -63,8 +64,8 @@ func (db *Ldb) CloseLdb() {
 	ldb = nil
 }
 
-func (db *Ldb) GetLatestBlkNum() (blk uint64) {
-	if v, err := db.db.Get([]byte(dnsResolveBlKnumber), nil); err != nil {
+func (db *Ldb) GetLatestBlkNum(network string) (blk uint64) {
+	if v, err := db.db.Get([]byte(dnsResolveBlKnumber+network), nil); err != nil {
 		return 0
 	} else {
 		if blk, err = strconv.ParseUint(string(v), 10, 64); err != nil {
@@ -74,9 +75,9 @@ func (db *Ldb) GetLatestBlkNum() (blk uint64) {
 	return
 }
 
-func (db *Ldb) SaveLatestBlkNum(blk uint64) error {
+func (db *Ldb) SaveLatestBlkNum(network string, blk uint64) error {
 
-	if err := db.db.Put([]byte(dnsResolveBlKnumber), []byte(strconv.FormatUint(blk, 10)), &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(dnsResolveBlKnumber+network), []byte(strconv.FormatUint(blk, 10)), &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 
@@ -373,6 +374,30 @@ func (db *Ldb) GetS3() (*S3, error) {
 func (db *Ldb) SaveS3(ct *S3) error {
 	v, _ := json.Marshal(ct)
 	k := fmt.Sprintf("S3")
+	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (db *Ldb) GetNftPass(owner string) ([]*NftPass, error) {
+	var ret []*NftPass
+	k := fmt.Sprintf(dnsNftPass, owner)
+	if v, err := db.db.Get([]byte(k), nil); err != nil {
+		return nil, err
+	} else {
+		err = json.Unmarshal(v, &ret)
+		if err != nil {
+			return nil, err
+		}
+
+		return ret, nil
+	}
+}
+
+func (db *Ldb) SaveNftPass(owner string, ct []*NftPass) error {
+	v, _ := json.Marshal(ct)
+	k := fmt.Sprintf(dnsNftPass, owner)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}

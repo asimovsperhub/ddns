@@ -10,6 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"io/ioutil"
 	"log"
 	"math/big"
 	"net/http"
@@ -788,5 +789,274 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 	}
 	writer.WriteHeader(200)
 	writer.Write([]byte(msg))
+
+}
+
+func (a *Api) AddrTopList(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != "GET" {
+		writer.WriteHeader(500)
+		fmt.Fprintf(writer, "not a get request")
+		return
+	}
+	pageNumber := "0"
+	pageSize := "10"
+	addr := ""
+	query := request.URL.Query()
+	log.Println("AddrTopList query ", query)
+	msg := "not found coinbase"
+	var (
+		v  []string
+		ok bool
+	)
+	if v, ok = query["pageNumber"]; ok {
+		pageNumber = v[0]
+	}
+	if v, ok = query["pageSize"]; ok {
+		pageSize = v[0]
+	}
+
+	if v, ok = query["coinbase"]; ok {
+		addr = v[0]
+	} else {
+		writer.WriteHeader(200)
+		fmt.Fprintf(writer, "not a valid request")
+		return
+	}
+	db := ldb.GetLdb()
+	val, err := db.GetAddressList(strings.ToLower(addr))
+	log.Println("AddrTopList GetAddressList ", val)
+	if err == nil {
+		number, _ := strconv.Atoi(pageNumber)
+		size, _ := strconv.Atoi(pageSize)
+		var rndata []string
+		var data []*AddrTopListDataItems
+		for _, name := range val {
+			if strings.Contains(name, "rnH_1_") {
+				rndata = append(rndata, name)
+			}
+		}
+		rndatares := Paging(number, size, rndata)
+		for _, name := range rndatares {
+			in, _ := db.GetKey(name)
+			root := new(dns.RootNameInfo)
+			errun := json.Unmarshal([]byte(in), &root)
+			if errun != nil {
+				log.Println("AddrTopList Json.Unmarshal err", errun)
+			} else {
+				data = append(data, &AddrTopListDataItems{
+					Name: root.Name, Erc721_Addr: root.Contract, TokenId: root.TokenId, OpenToReg: root.OpenToReg, ExpireTime: root.ExpireTime, Owner: root.Owner, PayTokens: []string{},
+				})
+			}
+		}
+		addrtoplistdata := &AddrTopListData{Total: len(rndata), PageNumber: number, PageSize: size, Items: data}
+		addrtoplist := &AddrTopListRes{Code: 1, Message: "ok", Data: addrtoplistdata}
+		resbyte, _ := json.Marshal(addrtoplist)
+		if err == nil {
+			msg = string(resbyte)
+		}
+	}
+	writer.WriteHeader(200)
+	writer.Write([]byte(msg))
+
+}
+
+func (a *Api) AddrSubList(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != "GET" {
+		writer.WriteHeader(500)
+		fmt.Fprintf(writer, "not a get request")
+		return
+	}
+	pageNumber := "0"
+	pageSize := "10"
+	addr := ""
+	query := request.URL.Query()
+	log.Println("AddrSubList query ", query)
+	msg := "not found coinbase"
+	var (
+		v  []string
+		ok bool
+	)
+	if v, ok = query["pageNumber"]; ok {
+		pageNumber = v[0]
+	}
+	if v, ok = query["pageSize"]; ok {
+		pageSize = v[0]
+	}
+
+	if v, ok = query["coinbase"]; ok {
+		addr = v[0]
+	} else {
+		writer.WriteHeader(200)
+		fmt.Fprintf(writer, "not a valid request")
+		return
+	}
+	db := ldb.GetLdb()
+	val, err := db.GetAddressList(strings.ToLower(addr))
+	log.Println("AddrSubList GetAddressList ", val)
+	if err == nil {
+		number, _ := strconv.Atoi(pageNumber)
+		size, _ := strconv.Atoi(pageSize)
+		var rndata []string
+		var data []*AddrTopListDataItems
+		for _, name := range val {
+			if strings.Contains(name, "snH_1_") {
+				rndata = append(rndata, name)
+			}
+		}
+		rndatares := Paging(number, size, rndata)
+		for _, name := range rndatares {
+			in, _ := db.GetKey(name)
+			sub := new(dns.SubNameInfo)
+			errun := json.Unmarshal([]byte(in), &sub)
+			if errun != nil {
+				log.Println("AddrSubList Json.Unmarshal err", errun)
+			} else {
+				data = append(data, &AddrTopListDataItems{
+					Name: sub.Name, Erc721_Addr: sub.Contract, TokenId: sub.TokenId, ExpireTime: sub.ExpireTime, Owner: sub.Owner, PayTokens: []string{},
+				})
+			}
+		}
+		addrtoplistdata := &AddrTopListData{Total: len(rndata), PageNumber: number, PageSize: size, Items: data}
+		addrtoplist := &AddrTopListRes{Code: 1, Message: "ok", Data: addrtoplistdata}
+		resbyte, _ := json.Marshal(addrtoplist)
+		if err == nil {
+			msg = string(resbyte)
+		}
+	}
+	writer.WriteHeader(200)
+	writer.Write([]byte(msg))
+
+}
+
+func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != "GET" {
+		writer.WriteHeader(500)
+		fmt.Fprintf(writer, "not a get request")
+		return
+	}
+	pageNumber := "0"
+	pageSize := "10"
+	query := request.URL.Query()
+	log.Println("GetOpenRegister query ", query)
+	msg := "not found coinbase"
+	var (
+		v  []string
+		ok bool
+	)
+	if v, ok = query["pageNumber"]; ok {
+		pageNumber = v[0]
+	}
+	if v, ok = query["pageSize"]; ok {
+		pageSize = v[0]
+	}
+	db := ldb.GetLdb()
+	contractL, err := db.GetContractList()
+	if err == nil {
+		number, _ := strconv.Atoi(pageNumber)
+		size, _ := strconv.Atoi(pageSize)
+		contractlist := Paging(number, size, contractL)
+		var data []*AddrTopListDataItems
+		for _, contract := range contractlist {
+			nameHash, _ := db.GetContractAddr(contract)
+			rootname, _ := db.GetRootName(nameHash)
+			rootinfo := new(dns.RootNameInfo)
+			err = json.Unmarshal([]byte(rootname), rootinfo)
+			if err != nil {
+				log.Println("GetOpenRegister Json.Unmarshal err", err)
+			} else {
+				data = append(data, &AddrTopListDataItems{
+					Name: rootinfo.Name, Erc721_Addr: rootinfo.Contract, TokenId: rootinfo.TokenId, ExpireTime: rootinfo.ExpireTime, OpenToReg: rootinfo.OpenToReg, Owner: rootinfo.Owner, PayTokens: []string{},
+				})
+			}
+		}
+		addrtoplistdata := &AddrTopListData{Total: len(contractL), PageNumber: number, PageSize: size, Items: data}
+		addrtoplist := &AddrTopListRes{Code: 1, Message: "ok", Data: addrtoplistdata}
+		resbyte, _ := json.Marshal(addrtoplist)
+		if err == nil {
+			msg = string(resbyte)
+		}
+	}
+	writer.WriteHeader(200)
+	writer.Write([]byte(msg))
+
+}
+
+func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != "GET" {
+		writer.WriteHeader(500)
+		fmt.Fprintf(writer, "not a get request")
+		return
+	}
+	pageNumber := "0"
+	pageSize := "10"
+	coinbase := ""
+	query := request.URL.Query()
+	log.Println("GetMyPassCardList query ", query)
+	msg := "not found coinbase"
+	var (
+		v  []string
+		ok bool
+	)
+	if v, ok = query["pageNumber"]; ok {
+		pageNumber = v[0]
+	}
+	if v, ok = query["pageSize"]; ok {
+		pageSize = v[0]
+	}
+
+	if v, ok = query["coinbase"]; ok {
+		coinbase = v[0]
+	} else {
+		writer.WriteHeader(200)
+		fmt.Fprintf(writer, "not a valid request")
+		return
+	}
+	db := ldb.GetLdb()
+	val, err := db.GetNftPass(strings.ToLower(coinbase))
+	log.Println("GetMyPassCardList GetNftPass ", val)
+	if err == nil {
+		number, _ := strconv.Atoi(pageNumber)
+		size, _ := strconv.Atoi(pageSize)
+		//var data []*ldb.NftPass
+		var data []*ldb.NftPass
+		if number == 0 && size == 0 {
+			data = val
+		}
+		if number <= len(val) {
+			if number+size > len(val) {
+				data = val[number:]
+			} else {
+				data = val[number : size+number]
+			}
+		} else {
+			data = nil
+		}
+		addrtoplistdata := &AddrTopListData{Total: len(data), PageNumber: number, PageSize: size, Items: data}
+		addrtoplist := &AddrTopListRes{Code: 1, Message: "ok", Data: addrtoplistdata}
+		resbyte, _ := json.Marshal(addrtoplist)
+		if err == nil {
+			msg = string(resbyte)
+		}
+	}
+	writer.WriteHeader(200)
+	writer.Write([]byte(msg))
+
+}
+
+func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != "POST" {
+		writer.WriteHeader(500)
+		fmt.Fprintf(writer, "not a get request")
+		return
+	}
+	//coinbase : current connected address . [required]
+	//erc721Addr: Pass card contract address [required]
+	//tokenId : Pass card ID [required]
+	//domainhash: the did name sha256 [required]
+	//years: [required]
+	//erc20Addr: 支付token address [required]
+	s, _ := ioutil.ReadAll(request.Body)
+	writer.WriteHeader(200)
+	writer.Write(s)
 
 }
