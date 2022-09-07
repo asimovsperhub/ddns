@@ -10,8 +10,10 @@ import "./accountant/IDnsAccountant.sol";
 import "../ERC20/IERC20.sol";
 import "./lib/LibDnsName.sol";
 import "./lib/LibDnsOwner.sol";
+import "./lib/LibDnsSig.sol";
 import "./owners/IDnsDaoOwner.sol";
 import "./owners/IDnsErc721Owner.sol";
+
 //import "./INamePub.sol";
 
 contract DnsName is ERC721,owned{
@@ -22,6 +24,8 @@ contract DnsName is ERC721,owned{
     bytes private baseUri;
     address public ownerC;
     address public priceC;
+    address public sigUser;
+    mapping(uint32=>bool) public passCardUsed;
 
     struct NameItem{
         bytes entireName;
@@ -45,9 +49,6 @@ contract DnsName is ERC721,owned{
         ownerC = LibDnsOwner.NewDnsOwner(msg.sender);
     }
 
-//    function getNameInfo(bytes32 hash_) external view override returns(uint256,uint256,address,bool){
-//        return (nameStore[hash_].expireTime,nameStore[hash_].tokenId,nameStore[hash_].erc721Addr,nameStore[hash_].openToReg);
-//    }
 
     function setBaseUri(string memory baseUri_) external onlyOwner{
         baseUri = bytes(baseUri_);
@@ -77,10 +78,12 @@ contract DnsName is ERC721,owned{
         emit EvOpenToReg(open_,hash_);
     }
 
-    function setContract(address taxC_,address accountantC_, address priceC_) external onlyOwner{
+    function setContract(address taxC_,address accountantC_, address priceC_,address sigUser_,bool open_) external onlyOwner{
         taxC = taxC_;
         accountantC = accountantC_;
         priceC = priceC_;
+        sigUser = sigUser_;
+        IDnsDaoOwner(ownerC).openLevel2Reg(open_);
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool){
@@ -166,6 +169,7 @@ contract DnsName is ERC721,owned{
             IDnsAccountant(accountantC).deposit(erc20Addr_,cost);
             IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),cost);
         }
+
     }
 
     function ChargeName(address erc20Addr_, bytes32 nameHash_,uint8 year_, bool transfer_) external payable{
@@ -185,27 +189,53 @@ contract DnsName is ERC721,owned{
         gNameId++;
     }
 
-    function _mintTopName(address erc20Addr_,string memory entireName_,uint8 year_) internal{
-        require(LibDnsToolKit.verifyRoot(bytes(entireName_)),"not a root Name");
+    // function _mintTopName(address erc20Addr_,string memory entireName_,uint8 year_) internal{
+    //     require(LibDnsToolKit.verifyRoot(bytes(entireName_)),"not a root Name");
+    //     require(nameStore[LibDnsToolKit.entireNameHash(entireName_)].tokenId == 0,"name was registered");
+    //     uint256 cost = uint256(year_)*IDnsPrice(priceC).Price(bytes32(0),erc20Addr_,bytes(entireName_).length);
+    //     require(cost>0,"payment not support");
+    //     if (erc20Addr_ == address(0)){
+    //         require(msg.value>=cost,"payout is not enough");
+    //         IDnsAccountant(accountantC).deposit(erc20Addr_,msg.value);
+    //         payable(accountantC).transfer(msg.value);
+
+    //     }else{
+    //         require(IERC20(erc20Addr_).balanceOf(msg.sender)>=cost &&
+    //             IERC20(erc20Addr_).allowance(msg.sender,address(this))>= cost,"payout is not enough");
+    //         IDnsAccountant(accountantC).deposit(erc20Addr_,cost);
+    //         IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),cost);
+    //     }
+    // }
+
+    function MintNameBySig(string memory entireName_,
+        uint8 year_, address erc20Addr_,
+        uint256 price_, uint32 passId_,bytes memory sig) external payable{
         require(nameStore[LibDnsToolKit.entireNameHash(entireName_)].tokenId == 0,"name was registered");
-        uint256 cost = uint256(year_)*IDnsPrice(priceC).Price(bytes32(0),erc20Addr_,bytes(entireName_).length);
-        require(cost>0,"payment not support");
+        // require(timeStamp_+10 > block.timestamp,"sig is expired");
+        //require sig is right
+        require(!passCardUsed[passId_],"pass card is used");
+        require(LibDnsSignature.SigUserAddr(
+            keccak256(abi.encodePacked(entireName_,year_,erc20Addr_,price_,msg.sender,passId_)),
+            sig) == sigUser,"sig not correct");
+
         if (erc20Addr_ == address(0)){
-            require(msg.value>=cost,"payout is not enough");
+            require(msg.value>=price_,"payout is not enough");
             IDnsAccountant(accountantC).deposit(erc20Addr_,msg.value);
             payable(accountantC).transfer(msg.value);
 
         }else{
-            require(IERC20(erc20Addr_).balanceOf(msg.sender)>=cost &&
-                IERC20(erc20Addr_).allowance(msg.sender,address(this))>= cost,"payout is not enough");
-            IDnsAccountant(accountantC).deposit(erc20Addr_,cost);
-            IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),cost);
+            require(IERC20(erc20Addr_).balanceOf(msg.sender)>=price_ &&
+                IERC20(erc20Addr_).allowance(msg.sender,address(this))>= price_,"payout is not enough");
+            IDnsAccountant(accountantC).deposit(erc20Addr_,price_);
+            IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),price_);
         }
-    }
-
-    function MintName(address erc20Addr_, string memory entireName_,uint8 year_) external payable{
-        _mintTopName(erc20Addr_,entireName_,year_);
         _mintName(bytes(entireName_),year_);
         emit EvMintDnsName(erc20Addr_,entireName_,year_);
     }
+
+    // function MintName(address erc20Addr_, string memory entireName_,uint8 year_) external payable{
+    //     _mintTopName(erc20Addr_,entireName_,year_);
+    //     _mintName(bytes(entireName_),year_);
+    //     emit EvMintDnsName(erc20Addr_,entireName_,year_);
+    // }
 }

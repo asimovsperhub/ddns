@@ -27,7 +27,7 @@ var (
 )
 
 // DnsSubNameABI is the input ABI used to generate the binding from.
-const DnsSubNameABI = "[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"fatherHash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"taxC_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceC_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"accountC_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"nameOwner_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"ownerC_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"approved\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"entireName\",\"type\":\"string\"}],\"name\":\"EvAddSubName\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"year\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"transfer\",\"type\":\"bool\"}],\"name\":\"EvChargeSubName\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"entireName\",\"type\":\"string\"}],\"name\":\"EvDelSubName\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"entireName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"year\",\"type\":\"uint8\"}],\"name\":\"EvMintSubName\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"entireName_\",\"type\":\"string\"}],\"name\":\"AddSubName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"nameHash_\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"year_\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"transfer_\",\"type\":\"bool\"}],\"name\":\"ChargeName\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash_\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"entireName_\",\"type\":\"string\"}],\"name\":\"DelSubName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"entireName_\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"year_\",\"type\":\"uint8\"}],\"name\":\"MintName\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"accountantC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"erc721Owner\",\"outputs\":[{\"internalType\":\"addresspayable\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fatherAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fatherHash\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"gNameId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getApproved\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"id2Hash\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"name\":\"isApprovedForAll\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"nameStore\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"entireName\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"expireTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"addresspayable\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ownerC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"ownerOf\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"priceC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"setApprovalForAll\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"baseUri_\",\"type\":\"string\"}],\"name\":\"setBaseUri\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name_\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol_\",\"type\":\"string\"}],\"name\":\"setName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"taxC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"tokenURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const DnsSubNameABI = "[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"fatherHash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"taxC_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceC_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"accountC_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"nameOwner_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"ownerC_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"approved\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"entireName\",\"type\":\"string\"}],\"name\":\"EvAddSubName\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"year\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"transfer\",\"type\":\"bool\"}],\"name\":\"EvChargeSubName\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"entireName\",\"type\":\"string\"}],\"name\":\"EvDelSubName\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"erc20Addr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"entireName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"year\",\"type\":\"uint8\"}],\"name\":\"EvMintSubName\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"nameHash_\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"year_\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"transfer_\",\"type\":\"bool\"}],\"name\":\"ChargeName\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"entireName_\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"year_\",\"type\":\"uint8\"}],\"name\":\"MintName\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"entireName_\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"year_\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price_\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"passId_\",\"type\":\"uint32\"},{\"internalType\":\"bytes\",\"name\":\"sig\",\"type\":\"bytes\"}],\"name\":\"MintNameBySig\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"accountantC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"erc721Owner\",\"outputs\":[{\"internalType\":\"addresspayable\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fatherAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fatherHash\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"gNameId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getApproved\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"id2Hash\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"name\":\"isApprovedForAll\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"nameStore\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"entireName\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"expireTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"addresspayable\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ownerC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"ownerOf\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"priceC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"setApprovalForAll\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"baseUri_\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"sigUser_\",\"type\":\"address\"}],\"name\":\"setBaseUri\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name_\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol_\",\"type\":\"string\"}],\"name\":\"setName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sigUser\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"taxC\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"taxPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"tokenURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // DnsSubName is an auto generated Go binding around an Ethereum contract.
 type DnsSubName struct {
@@ -652,6 +652,37 @@ func (_DnsSubName *DnsSubNameCallerSession) PriceC() (common.Address, error) {
 	return _DnsSubName.Contract.PriceC(&_DnsSubName.CallOpts)
 }
 
+// SigUser is a free data retrieval call binding the contract method 0x9ff00963.
+//
+// Solidity: function sigUser() view returns(address)
+func (_DnsSubName *DnsSubNameCaller) SigUser(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _DnsSubName.contract.Call(opts, &out, "sigUser")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// SigUser is a free data retrieval call binding the contract method 0x9ff00963.
+//
+// Solidity: function sigUser() view returns(address)
+func (_DnsSubName *DnsSubNameSession) SigUser() (common.Address, error) {
+	return _DnsSubName.Contract.SigUser(&_DnsSubName.CallOpts)
+}
+
+// SigUser is a free data retrieval call binding the contract method 0x9ff00963.
+//
+// Solidity: function sigUser() view returns(address)
+func (_DnsSubName *DnsSubNameCallerSession) SigUser() (common.Address, error) {
+	return _DnsSubName.Contract.SigUser(&_DnsSubName.CallOpts)
+}
+
 // SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
 // Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
@@ -745,6 +776,37 @@ func (_DnsSubName *DnsSubNameCallerSession) TaxC() (common.Address, error) {
 	return _DnsSubName.Contract.TaxC(&_DnsSubName.CallOpts)
 }
 
+// TaxPrice is a free data retrieval call binding the contract method 0xeda5745c.
+//
+// Solidity: function taxPrice() view returns(uint256)
+func (_DnsSubName *DnsSubNameCaller) TaxPrice(opts *bind.CallOpts) (*big.Int, error) {
+	var out []interface{}
+	err := _DnsSubName.contract.Call(opts, &out, "taxPrice")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// TaxPrice is a free data retrieval call binding the contract method 0xeda5745c.
+//
+// Solidity: function taxPrice() view returns(uint256)
+func (_DnsSubName *DnsSubNameSession) TaxPrice() (*big.Int, error) {
+	return _DnsSubName.Contract.TaxPrice(&_DnsSubName.CallOpts)
+}
+
+// TaxPrice is a free data retrieval call binding the contract method 0xeda5745c.
+//
+// Solidity: function taxPrice() view returns(uint256)
+func (_DnsSubName *DnsSubNameCallerSession) TaxPrice() (*big.Int, error) {
+	return _DnsSubName.Contract.TaxPrice(&_DnsSubName.CallOpts)
+}
+
 // TokenURI is a free data retrieval call binding the contract method 0xc87b56dd.
 //
 // Solidity: function tokenURI(uint256 tokenId) view returns(string)
@@ -776,27 +838,6 @@ func (_DnsSubName *DnsSubNameCallerSession) TokenURI(tokenId *big.Int) (string, 
 	return _DnsSubName.Contract.TokenURI(&_DnsSubName.CallOpts, tokenId)
 }
 
-// AddSubName is a paid mutator transaction binding the contract method 0x590d5873.
-//
-// Solidity: function AddSubName(bytes32 hash_, string entireName_) returns()
-func (_DnsSubName *DnsSubNameTransactor) AddSubName(opts *bind.TransactOpts, hash_ [32]byte, entireName_ string) (*types.Transaction, error) {
-	return _DnsSubName.contract.Transact(opts, "AddSubName", hash_, entireName_)
-}
-
-// AddSubName is a paid mutator transaction binding the contract method 0x590d5873.
-//
-// Solidity: function AddSubName(bytes32 hash_, string entireName_) returns()
-func (_DnsSubName *DnsSubNameSession) AddSubName(hash_ [32]byte, entireName_ string) (*types.Transaction, error) {
-	return _DnsSubName.Contract.AddSubName(&_DnsSubName.TransactOpts, hash_, entireName_)
-}
-
-// AddSubName is a paid mutator transaction binding the contract method 0x590d5873.
-//
-// Solidity: function AddSubName(bytes32 hash_, string entireName_) returns()
-func (_DnsSubName *DnsSubNameTransactorSession) AddSubName(hash_ [32]byte, entireName_ string) (*types.Transaction, error) {
-	return _DnsSubName.Contract.AddSubName(&_DnsSubName.TransactOpts, hash_, entireName_)
-}
-
 // ChargeName is a paid mutator transaction binding the contract method 0xc70f923c.
 //
 // Solidity: function ChargeName(address erc20Addr_, bytes32 nameHash_, uint8 year_, bool transfer_) payable returns()
@@ -818,27 +859,6 @@ func (_DnsSubName *DnsSubNameTransactorSession) ChargeName(erc20Addr_ common.Add
 	return _DnsSubName.Contract.ChargeName(&_DnsSubName.TransactOpts, erc20Addr_, nameHash_, year_, transfer_)
 }
 
-// DelSubName is a paid mutator transaction binding the contract method 0xea70e2fc.
-//
-// Solidity: function DelSubName(bytes32 hash_, string entireName_) returns()
-func (_DnsSubName *DnsSubNameTransactor) DelSubName(opts *bind.TransactOpts, hash_ [32]byte, entireName_ string) (*types.Transaction, error) {
-	return _DnsSubName.contract.Transact(opts, "DelSubName", hash_, entireName_)
-}
-
-// DelSubName is a paid mutator transaction binding the contract method 0xea70e2fc.
-//
-// Solidity: function DelSubName(bytes32 hash_, string entireName_) returns()
-func (_DnsSubName *DnsSubNameSession) DelSubName(hash_ [32]byte, entireName_ string) (*types.Transaction, error) {
-	return _DnsSubName.Contract.DelSubName(&_DnsSubName.TransactOpts, hash_, entireName_)
-}
-
-// DelSubName is a paid mutator transaction binding the contract method 0xea70e2fc.
-//
-// Solidity: function DelSubName(bytes32 hash_, string entireName_) returns()
-func (_DnsSubName *DnsSubNameTransactorSession) DelSubName(hash_ [32]byte, entireName_ string) (*types.Transaction, error) {
-	return _DnsSubName.Contract.DelSubName(&_DnsSubName.TransactOpts, hash_, entireName_)
-}
-
 // MintName is a paid mutator transaction binding the contract method 0xcd9481af.
 //
 // Solidity: function MintName(address erc20Addr_, string entireName_, uint8 year_) payable returns()
@@ -858,6 +878,27 @@ func (_DnsSubName *DnsSubNameSession) MintName(erc20Addr_ common.Address, entire
 // Solidity: function MintName(address erc20Addr_, string entireName_, uint8 year_) payable returns()
 func (_DnsSubName *DnsSubNameTransactorSession) MintName(erc20Addr_ common.Address, entireName_ string, year_ uint8) (*types.Transaction, error) {
 	return _DnsSubName.Contract.MintName(&_DnsSubName.TransactOpts, erc20Addr_, entireName_, year_)
+}
+
+// MintNameBySig is a paid mutator transaction binding the contract method 0xe0c52d70.
+//
+// Solidity: function MintNameBySig(string entireName_, uint8 year_, address erc20Addr_, uint256 price_, uint32 passId_, bytes sig) payable returns()
+func (_DnsSubName *DnsSubNameTransactor) MintNameBySig(opts *bind.TransactOpts, entireName_ string, year_ uint8, erc20Addr_ common.Address, price_ *big.Int, passId_ uint32, sig []byte) (*types.Transaction, error) {
+	return _DnsSubName.contract.Transact(opts, "MintNameBySig", entireName_, year_, erc20Addr_, price_, passId_, sig)
+}
+
+// MintNameBySig is a paid mutator transaction binding the contract method 0xe0c52d70.
+//
+// Solidity: function MintNameBySig(string entireName_, uint8 year_, address erc20Addr_, uint256 price_, uint32 passId_, bytes sig) payable returns()
+func (_DnsSubName *DnsSubNameSession) MintNameBySig(entireName_ string, year_ uint8, erc20Addr_ common.Address, price_ *big.Int, passId_ uint32, sig []byte) (*types.Transaction, error) {
+	return _DnsSubName.Contract.MintNameBySig(&_DnsSubName.TransactOpts, entireName_, year_, erc20Addr_, price_, passId_, sig)
+}
+
+// MintNameBySig is a paid mutator transaction binding the contract method 0xe0c52d70.
+//
+// Solidity: function MintNameBySig(string entireName_, uint8 year_, address erc20Addr_, uint256 price_, uint32 passId_, bytes sig) payable returns()
+func (_DnsSubName *DnsSubNameTransactorSession) MintNameBySig(entireName_ string, year_ uint8, erc20Addr_ common.Address, price_ *big.Int, passId_ uint32, sig []byte) (*types.Transaction, error) {
+	return _DnsSubName.Contract.MintNameBySig(&_DnsSubName.TransactOpts, entireName_, year_, erc20Addr_, price_, passId_, sig)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
@@ -944,25 +985,25 @@ func (_DnsSubName *DnsSubNameTransactorSession) SetApprovalForAll(operator commo
 	return _DnsSubName.Contract.SetApprovalForAll(&_DnsSubName.TransactOpts, operator, approved)
 }
 
-// SetBaseUri is a paid mutator transaction binding the contract method 0xa0bcfc7f.
+// SetBaseUri is a paid mutator transaction binding the contract method 0xb470e164.
 //
-// Solidity: function setBaseUri(string baseUri_) returns()
-func (_DnsSubName *DnsSubNameTransactor) SetBaseUri(opts *bind.TransactOpts, baseUri_ string) (*types.Transaction, error) {
-	return _DnsSubName.contract.Transact(opts, "setBaseUri", baseUri_)
+// Solidity: function setBaseUri(string baseUri_, address sigUser_) returns()
+func (_DnsSubName *DnsSubNameTransactor) SetBaseUri(opts *bind.TransactOpts, baseUri_ string, sigUser_ common.Address) (*types.Transaction, error) {
+	return _DnsSubName.contract.Transact(opts, "setBaseUri", baseUri_, sigUser_)
 }
 
-// SetBaseUri is a paid mutator transaction binding the contract method 0xa0bcfc7f.
+// SetBaseUri is a paid mutator transaction binding the contract method 0xb470e164.
 //
-// Solidity: function setBaseUri(string baseUri_) returns()
-func (_DnsSubName *DnsSubNameSession) SetBaseUri(baseUri_ string) (*types.Transaction, error) {
-	return _DnsSubName.Contract.SetBaseUri(&_DnsSubName.TransactOpts, baseUri_)
+// Solidity: function setBaseUri(string baseUri_, address sigUser_) returns()
+func (_DnsSubName *DnsSubNameSession) SetBaseUri(baseUri_ string, sigUser_ common.Address) (*types.Transaction, error) {
+	return _DnsSubName.Contract.SetBaseUri(&_DnsSubName.TransactOpts, baseUri_, sigUser_)
 }
 
-// SetBaseUri is a paid mutator transaction binding the contract method 0xa0bcfc7f.
+// SetBaseUri is a paid mutator transaction binding the contract method 0xb470e164.
 //
-// Solidity: function setBaseUri(string baseUri_) returns()
-func (_DnsSubName *DnsSubNameTransactorSession) SetBaseUri(baseUri_ string) (*types.Transaction, error) {
-	return _DnsSubName.Contract.SetBaseUri(&_DnsSubName.TransactOpts, baseUri_)
+// Solidity: function setBaseUri(string baseUri_, address sigUser_) returns()
+func (_DnsSubName *DnsSubNameTransactorSession) SetBaseUri(baseUri_ string, sigUser_ common.Address) (*types.Transaction, error) {
+	return _DnsSubName.Contract.SetBaseUri(&_DnsSubName.TransactOpts, baseUri_, sigUser_)
 }
 
 // SetName is a paid mutator transaction binding the contract method 0x5c707f07.

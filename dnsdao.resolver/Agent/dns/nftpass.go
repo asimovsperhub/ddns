@@ -81,10 +81,12 @@ func BatchNewColdBootClient(start, end uint64) {
 		if nftpass == nil {
 			nftpass = []*ldb.NftPass{&ldb.NftPass{
 				Name: label, Erc721Addr: common.HexToAddress(config.GetRConf().Cconf.ColdBoot), TokenId: ev.CardId, Owner: ev.User,
+				CardColor: ev.Color,
 			}}
 		} else {
 			nftpass = append(nftpass, &ldb.NftPass{
 				Name: label, Erc721Addr: common.HexToAddress(config.GetRConf().Cconf.ColdBoot), TokenId: ev.CardId, Owner: ev.User,
+				CardColor: ev.Color,
 			})
 		}
 		db.SaveNftPass(addrkey, nftpass)

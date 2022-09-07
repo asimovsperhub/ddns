@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"github.com/dnsdao/dnsdao.resolver/database/ldb"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
@@ -74,20 +75,34 @@ type AddrTopListData struct {
 	Items      interface{} `json:"items"`
 }
 
-type AddrTopListRes struct {
-	Code    int              `json:"code"`
-	Message string           `json:"message"`
-	Data    *AddrTopListData `json:"data"`
+type Res struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
-//coinbase : current connected address . [required]
-//erc721Addr: Pass card contract address [required]
-//tokenId : Pass card ID [required]
-//domainhash: the did name sha256 [required]
-//years: [required]
-//erc20Addr: 支付token address [required]
-type PostSignMintReq struct {
-	Coinbase   string `json:"coinbase"`
-	Erc721Addr string `json:"erc721Addr"`
-	TokenId    string `json:"tokenId"`
+type PostSignMintParams struct {
+	DomainName string         `json:"domain_name"`
+	Year       int32          `json:"year"`
+	Erc20Addr  common.Address `json:"erc_20_addr"`
+	Price      string         `json:"price"`
+	MsgSender  common.Address `json:"msg_sender"`
+	TokenId    int32          `json:"token_id"`
+}
+type PostSignMintData struct {
+	Signature string              `json:"signature"`
+	PAddr     common.Address      `json:"p_addr"`
+	Params    *PostSignMintParams `json:"params"`
+}
+
+func NotDataRes(msg string) string {
+	res := &Res{
+		Code:    0,
+		Message: msg,
+	}
+	resbyte, err := json.Marshal(res)
+	if err == nil {
+		return string(resbyte)
+	}
+	return ""
 }

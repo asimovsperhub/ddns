@@ -8,4 +8,5 @@ interface IDnsOwnerPub{
     function operatorIsAllowance(address contractAddr_) external view returns(bool);
     function getEntireName(bytes32 nameHash_) external view returns(string memory);
     function getUDIDSymbol(bytes32 nameHash_) external view returns(string memory);
+    function isOpened() external returns (bool);
 }

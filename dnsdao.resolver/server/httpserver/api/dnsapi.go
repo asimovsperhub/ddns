@@ -10,7 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"io/ioutil"
 	"log"
 	"math/big"
 	"net/http"
@@ -69,8 +68,9 @@ func Paging(pageNumber int, pageSize int, resArr []string) []string {
 }
 func (a *Api) Blockchain(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 
@@ -82,8 +82,9 @@ func (a *Api) Blockchain(writer http.ResponseWriter, request *http.Request) {
 	)
 
 	if v, ok = query["blockchain"]; !ok {
+		res_ := NotDataRes("not blockchain ")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 
@@ -107,8 +108,9 @@ func (a *Api) Blockchain(writer http.ResponseWriter, request *http.Request) {
 
 func (a *Api) CName(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 
@@ -121,7 +123,7 @@ func (a *Api) CName(writer http.ResponseWriter, request *http.Request) {
 
 	if v, ok = query["cname"]; !ok {
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		fmt.Fprintf(writer, "not cname")
 		return
 	}
 
@@ -145,8 +147,9 @@ func (a *Api) CName(writer http.ResponseWriter, request *http.Request) {
 
 func (a *Api) Ipv6(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 
@@ -158,8 +161,9 @@ func (a *Api) Ipv6(writer http.ResponseWriter, request *http.Request) {
 	)
 
 	if v, ok = query["ipv6"]; !ok {
+		res_ := NotDataRes("not ipv6")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 
@@ -183,8 +187,9 @@ func (a *Api) Ipv6(writer http.ResponseWriter, request *http.Request) {
 
 func (a *Api) GetTotalBySubLen(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 
@@ -196,8 +201,9 @@ func (a *Api) GetTotalBySubLen(writer http.ResponseWriter, request *http.Request
 	)
 
 	if v, ok = query["tldName"]; !ok {
+		res_ := NotDataRes("not tldName")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 
@@ -220,7 +226,7 @@ func (a *Api) GetTotalBySubLen(writer http.ResponseWriter, request *http.Request
 			msg = string(res)
 		}
 	} else {
-		msg = fmt.Sprint("%s:is not root", name)
+		msg = fmt.Sprintf("%s:is not root", name)
 	}
 
 	writer.WriteHeader(200)
@@ -229,8 +235,9 @@ func (a *Api) GetTotalBySubLen(writer http.ResponseWriter, request *http.Request
 
 func (a *Api) QuerySubDomainByPage(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 
@@ -246,8 +253,9 @@ func (a *Api) QuerySubDomainByPage(writer http.ResponseWriter, request *http.Req
 	pageSize := ""
 	rootname := ""
 	if v, ok = query["tldName"]; !ok {
+		res_ := NotDataRes("not tldName")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "tldName is not a valid request")
+		writer.Write([]byte(res_))
 		return
 	} else {
 		rootname = v[0]
@@ -321,7 +329,7 @@ func (a *Api) QuerySubDomainByPage(writer http.ResponseWriter, request *http.Req
 			msg = string(resbyte)
 		}
 	} else {
-		msg = fmt.Sprint("%s:is not root", rootname)
+		msg = fmt.Sprintf("%s:is not root", rootname)
 	}
 
 	writer.WriteHeader(200)
@@ -392,8 +400,9 @@ func (a *Api) QuerySubDomainByPage(writer http.ResponseWriter, request *http.Req
 
 func (a *Api) AddrResolve(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	pageNumber := ""
@@ -416,8 +425,9 @@ func (a *Api) AddrResolve(writer http.ResponseWriter, request *http.Request) {
 	if v, ok = query["addr"]; ok {
 		addr = v[0]
 	} else {
+		res_ := NotDataRes("not addr")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	db := ldb.GetLdb()
@@ -445,8 +455,9 @@ func (a *Api) AddrResolve(writer http.ResponseWriter, request *http.Request) {
 
 func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	addr := ""
@@ -460,8 +471,9 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 	if v, ok = query["addr"]; ok {
 		addr = v[0]
 	} else {
+		res_ := NotDataRes("not addr")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	db := ldb.GetLdb()
@@ -472,7 +484,7 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 			cc[k] = v.Earnings
 		}
 		res := &GetEarningsByAddressRes{
-			Code:    200,
+			Code:    1,
 			Message: "ok",
 			Data: &GetEarningsByAddress{
 				IncomeSummary: val.Earnings,
@@ -491,8 +503,9 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 
 func (a *Api) GetEarningsDetailsByAddress(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	addr := ""
@@ -506,15 +519,16 @@ func (a *Api) GetEarningsDetailsByAddress(writer http.ResponseWriter, request *h
 	if v, ok = query["addr"]; ok {
 		addr = v[0]
 	} else {
+		res_ := NotDataRes("not addr")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	db := ldb.GetLdb()
 	val, err := db.GetRootEarnings(strings.ToLower(addr))
 	// log.Println(val)
 	if err == nil {
-		res := &GetEarningsDetailsByAddress{Code: 200, Message: "ok", Data: val}
+		res := &GetEarningsDetailsByAddress{Code: 1, Message: "ok", Data: val}
 		resbyte, errc := json.Marshal(res)
 		if errc == nil {
 			msg = string(resbyte)
@@ -527,8 +541,9 @@ func (a *Api) GetEarningsDetailsByAddress(writer http.ResponseWriter, request *h
 
 func (a *Api) GetCashDetailsByAddress(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	addr := ""
@@ -542,14 +557,15 @@ func (a *Api) GetCashDetailsByAddress(writer http.ResponseWriter, request *http.
 	if v, ok = query["addr"]; ok {
 		addr = v[0]
 	} else {
+		res_ := NotDataRes("not addr")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	db := ldb.GetLdb()
 	val, err := db.GetAddressCash(strings.ToLower(addr))
 	if err == nil {
-		res := &GetCashDetailsByAddress{Code: 200, Message: "ok", Data: val}
+		res := &GetCashDetailsByAddress{Code: 1, Message: "ok", Data: val}
 		resbyte, errc := json.Marshal(res)
 		if errc == nil {
 			msg = string(resbyte)
@@ -562,8 +578,9 @@ func (a *Api) GetCashDetailsByAddress(writer http.ResponseWriter, request *http.
 
 func (a *Api) GetQuerySignTldList(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	addr := ""
@@ -577,8 +594,9 @@ func (a *Api) GetQuerySignTldList(writer http.ResponseWriter, request *http.Requ
 	if v, ok = query["addr"]; ok {
 		addr = v[0]
 	} else {
+		res_ := NotDataRes("not addr")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	db := ldb.GetLdb()
@@ -635,7 +653,7 @@ func (a *Api) GetQuerySignTldList(writer http.ResponseWriter, request *http.Requ
 			}
 		}
 	}
-	res := &QuerySignTldList{Code: 200, Message: "ok", Data: data}
+	res := &QuerySignTldList{Code: 1, Message: "ok", Data: data}
 	resbyte, errc := json.Marshal(res)
 	if errc == nil {
 		msg = string(resbyte)
@@ -647,8 +665,9 @@ func (a *Api) GetQuerySignTldList(writer http.ResponseWriter, request *http.Requ
 
 func (a *Api) ConfResolve(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	pageNumber := ""
@@ -672,15 +691,17 @@ func (a *Api) ConfResolve(writer http.ResponseWriter, request *http.Request) {
 	if v, ok = query["conftype"]; ok {
 		conftype = v[0]
 	} else {
+		res_ := NotDataRes("not conftype")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	if v, ok = query["confval"]; ok {
 		confval = v[0]
 	} else {
+		res_ := NotDataRes("not a get confval")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	db := ldb.GetLdb()
@@ -708,8 +729,9 @@ func (a *Api) ConfResolve(writer http.ResponseWriter, request *http.Request) {
 
 func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	pageNumber := ""
@@ -719,7 +741,7 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 	query := request.URL.Query()
 	log.Println("AddrDomainsResolve query ", query)
 
-	notfoundRes := &AddrDomainsResolveRes{Code: 200, Message: "not found", TotalCount: 0, Data: []*AddrDomains{}}
+	notfoundRes := &AddrDomainsResolveRes{Code: 1, Message: "not found", TotalCount: 0, Data: []*AddrDomains{}}
 	notfoundresbyte, _ := json.Marshal(notfoundRes)
 	msg := string(notfoundresbyte)
 
@@ -737,8 +759,9 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 	if v, ok = query["addrtype"]; ok {
 		addrtype = v[0]
 	} else {
+		res_ := NotDataRes("not addrtype")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	//if v, ok = query["addr"]; ok {
@@ -781,7 +804,7 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 				}
 			}
 		}
-		res := &AddrDomainsResolveRes{Code: 200, Message: "ok", TotalCount: len(val), Data: data}
+		res := &AddrDomainsResolveRes{Code: 1, Message: "ok", TotalCount: len(val), Data: data}
 		resbyte, _ := json.Marshal(res)
 		if err == nil {
 			msg = string(resbyte)
@@ -794,8 +817,9 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 
 func (a *Api) AddrTopList(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	pageNumber := "0"
@@ -818,8 +842,9 @@ func (a *Api) AddrTopList(writer http.ResponseWriter, request *http.Request) {
 	if v, ok = query["coinbase"]; ok {
 		addr = v[0]
 	} else {
+		res_ := NotDataRes("not coinbase")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	db := ldb.GetLdb()
@@ -849,7 +874,7 @@ func (a *Api) AddrTopList(writer http.ResponseWriter, request *http.Request) {
 			}
 		}
 		addrtoplistdata := &AddrTopListData{Total: len(rndata), PageNumber: number, PageSize: size, Items: data}
-		addrtoplist := &AddrTopListRes{Code: 1, Message: "ok", Data: addrtoplistdata}
+		addrtoplist := &Res{Code: 1, Message: "ok", Data: addrtoplistdata}
 		resbyte, _ := json.Marshal(addrtoplist)
 		if err == nil {
 			msg = string(resbyte)
@@ -862,8 +887,9 @@ func (a *Api) AddrTopList(writer http.ResponseWriter, request *http.Request) {
 
 func (a *Api) AddrSubList(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	pageNumber := "0"
@@ -886,8 +912,9 @@ func (a *Api) AddrSubList(writer http.ResponseWriter, request *http.Request) {
 	if v, ok = query["coinbase"]; ok {
 		addr = v[0]
 	} else {
+		res_ := NotDataRes("not coinbase")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	db := ldb.GetLdb()
@@ -917,7 +944,7 @@ func (a *Api) AddrSubList(writer http.ResponseWriter, request *http.Request) {
 			}
 		}
 		addrtoplistdata := &AddrTopListData{Total: len(rndata), PageNumber: number, PageSize: size, Items: data}
-		addrtoplist := &AddrTopListRes{Code: 1, Message: "ok", Data: addrtoplistdata}
+		addrtoplist := &Res{Code: 1, Message: "ok", Data: addrtoplistdata}
 		resbyte, _ := json.Marshal(addrtoplist)
 		if err == nil {
 			msg = string(resbyte)
@@ -930,8 +957,9 @@ func (a *Api) AddrSubList(writer http.ResponseWriter, request *http.Request) {
 
 func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	pageNumber := "0"
@@ -970,7 +998,7 @@ func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request)
 			}
 		}
 		addrtoplistdata := &AddrTopListData{Total: len(contractL), PageNumber: number, PageSize: size, Items: data}
-		addrtoplist := &AddrTopListRes{Code: 1, Message: "ok", Data: addrtoplistdata}
+		addrtoplist := &Res{Code: 1, Message: "ok", Data: addrtoplistdata}
 		resbyte, _ := json.Marshal(addrtoplist)
 		if err == nil {
 			msg = string(resbyte)
@@ -983,8 +1011,9 @@ func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request)
 
 func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
 	pageNumber := "0"
@@ -1007,8 +1036,9 @@ func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Reques
 	if v, ok = query["coinbase"]; ok {
 		coinbase = v[0]
 	} else {
+		res_ := NotDataRes("not coinbase")
 		writer.WriteHeader(200)
-		fmt.Fprintf(writer, "not a valid request")
+		writer.Write([]byte(res_))
 		return
 	}
 	db := ldb.GetLdb()
@@ -1032,7 +1062,7 @@ func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Reques
 			data = nil
 		}
 		addrtoplistdata := &AddrTopListData{Total: len(data), PageNumber: number, PageSize: size, Items: data}
-		addrtoplist := &AddrTopListRes{Code: 1, Message: "ok", Data: addrtoplistdata}
+		addrtoplist := &Res{Code: 1, Message: "ok", Data: addrtoplistdata}
 		resbyte, _ := json.Marshal(addrtoplist)
 		if err == nil {
 			msg = string(resbyte)
@@ -1045,18 +1075,131 @@ func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Reques
 
 func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
+		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
-		fmt.Fprintf(writer, "not a get request")
+		writer.Write([]byte(res_))
 		return
 	}
-	//coinbase : current connected address . [required]
-	//erc721Addr: Pass card contract address [required]
-	//tokenId : Pass card ID [required]
-	//domainhash: the did name sha256 [required]
-	//years: [required]
-	//erc20Addr: 支付token address [required]
-	s, _ := ioutil.ReadAll(request.Body)
+	msg := "not found"
+	decoder := json.NewDecoder(request.Body)
+	var reqparams map[string]string
+	decoder.Decode(&reqparams)
+	name := reqparams["domain_name"]
+	if name == "" {
+		res_ := NotDataRes("not name")
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
+	db := ldb.GetLdb()
+	year := reqparams["year"]
+	if name == "" {
+		res_ := NotDataRes("not year")
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
+	erc_20_addr := reqparams["erc_20_addr"]
+	if erc_20_addr == "" {
+		res_ := NotDataRes("not erc_20_addr")
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
+	price := reqparams["price"]
+	if price == "" {
+		res_ := NotDataRes("not price")
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
+	msg_sender := reqparams["msg_sender"]
+	if msg_sender == "" {
+		res_ := NotDataRes("not msg_sender")
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
+	token_id := reqparams["token_id"]
+	if token_id == "" {
+		res_ := NotDataRes("not token_id")
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
+	log.Println("PostSignMint query", reqparams, len(reqparams))
+	for _, v := range domainslist {
+		if name == v {
+			res_ := NotDataRes("Domain name cannot be registered")
+			writer.WriteHeader(200)
+			writer.Write([]byte(res_))
+			return
+		}
+	}
+	if token_id != "9999" {
+		PassList, _ := db.GetNftPass(strings.ToLower(msg_sender))
+		if PassList == nil {
+			res_ := NotDataRes(fmt.Sprintf("%s There is no card", msg_sender))
+			writer.WriteHeader(200)
+			writer.Write([]byte(res_))
+			return
+		} else {
+			in := false
+			for _, pass := range PassList {
+				if pass.TokenId.String() == token_id {
+					in = true
+					if pass.CardColor == 3 {
+						if !strings.HasSuffix(name, ".did") {
+							res_ := NotDataRes("green card can only be mint .did")
+							writer.WriteHeader(200)
+							writer.Write([]byte(res_))
+							return
+						}
+					}
+				}
+			}
+			if !in {
+				res_ := NotDataRes(fmt.Sprintf("%s not tokenid %s card", msg_sender, token_id))
+				writer.WriteHeader(200)
+				writer.Write([]byte(res_))
+				return
+			}
+		}
+	}
+
+	result := encodePacked(
+		encodeBytesString(hex.EncodeToString([]byte(name))),
+		encodeUint256(year)[32-1:],
+		encodeBytesString(erc_20_addr[2:]),
+		encodeUint256(price),
+		encodeBytesString(msg_sender[2:]),
+		encodeUint256(token_id)[32-4:],
+	)
+	hash := crypto.Keccak256Hash(result)
+	log.Println("Hash", hex.EncodeToString(hash[:]))
+	signer, err := Signer(hash[:])
+	if err != nil {
+		log.Println("Sign err", err)
+	}
+	if signer[len(signer)-1] <= 1 {
+		signer[len(signer)-1] = signer[len(signer)-1] + 27
+	}
+	year_int, _ := strconv.Atoi(year)
+	token_id_int, _ := strconv.Atoi(token_id)
+	// db := ldb.GetLdb()
+	params := &PostSignMintParams{DomainName: name, Year: int32(year_int), Erc20Addr: common.HexToAddress(erc_20_addr), Price: price,
+		MsgSender: common.HexToAddress(msg_sender), TokenId: int32(token_id_int)}
+	data := &PostSignMintData{Signature: hex.EncodeToString(signer), Params: params}
+	res := &Res{
+		Code:    1,
+		Message: "ok",
+		Data:    data,
+	}
+	resbyte, _ := json.Marshal(res)
+	if err == nil {
+		msg = string(resbyte)
+	}
 	writer.WriteHeader(200)
-	writer.Write(s)
+	writer.Write([]byte(msg))
 
 }

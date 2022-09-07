@@ -5,6 +5,7 @@ import "./IDnsOwner.sol";
 
 interface IDnsDaoOwner is IDnsOwner{
     function addAllowance(address user_) external;
+    function openLevel2Reg(bool o) external;
 }
 
 

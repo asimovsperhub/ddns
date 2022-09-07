@@ -10,6 +10,7 @@ import "./accountant/IDnsAccountant.sol";
 import "../ERC20/IERC20.sol";
 import "./owners/IDnsDaoOwner.sol";
 import "./owners/IDnsOwnerPub.sol";
+import "./lib/LibDnsSig.sol";
 //import "./INamePub.sol";
 
 contract DnsSubName is ERC721,Erc721Owner{
@@ -22,10 +23,13 @@ contract DnsSubName is ERC721,Erc721Owner{
     bytes private baseUri;
     address public fatherAddr;
     address public ownerC;
+    uint256 public taxPrice = 5000000000000000000;
+    mapping(uint32=>bool) passCardUsed;
+    address public sigUser;
 
     struct NameItem{
         bytes entireName;
-//        bytes32 hash;
+        //        bytes32 hash;
         mapping(bytes32=>bytes) subName;
         uint256 expireTime;
         uint256 tokenId;
@@ -57,12 +61,13 @@ contract DnsSubName is ERC721,Erc721Owner{
         ownerC = ownerC_;
     }
 
-//    function getNameInfo(bytes32 hash_) external view override returns(uint256,uint256,address,bool){
-//        return (nameStore[hash_].expireTime,nameStore[hash_].tokenId,address(0),false);
-//    }
+    //    function getNameInfo(bytes32 hash_) external view override returns(uint256,uint256,address,bool){
+    //        return (nameStore[hash_].expireTime,nameStore[hash_].tokenId,address(0),false);
+    //    }
 
-    function setBaseUri(string memory baseUri_) external onlyOwner{
+    function setBaseUri(string memory baseUri_,address sigUser_) external onlyOwner{
         baseUri = bytes(baseUri_);
+        sigUser = sigUser_;
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool){
@@ -183,10 +188,6 @@ contract DnsSubName is ERC721,Erc721Owner{
         (,uint256 defaultTax,,) =
         IDnsTax(taxC).tax(erc20Addr_,LibDnsToolKit.getSubName(bytes(entireName_)).length);
         uint256 price = IDnsPrice(priceC).Price(fatherHash,erc20Addr_,LibDnsToolKit.getSubName(bytes(entireName_)).length)*year_;
-//        (uint256 expireTime,,,) = INamePub(fatherAddr).getNameInfo(fatherHash);
-//        if(block.timestamp > expireTime){
-//            price = 0;
-//        }
         defaultTax = defaultTax*year_;
         uint256 max = LibDnsToolKit.max(price,defaultTax);
         require(max>0,"payment not support");
@@ -219,32 +220,66 @@ contract DnsSubName is ERC721,Erc721Owner{
     }
 
     function MintName(address erc20Addr_, string memory entireName_,uint8 year_) external payable{
+        require(IDnsOwnerPub(ownerC).isOpened(),"not opened to public");
         _mintSubName(erc20Addr_,entireName_,year_);
         _mintName(bytes(entireName_),year_);
         emit EvMintSubName(erc20Addr_, entireName_,year_);
     }
-
-    function AddSubName(bytes32 hash_, string memory entireName_) external{
-        require(nameStore[hash_].tokenId > 0,"name was not registered");
-        require(super.ownerOf(nameStore[hash_].tokenId)==msg.sender,"user not valid");
-        require(LibDnsToolKit.getLeve2FatherNameHash(bytes(entireName_))==hash_,"not a valid sub name");
-
-        bytes32 entireHash = LibDnsToolKit.entireNameHash(entireName_);
-
-        nameStore[hash_].subName[entireHash] = bytes(entireName_);
-
-        emit EvAddSubName(hash_, entireName_);
+    function MintNameBySig(string memory entireName_,
+        uint8 year_, address erc20Addr_,
+        uint256 price_, uint32 passId_,bytes memory sig) external payable{
+        // require(price_>=taxPrice,"tax not enough");
+        require(LibDnsSignature.SigUserAddr(
+            keccak256(abi.encodePacked(entireName_,year_,erc20Addr_,price_,msg.sender,passId_)),
+            sig) == sigUser,"sig not correct");
+        require(!passCardUsed[passId_],"pass is used");
+        passCardUsed[passId_] = true;
+        uint256 leftAmount = 0;
+        uint256 taxAmount = 0;
+        if(price_>taxPrice){
+            leftAmount = price_-taxPrice;
+            taxAmount = taxPrice;
+        }else{
+            taxAmount = price_;
+        }
+        if (taxAmount > 0){
+            IDnsAccountant(accountantC).deposit(fatherAddr,erc20Addr_,taxAmount);
+        }
+        if(leftAmount>0){
+            IDnsAccountant(accountantC).deposit(erc20Addr_,leftAmount);
+        }
+        if(price_>0){
+            if(erc20Addr_ != address (0)){
+                IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),price_);
+            }else{
+                payable(accountantC).transfer(price_);
+            }
+        }
+        _mintName(bytes(entireName_),year_);
+        emit EvMintSubName(erc20Addr_, entireName_,year_);
     }
 
-    function DelSubName(bytes32 hash_,string memory entireName_) external{
-        require(nameStore[hash_].tokenId > 0,"name was not registered");
-        require(super.ownerOf(nameStore[hash_].tokenId)==msg.sender,"user not valid");
-        require(LibDnsToolKit.getLeve2FatherNameHash(bytes(entireName_))==hash_,"not a valid sub name");
-        bytes32 entireHash = LibDnsToolKit.entireNameHash(entireName_);
+    // function AddSubName(bytes32 hash_, string memory entireName_) external{
+    //     require(nameStore[hash_].tokenId > 0,"name was not registered");
+    //     require(super.ownerOf(nameStore[hash_].tokenId)==msg.sender,"user not valid");
+    //     require(LibDnsToolKit.getLeve2FatherNameHash(bytes(entireName_))==hash_,"not a valid sub name");
 
-        delete nameStore[hash_].subName[entireHash];
+    //     bytes32 entireHash = LibDnsToolKit.entireNameHash(entireName_);
 
-        emit EvDelSubName(hash_, entireName_);
-    }
+    //     nameStore[hash_].subName[entireHash] = bytes(entireName_);
+
+    //     emit EvAddSubName(hash_, entireName_);
+    // }
+
+    // function DelSubName(bytes32 hash_,string memory entireName_) external{
+    //     require(nameStore[hash_].tokenId > 0,"name was not registered");
+    //     require(super.ownerOf(nameStore[hash_].tokenId)==msg.sender,"user not valid");
+    //     require(LibDnsToolKit.getLeve2FatherNameHash(bytes(entireName_))==hash_,"not a valid sub name");
+    //     bytes32 entireHash = LibDnsToolKit.entireNameHash(entireName_);
+
+    //     delete nameStore[hash_].subName[entireHash];
+
+    //     emit EvDelSubName(hash_, entireName_);
+    // }
 
 }

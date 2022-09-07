@@ -48,5 +48,6 @@ type NftPass struct {
 	Erc721Addr     common.Address `json:"erc_721_addr"`
 	TokenId        *big.Int       `json:"token_id"`
 	Owner          common.Address `json:"owner"`
+	CardColor      uint8          `json:"card_color"`
 	RemainingTimes int            `json:"remaining_times"`
 }

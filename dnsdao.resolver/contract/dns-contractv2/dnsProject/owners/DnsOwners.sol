@@ -9,6 +9,7 @@ import "../../utils/Owner.sol";
 contract DnsOwners is IDnsOwnerPub,IDnsDaoOwner,owned{
 
     using Strings for uint256;
+    bool public open2Reg;
 
     struct OwnerItem {
         address dnsOwner;
@@ -21,6 +22,8 @@ contract DnsOwners is IDnsOwnerPub,IDnsDaoOwner,owned{
     mapping(address=>bytes32) public contractAddrs;
 
     mapping(address=>bool) public allowance;
+    // mapping(uint32=>bool) public passCardUsed;
+    // mapping(address=>address) public SigUser;
 
     event EvUpdateOwner(bytes32 nameHash, address nameOwner, address contractAddr);
     event EvAddAllowance(address user);
@@ -35,6 +38,8 @@ contract DnsOwners is IDnsOwnerPub,IDnsDaoOwner,owned{
         require(allowance[msg.sender],"not allowed");
         _;
     }
+
+
 
     function getEntireName(bytes32 nameHash_) external view override returns(string memory){
         return string(dnsOwners[nameHash_].entireName);
@@ -62,6 +67,14 @@ contract DnsOwners is IDnsOwnerPub,IDnsDaoOwner,owned{
     function addAllowance(address user_) external override onlyOwner{
         allowance[user_] = true;
         emit EvAddAllowance(user_);
+    }
+
+    function openLevel2Reg(bool o) external override onlyOwner{
+        open2Reg = o;
+    }
+
+    function isOpened() external view override returns (bool){
+        return open2Reg;
     }
 
     function getOwnerByHash(bytes32 nameHash_) external view override returns(address){

@@ -26,7 +26,7 @@ func splitPath(p string) (string, string, error) {
 	return addr, stokenId, nil
 }
 
-type Res struct {
+type TokenIDRes struct {
 	Name          string `json:"name"`
 	Image         string `json:"image"`
 	External_Url  string `json:"external_url"`
@@ -68,7 +68,7 @@ func (a *Api) DnsTokenId(writer http.ResponseWriter, request *http.Request) {
 	if tokenName != nil {
 		name := tokenName.TokenName[tokenid]
 		if name != "" {
-			res := new(Res)
+			res := new(TokenIDRes)
 			res.Name = name
 			res.Image = fmt.Sprintf("https://dnsdaonftpasscard.s3.ap-east-1.amazonaws.com/dnsname/%s_%s.png", contractaddr, tokenid)
 			res.Description = fmt.Sprintf("Udid")
