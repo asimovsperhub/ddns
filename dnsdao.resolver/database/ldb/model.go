@@ -51,3 +51,13 @@ type NftPass struct {
 	CardColor      uint8          `json:"card_color"`
 	RemainingTimes int            `json:"remaining_times"`
 }
+
+type NftPassTokenIdName struct {
+	TokenName map[string]string `json:"token_name"`
+}
+
+type SignMintCallParams struct {
+	TokenId     string `json:"token_id"`
+	DomainsName string `json:"domains_name"`
+	MsgSender   string `json:"msg_sender"`
+}

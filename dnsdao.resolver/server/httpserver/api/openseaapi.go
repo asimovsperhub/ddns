@@ -32,7 +32,7 @@ type TokenIDRes struct {
 	External_Url  string `json:"external_url"`
 	Animation_Url string `json:"animation_url"`
 	Description   string `json:"description"`
-	Image_Data    string `json:"image_data"`
+	// Image_Data    string `json:"image_data"`
 }
 
 func (a *Api) DnsTokenId(writer http.ResponseWriter, request *http.Request) {

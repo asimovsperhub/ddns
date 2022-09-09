@@ -152,6 +152,20 @@ func BatchNewRoot(start, end uint64) {
 				continue
 			}
 
+			// 回调nftpass卡服务 修改opensea元数据中的name
+			tokenname, _ := db.GetNftPassTokenIdName(addrkey)
+			if tokenname != nil {
+				for k, v := range tokenname.TokenName {
+					if v == "" {
+						tokenname.TokenName[k] = ev.EntireName
+						CallNftPass(k, ev.EntireName)
+						db.SaveNftPassTokenIdName(addrkey, tokenname)
+						log.Println(fmt.Sprintf("Call nftpasscard tokenid:%s,name:%s", k, ev.EntireName))
+						break
+					}
+				}
+			}
+
 		}
 	}
 	// 开启子域名注册记录 添加合约地址

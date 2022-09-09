@@ -22,7 +22,7 @@ var (
 func defaultConf() *RConfig {
 	return &RConfig{
 		WConf: &WebSeverConf{
-			ListenServer: ":30518",
+			ListenServer: ":30500",
 		},
 		Cconf: &ContractConf{
 			ChainName:            "rinkeby",
@@ -36,11 +36,11 @@ func defaultConf() *RConfig {
 			RpcMainEndPoint:      "https://mainnet.infura.io/v3/",
 			WsRPCEndPoint:        "wss://ropsten.infura.io/ws/v3/",
 			RpcEndPointID:        "ced16671f5894b2796224e49062999ca",
-			DnsName:              "0x3Bb534461b700A752aac8dCe9363E16910d5F66a",
-			DnsOwner:             "0xbfdAF6EcD61f078D4f52b75679D89320c00d2368",
-			DnsPrice:             "0x39f8817db77Fc26C0B2EE1C8f841868e811d4375",
-			DnsConf:              "0xa8764D4109607955dA14bfEc62bbD9a76339db52",
-			DnsAccountant:        "0xB9E7ECCfb7f48f9bCd10BC8F768ca3ab43E46E37",
+			DnsName:              "0xE468Ba38F6DaF40E07B4E830E099cF96e90Af8aD",
+			DnsOwner:             "0xB865828659694D2C91baE6fB7DDa468b4C64541e",
+			DnsPrice:             "0x3086F038757EB4a3185BfEb9690CC4e3103E6223",
+			DnsConf:              "0x9218bc65C2Bfb0bc59dCB7DFC11b9CdD94e8eF55",
+			DnsAccountant:        "0xb57b91567AC4bA767825755457334C091000Dfa4",
 			ColdBoot:             "0x22871b977AAe43d44FE50dF03f632134c3e3e490",
 		},
 		SConf: &SysConf{

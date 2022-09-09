@@ -83,15 +83,8 @@ func loopForNewName() {
 	//BatchNewSubName(dbblk, currentBlkNumber)
 	//BatchMarketBuyFromSeller(dbblk, currentBlkNumber)
 	//BatchDomainConfChanged(dbblk, currentBlkNumber)
-	BatchNewRoot(dbblk, currentBlkNumber)
-	BatchNewPrice(dbblk, currentBlkNumber)
-	BatchNewSub(dbblk, currentBlkNumber)
-	BatchNewOwner(dbblk, currentBlkNumber)
-	BatchNewConf(dbblk, currentBlkNumber)
-	BatchNewAccountant(dbblk, currentBlkNumber)
-	//defer db.CloseLdb()
-	db.SaveLatestBlkNum("rinkeby", currentBlkNumber)
 
+	// nftpass
 	currentBlkMainNumber, err := currentBlk("mainnet")
 	if err != nil {
 		return
@@ -99,6 +92,15 @@ func loopForNewName() {
 	mdbblk := db.GetLatestBlkNum("mainnet")
 	BatchNewColdBootClient(mdbblk, currentBlkMainNumber)
 	db.SaveLatestBlkNum("mainnet", currentBlkMainNumber)
+
+	// dns
+	BatchNewRoot(dbblk, currentBlkNumber)
+	BatchNewPrice(dbblk, currentBlkNumber)
+	BatchNewSub(dbblk, currentBlkNumber)
+	BatchNewOwner(dbblk, currentBlkNumber)
+	BatchNewConf(dbblk, currentBlkNumber)
+	BatchNewAccountant(dbblk, currentBlkNumber)
+	db.SaveLatestBlkNum("rinkeby", currentBlkNumber)
 }
 
 func (ag *DNSAgent) DNSLoopEvent() {

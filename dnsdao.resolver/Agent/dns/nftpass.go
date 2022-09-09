@@ -91,6 +91,16 @@ func BatchNewColdBootClient(start, end uint64) {
 		}
 		db.SaveNftPass(addrkey, nftpass)
 		log.Println("BatchNewColdBootClient SaveNftPass ", ev.User.String(), ev.CardId)
+
+		tokenname, _ := db.GetNftPassTokenIdName(addrkey)
+		if tokenname == nil {
+			tokenname = &ldb.NftPassTokenIdName{map[string]string{ev.CardId.String(): ""}}
+		} else {
+			tokenname.TokenName[ev.CardId.String()] = ""
+		}
+		db.SaveNftPassTokenIdName(addrkey, tokenname)
+		log.Println("BatchNewColdBootClient SaveNftPassTokenIdName ", ev.User.String(), ev.CardId)
+
 		if ev.Color > 0 {
 			//path := "./passcard/" + cn[0] + ev.User.String() + "_" + cardId + ".svg"
 			//info := fmt.Sprintf(svg, "http://31.12.95.78:8080/images/"+ColorList[ev.Color]+".gif", label)

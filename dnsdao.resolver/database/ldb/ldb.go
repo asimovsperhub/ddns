@@ -24,6 +24,8 @@ const (
 	dnsConf                = "dnsConf"
 	dnsContractTokenIdName = "dnsContractTokenIdName"
 	dnsNftPass             = "dnsNftPass"
+	SignMintCall           = "SignMintCallParams"
+	PassTokenIdName        = "PassTokenIdName"
 )
 
 type Ldb struct {
@@ -398,6 +400,54 @@ func (db *Ldb) GetNftPass(owner string) ([]*NftPass, error) {
 func (db *Ldb) SaveNftPass(owner string, ct []*NftPass) error {
 	v, _ := json.Marshal(ct)
 	k := fmt.Sprintf(dnsNftPass, owner)
+	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+		return err
+	}
+	return nil
+}
+
+//NftPassTokenIdName
+func (db *Ldb) GetNftPassTokenIdName(owner string) (*NftPassTokenIdName, error) {
+	var ret *NftPassTokenIdName
+	k := fmt.Sprintf(PassTokenIdName, owner)
+	if v, err := db.db.Get([]byte(k), nil); err != nil {
+		return nil, err
+	} else {
+		err = json.Unmarshal(v, &ret)
+		if err != nil {
+			return nil, err
+		}
+
+		return ret, nil
+	}
+}
+
+func (db *Ldb) SaveNftPassTokenIdName(owner string, ct *NftPassTokenIdName) error {
+	v, _ := json.Marshal(ct)
+	k := fmt.Sprintf(PassTokenIdName, owner)
+	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+		return err
+	}
+	return nil
+}
+func (db *Ldb) GetSignMintCallParams(name string) (*SignMintCallParams, error) {
+	var ret *SignMintCallParams
+	k := fmt.Sprintf(SignMintCall, name)
+	if v, err := db.db.Get([]byte(k), nil); err != nil {
+		return nil, err
+	} else {
+		err = json.Unmarshal(v, &ret)
+		if err != nil {
+			return nil, err
+		}
+
+		return ret, nil
+	}
+}
+
+func (db *Ldb) SaveSignMintCallParams(name string, ct *SignMintCallParams) error {
+	v, _ := json.Marshal(ct)
+	k := fmt.Sprintf(SignMintCall, name)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}

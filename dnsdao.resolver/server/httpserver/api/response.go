@@ -76,9 +76,12 @@ type AddrTopListData struct {
 }
 
 type Res struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Code       int         `json:"code"`
+	Message    string      `json:"message"`
+	Total      int         `json:"total"`
+	PageSize   int         `json:"page_size"`
+	PageNumber int         `json:"page_number"`
+	Data       interface{} `json:"data"`
 }
 
 type PostSignMintParams struct {
@@ -99,6 +102,7 @@ func NotDataRes(msg string) string {
 	res := &Res{
 		Code:    0,
 		Message: msg,
+		Data:    []string{},
 	}
 	resbyte, err := json.Marshal(res)
 	if err == nil {

@@ -43,6 +43,7 @@ const (
 	GetOpenRegister             = "/dns/dids/top/get_open_dids"
 	GetMyPassCardList           = "/dns/passcard/get_all"
 	PostSignMint                = "/dns/passcard/signed_mint"
+	SignMintCall                = "/dns/passcard/signed_call"
 )
 
 func Cors(f http.HandlerFunc) http.HandlerFunc {
@@ -131,6 +132,7 @@ func (ws *WebProxyServer) init() *WebProxyServer {
 	rh.HandleFunc(GetOpenRegister, Cors(wapi.GetOpenRegister))
 	rh.HandleFunc(GetMyPassCardList, Cors(wapi.GetMyPassCardList))
 	rh.HandleFunc(PostSignMint, Cors(wapi.PostSignMint))
+	// rh.HandleFunc(SignMintCall, Cors(wapi.SignMintCall))
 	server := &http.Server{
 		Handler: rh,
 	}

@@ -233,6 +233,19 @@ func BatchNewSub(start, end uint64) {
 					log.Println("BatchNewSub SaveContractTokenIdName", "save to db error")
 					continue
 				}
+				// 回调nftpass卡服务 修改opensea元数据中的name
+				tokenname, _ := db.GetNftPassTokenIdName(strings.ToLower(owner.DnsOwner.String()))
+				if tokenname != nil {
+					for k, v := range tokenname.TokenName {
+						if v == "" {
+							tokenname.TokenName[k] = ev.EntireName
+							CallNftPass(k, ev.EntireName)
+							db.SaveNftPassTokenIdName(strings.ToLower(owner.DnsOwner.String()), tokenname)
+							log.Println(fmt.Sprintf("Call nftpasscard tokenid:%s,name:%s", k, ev.EntireName))
+							break
+						}
+					}
+				}
 			}
 		}
 		//var newsubname *udidc.DnsSubNameEvAddSubNameIterator
