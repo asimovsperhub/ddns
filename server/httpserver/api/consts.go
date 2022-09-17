@@ -1,0 +1,14 @@
+package api
+
+var domainslist = []string{"com", "net", "org", "xyz", "info", "top", "biz", "gov", "edu", "mil", "int", "did", "udid", "eth", "bit", "sol", "bnb", "lens", "Btc", "Eta", "Used", "Used", "Bnb", "xrp", "Ada", "Sol", "Doge", "Dot", "Matic", "Dai", "Shib", "Trx", "avax", "Leo", "wbtc", "uni", "etc", "ltc", "ftt", "atom", "near", "link", "cro", "xmr", "xlm", "bch", "flow", "algo", "vet", "icp", "fil", "ape", "mana", "sand", "eos", "xtz", "hbar", "chz", "egld", "aave", "theta", "axs", "qnt", "tusd", "bsv", "usdp", "okb", "zec", "kcs", "xec", "btt", "miota", "mkr", "grt", "usdd", "ftm", "ht", "snx", "klay", "hnt", "usdn", "neo", "rune", "ldo", "nexo", "crv", "paxg", "cake", "enj", "bat", "waves", "dash", "stx", "zil", "lrc", "kava", "mina", "fei", "ksm", "dcr", "gmt", "gno", "xem", "btg", "1inch", "twt", "gelo", "hot", "gala", "Cvx", "ankr", "ar", "comp", "gt", "qtum", "xdc", "yfi", "rose", "tfuel", "kda", "gusd", "rvn", "iotx", "knc", "bal", "bora", "rsr", "one", "op", "gel", "amp", "flux", "omg", "icon", "zrx", "ens", "lpt", "ustc", "jst", "iost", "glm", "hive", "xym", "audio", "storj", "ont", "waxp", "sc", "srm", "zen", "imx", "mxc", "uma", "glmr", "scrt", "sxp", "skl", "poly", "xch", "woo", "btrst", "abbc", "slp", "cspr", "chsb", "gdb", "nft", "elon", "dao", "pla", "vgx", "cvc", "lsk", "med", "sushi", "keep", "ceek", "btcst", "spell", "rndr", "pundix", "eps", "ckb", "celr", "xno", "ren", "ewt", "ong", "nu", "win", "tribe", "orbs", "inj", "req", "cfx", "people", "ardr", "uos", "xyo", "fx", "chr", "powr", "dydx", "nmr", "dag", "snt", "mx", "coti", "ocean", "tel", "rlc", "susd", "rly", "vlx", "dent", "Api3", "fxs"}
+
+//"0xf5994c4D8849EC6EB1f45DD6e078078Df467F6cD": "3601",
+var addrpass = map[string]string{"0x145Dd2204c8b252f0a0835F7134C6BB816d4BA64": "1662", "0x5a821767986A9f1172E5096B0a83926528765A26": "199",
+	"0x0f3Adfe4Ca73448df4bB900D356C1D4F932A03d4": "915", "0x23d6f336a0f06F451ffe677500D05038B68C0E22": "2778", "0x3EA5Faf6b9A05876128B50b52db6f2C25b30b32b": "964",
+	"0xCe8731b9a908608385E5ef6f4c4FCA9B5e75b485": "952", "0xFcb95624971d38Bca2926d05cd433CDf4948a893": "2568", "0x3c12bA2B6D6a1f1Bc754315d30eBd65F954A7530": "958",
+	"0x1117382C910DD3d09C6d099a2BA7F887D02C744c": "960", "0x2F9eBE7C49364dF3B8D497492530067bF9219C6C": "407", "0xf5994c4D8849EC6EB1f45DD6e078078Df467F6cD": "2741",
+	"0x933b2293DcF96BF12c5754079ED4879b201E947b": "1612", "0xfF4090A1Da9aCd39186b6aF237e8f41E81FB72C1": "1703", "0x0fff6b403A7DB558d74ecA3d050C30C2f7544e0B": "2224",
+	"0xABe61efb20e338e5b6Ee255044406c0B9E1132ad": "4300", "0xfdf9811f657f07EA91b9d92366A80357dB52aaBA": "947", "0x233887e2FC18Ee91307F9d6F480d3893d4088ba3": "950",
+	"0xAdC74B26C1106eDCeCeC856d2E2aD29e3f383a19": "58", "0x2C17B7b625e24eD418164a495732AD440dFEF3BC": "4150", "0x413433a489d88816F830117877CD994F0890C78A": "1746",
+	"0x4A7D72e829729173392cda90609D3C68141911ff": "1752", "0xa0A1A7e4886924B94941F465F7f1285d7843fBD5": "1162",
+}

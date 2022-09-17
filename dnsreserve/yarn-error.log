@@ -1,0 +1,35 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn add docsify-cli --global
+
+PATH: 
+  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:#/usr/local/go/bin:/usr/local/go.1.17.10/bin:#/usr/local/go.1.18.2/bin:/Library/Apple/usr/bin:/Users/rickeyliao/gowork/bin:/Users/rickeyliao/Library/Android/android-ndk-r21d
+
+Yarn version: 
+  1.22.11
+
+Node version: 
+  10.11.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/docsify-cli: tunneling socket could not be established, cause=Parse Error
+      at ClientRequest.onError (/usr/local/lib/node_modules/yarn/lib/cli.js:152249:17)
+      at Object.onceWrapper (events.js:273:13)
+      at ClientRequest.emit (events.js:182:13)
+      at Socket.socketOnData (_http_client.js:447:9)
+      at Socket.emit (events.js:182:13)
+      at addChunk (_stream_readable.js:283:12)
+      at readableAddChunk (_stream_readable.js:264:11)
+      at Socket.Readable.push (_stream_readable.js:219:10)
+      at TCP.onStreamRead (internal/stream_base_commons.js:94:17)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
