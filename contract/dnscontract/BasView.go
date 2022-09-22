@@ -4,6 +4,7 @@
 package dnscontract
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -26,8 +28,14 @@ var (
 	_ = event.NewSubscription
 )
 
+// BasViewMetaData contains all meta data concerning the BasView contract.
+var BasViewMetaData = &bind.MetaData{
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"rel_addr\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newDao\",\"type\":\"address\"}],\"name\":\"ChangeDAO\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DAOAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"ErrorCode\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"new_rel\",\"type\":\"address\"}],\"name\":\"changeRelation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"name\",\"type\":\"bytes\"},{\"internalType\":\"bool\",\"name\":\"isCustom\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"cusPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"durationInYear\",\"type\":\"uint8\"}],\"name\":\"checkRootRegistry\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"rName\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"sName\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"durationInYear\",\"type\":\"uint256\"}],\"name\":\"checkSubRegistry\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"domainIsWild\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOANNParams\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"MAX_YEAR\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"AROOT_GAS\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"BROOT_GAS\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"SUB_GAS\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"CUSTOM_PRICE_GAS\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"}],\"name\":\"queryDomainConfigs\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"A\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"AAAA\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"MX\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"BlockChain\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"IOTA\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"CName\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"MXBCA\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"}],\"name\":\"queryDomainEmailInfo\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"name\",\"type\":\"bytes\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"expiration\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"openToPublic\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"}],\"name\":\"queryDomainInfo\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"name\",\"type\":\"bytes\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"expiration\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isRoot\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"rIsOpen\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"rIsCustom\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"rIsRare\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"rCusPrice\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"sRootHash\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"isMarketOrder\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"mailHash\",\"type\":\"bytes32\"}],\"name\":\"queryEmailInfo\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"expiration\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"domainHash\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"isValid\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"aliasName\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"bcAddress\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"seller\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"}],\"name\":\"queryOrderInfo\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"name\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isValid\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"rel\",\"outputs\":[{\"internalType\":\"contractBasRelations\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"index\",\"type\":\"uint8\"},{\"internalType\":\"string\",\"name\":\"reason\",\"type\":\"string\"}],\"name\":\"setErrorCode\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+}
+
 // BasViewABI is the input ABI used to generate the binding from.
-const BasViewABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"rel_addr\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newDao\",\"type\":\"address\"}],\"name\":\"ChangeDAO\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DAOAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"ErrorCode\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"new_rel\",\"type\":\"address\"}],\"name\":\"changeRelation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"name\",\"type\":\"bytes\"},{\"internalType\":\"bool\",\"name\":\"isCustom\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"cusPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"durationInYear\",\"type\":\"uint8\"}],\"name\":\"checkRootRegistry\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"rName\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"sName\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"durationInYear\",\"type\":\"uint256\"}],\"name\":\"checkSubRegistry\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"domainIsWild\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOANNParams\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"MAX_YEAR\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"AROOT_GAS\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"BROOT_GAS\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"SUB_GAS\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"CUSTOM_PRICE_GAS\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"}],\"name\":\"queryDomainConfigs\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"A\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"AAAA\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"MX\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"BlockChain\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"IOTA\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"CName\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"MXBCA\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"}],\"name\":\"queryDomainEmailInfo\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"name\",\"type\":\"bytes\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"expiration\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"openToPublic\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"}],\"name\":\"queryDomainInfo\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"name\",\"type\":\"bytes\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"expiration\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isRoot\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"rIsOpen\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"rIsCustom\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"rIsRare\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"rCusPrice\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"sRootHash\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"isMarketOrder\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"mailHash\",\"type\":\"bytes32\"}],\"name\":\"queryEmailInfo\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"expiration\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"domainHash\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"isValid\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"aliasName\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"bcAddress\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"seller\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"nameHash\",\"type\":\"bytes32\"}],\"name\":\"queryOrderInfo\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"name\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isValid\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"rel\",\"outputs\":[{\"internalType\":\"contractBasRelations\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"index\",\"type\":\"uint8\"},{\"internalType\":\"string\",\"name\":\"reason\",\"type\":\"string\"}],\"name\":\"setErrorCode\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+// Deprecated: Use BasViewMetaData.ABI instead.
+var BasViewABI = BasViewMetaData.ABI
 
 // BasView is an auto generated Go binding around an Ethereum contract.
 type BasView struct {
@@ -349,12 +357,15 @@ func (_BasView *BasViewCaller) GetOANNParams(opts *bind.CallOpts) (struct {
 		SUBGAS         *big.Int
 		CUSTOMPRICEGAS *big.Int
 	})
+	if err != nil {
+		return *outstruct, err
+	}
 
-	outstruct.MAXYEAR = out[0].(*big.Int)
-	outstruct.AROOTGAS = out[1].(*big.Int)
-	outstruct.BROOTGAS = out[2].(*big.Int)
-	outstruct.SUBGAS = out[3].(*big.Int)
-	outstruct.CUSTOMPRICEGAS = out[4].(*big.Int)
+	outstruct.MAXYEAR = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	outstruct.AROOTGAS = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	outstruct.BROOTGAS = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
+	outstruct.SUBGAS = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
+	outstruct.CUSTOMPRICEGAS = *abi.ConvertType(out[4], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
 
@@ -410,14 +421,17 @@ func (_BasView *BasViewCaller) QueryDomainConfigs(opts *bind.CallOpts, nameHash 
 		CName      []byte
 		MXBCA      []byte
 	})
+	if err != nil {
+		return *outstruct, err
+	}
 
-	outstruct.A = out[0].([]byte)
-	outstruct.AAAA = out[1].([]byte)
-	outstruct.MX = out[2].([]byte)
-	outstruct.BlockChain = out[3].([]byte)
-	outstruct.IOTA = out[4].([]byte)
-	outstruct.CName = out[5].([]byte)
-	outstruct.MXBCA = out[6].([]byte)
+	outstruct.A = *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+	outstruct.AAAA = *abi.ConvertType(out[1], new([]byte)).(*[]byte)
+	outstruct.MX = *abi.ConvertType(out[2], new([]byte)).(*[]byte)
+	outstruct.BlockChain = *abi.ConvertType(out[3], new([]byte)).(*[]byte)
+	outstruct.IOTA = *abi.ConvertType(out[4], new([]byte)).(*[]byte)
+	outstruct.CName = *abi.ConvertType(out[5], new([]byte)).(*[]byte)
+	outstruct.MXBCA = *abi.ConvertType(out[6], new([]byte)).(*[]byte)
 
 	return *outstruct, err
 
@@ -473,12 +487,15 @@ func (_BasView *BasViewCaller) QueryDomainEmailInfo(opts *bind.CallOpts, nameHas
 		IsActive     bool
 		OpenToPublic bool
 	})
+	if err != nil {
+		return *outstruct, err
+	}
 
-	outstruct.Name = out[0].([]byte)
-	outstruct.Owner = out[1].(common.Address)
-	outstruct.Expiration = out[2].(*big.Int)
-	outstruct.IsActive = out[3].(bool)
-	outstruct.OpenToPublic = out[4].(bool)
+	outstruct.Name = *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+	outstruct.Owner = *abi.ConvertType(out[1], new(common.Address)).(*common.Address)
+	outstruct.Expiration = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
+	outstruct.IsActive = *abi.ConvertType(out[3], new(bool)).(*bool)
+	outstruct.OpenToPublic = *abi.ConvertType(out[4], new(bool)).(*bool)
 
 	return *outstruct, err
 
@@ -540,17 +557,20 @@ func (_BasView *BasViewCaller) QueryDomainInfo(opts *bind.CallOpts, nameHash [32
 		SRootHash     [32]byte
 		IsMarketOrder bool
 	})
+	if err != nil {
+		return *outstruct, err
+	}
 
-	outstruct.Name = out[0].([]byte)
-	outstruct.Owner = out[1].(common.Address)
-	outstruct.Expiration = out[2].(*big.Int)
-	outstruct.IsRoot = out[3].(bool)
-	outstruct.RIsOpen = out[4].(bool)
-	outstruct.RIsCustom = out[5].(bool)
-	outstruct.RIsRare = out[6].(bool)
-	outstruct.RCusPrice = out[7].(*big.Int)
-	outstruct.SRootHash = out[8].([32]byte)
-	outstruct.IsMarketOrder = out[9].(bool)
+	outstruct.Name = *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+	outstruct.Owner = *abi.ConvertType(out[1], new(common.Address)).(*common.Address)
+	outstruct.Expiration = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
+	outstruct.IsRoot = *abi.ConvertType(out[3], new(bool)).(*bool)
+	outstruct.RIsOpen = *abi.ConvertType(out[4], new(bool)).(*bool)
+	outstruct.RIsCustom = *abi.ConvertType(out[5], new(bool)).(*bool)
+	outstruct.RIsRare = *abi.ConvertType(out[6], new(bool)).(*bool)
+	outstruct.RCusPrice = *abi.ConvertType(out[7], new(*big.Int)).(**big.Int)
+	outstruct.SRootHash = *abi.ConvertType(out[8], new([32]byte)).(*[32]byte)
+	outstruct.IsMarketOrder = *abi.ConvertType(out[9], new(bool)).(*bool)
 
 	return *outstruct, err
 
@@ -614,13 +634,16 @@ func (_BasView *BasViewCaller) QueryEmailInfo(opts *bind.CallOpts, mailHash [32]
 		AliasName  []byte
 		BcAddress  []byte
 	})
+	if err != nil {
+		return *outstruct, err
+	}
 
-	outstruct.Owner = out[0].(common.Address)
-	outstruct.Expiration = out[1].(*big.Int)
-	outstruct.DomainHash = out[2].([32]byte)
-	outstruct.IsValid = out[3].(bool)
-	outstruct.AliasName = out[4].([]byte)
-	outstruct.BcAddress = out[5].([]byte)
+	outstruct.Owner = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	outstruct.Expiration = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	outstruct.DomainHash = *abi.ConvertType(out[2], new([32]byte)).(*[32]byte)
+	outstruct.IsValid = *abi.ConvertType(out[3], new(bool)).(*bool)
+	outstruct.AliasName = *abi.ConvertType(out[4], new([]byte)).(*[]byte)
+	outstruct.BcAddress = *abi.ConvertType(out[5], new([]byte)).(*[]byte)
 
 	return *outstruct, err
 
@@ -670,10 +693,13 @@ func (_BasView *BasViewCaller) QueryOrderInfo(opts *bind.CallOpts, seller common
 		Price   *big.Int
 		IsValid bool
 	})
+	if err != nil {
+		return *outstruct, err
+	}
 
-	outstruct.Name = out[0].([]byte)
-	outstruct.Price = out[1].(*big.Int)
-	outstruct.IsValid = out[2].(bool)
+	outstruct.Name = *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+	outstruct.Price = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	outstruct.IsValid = *abi.ConvertType(out[2], new(bool)).(*bool)
 
 	return *outstruct, err
 

@@ -15,7 +15,7 @@ import "./lib/LibDnsSig.sol";
 
 contract DnsSubName is ERC721,Erc721Owner{
     using Strings for uint256;
-    bytes32 public fatherHash;
+    bytes32 fatherHash;
     uint256 public gNameId;
     address public taxC;
     address public priceC;
@@ -23,8 +23,8 @@ contract DnsSubName is ERC721,Erc721Owner{
     bytes private baseUri;
     address public fatherAddr;
     address public ownerC;
-    uint256 public taxPrice = 5000000000000000000;
-    mapping(uint32=>bool) passCardUsed;
+    uint256 taxPrice = 5000000000000000000;
+    mapping(uint32=>bool) public passCardUsed;
     address public sigUser;
 
     struct NameItem{
@@ -61,10 +61,6 @@ contract DnsSubName is ERC721,Erc721Owner{
         ownerC = ownerC_;
     }
 
-    //    function getNameInfo(bytes32 hash_) external view override returns(uint256,uint256,address,bool){
-    //        return (nameStore[hash_].expireTime,nameStore[hash_].tokenId,address(0),false);
-    //    }
-
     function setBaseUri(string memory baseUri_,address sigUser_) external onlyOwner{
         baseUri = bytes(baseUri_);
         sigUser = sigUser_;
@@ -74,13 +70,7 @@ contract DnsSubName is ERC721,Erc721Owner{
         return super.supportsInterface(interfaceId);
     }
 
-    //    function ownerOf(uint256 tokenId) public view override returns (address){
-    //        return super.ownerOf(tokenId);
-    //    }
-    //
-    //    function balanceOf(address owner) public view override returns (uint256){
-    //        return super.balanceOf(owner);
-    //    }
+
     function name() public view override returns (string memory){
         return IDnsOwnerPub(ownerC).getEntireName(fatherHash);
     }

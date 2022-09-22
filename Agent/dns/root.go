@@ -114,8 +114,6 @@ func BatchNewRoot(start, end uint64) {
 			if err != nil {
 				log.Println("BatchNewRoot", "save to db error")
 				continue
-			} else {
-				log.Println(fmt.Sprintf("%s register %s", owner.DnsOwner, ev.EntireName))
 			}
 			// coinbase:[namehash]
 			addrkey := strings.ToLower(rn.Owner.String())

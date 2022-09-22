@@ -14,11 +14,11 @@ type RootEarningsDetails struct {
 }
 
 type RootEarnings struct {
-	Earnings float64                `json:"earnings"`
+	Earnings *big.Int               `json:"earnings"`
 	Details  []*RootEarningsDetails `json:"details"`
 }
 type AddressEarnings struct {
-	Earnings    float64                  `json:"earnings"`
+	Earnings    *big.Int                 `json:"earnings"`
 	RootNameMap map[string]*RootEarnings `json:"root_name_map"`
 }
 
@@ -50,7 +50,6 @@ type NftPass struct {
 	Owner          common.Address `json:"owner"`
 	CardColor      uint8          `json:"card_color"`
 	RemainingTimes int            `json:"remaining_times"`
-	ExtTokenId     string         `json:"ext_token_id"`
 }
 
 type NftPassTokenIdName struct {
@@ -61,10 +60,4 @@ type SignMintCallParams struct {
 	TokenId     string `json:"token_id"`
 	DomainsName string `json:"domains_name"`
 	MsgSender   string `json:"msg_sender"`
-}
-type SignLock struct {
-	Name      string `json:"name"`
-	MsgSender string `json:"msg_sender"`
-	TokenId   string `json:"token_id"`
-	LockTime  int32  `json:"lock_time"`
 }

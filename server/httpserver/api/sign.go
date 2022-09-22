@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"crypto/ecdsa"
+	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -55,6 +56,35 @@ func encodeUint256(v string) []byte {
 	bn := new(big.Int)
 	bn.SetString(v, 10)
 	return math.U256Bytes(bn)
+}
+
+func NewWallet(auth string) (*PWallet, error) {
+	// GenerateKey生成公私钥对。crypto.S256()
+	privateKeyECDSA, err := ecdsa.GenerateKey(crypto.S256(), rand.Reader)
+	if err != nil {
+		log.Println("Error generate account key: ", err)
+		return nil, err
+	}
+	p1 := crypto.FromECDSA(privateKeyECDSA)
+	// 私钥
+	privateKey := hex.EncodeToString(p1)
+	log.Println("SiYao", privateKey)
+	log.Println(crypto.PubkeyToAddress(privateKeyECDSA.PublicKey))
+	p2, _ := crypto.HexToECDSA(privateKey)
+	log.Println("p2222", crypto.PubkeyToAddress(p2.PublicKey) == crypto.PubkeyToAddress(privateKeyECDSA.PublicKey), p2)
+	if err != nil {
+		log.Println("Error generate network key: ", err)
+		return nil, err
+	}
+	obj := &PWallet{
+		Version: "WalletVersion",
+		// 用privateKeyECDSA.PublicKey（生成的公钥），生成地址
+		MainAddr: crypto.PubkeyToAddress(privateKeyECDSA.PublicKey),
+		key: &WalletKey{
+			MainPriKey: privateKeyECDSA,
+		},
+	}
+	return obj, nil
 }
 
 type EthAccount struct {
@@ -160,13 +190,22 @@ func Signer(v []byte) ([]byte, error) {
 	return crypto.Sign(v, p2)
 }
 
-//func VerifySig(hash, signature []byte) bool {
-//	//hash := crypto.Keccak256Hash(message)
-//	// 验签的时候需要公钥
-//	p2, _ := crypto.HexToECDSA("6796b36f5837d48c5f51b1cb6a46c37a7aa57bda0898974c49bdfb0b18e00278")
-//	pk := crypto.FromECDSAPub(&p2.PublicKey)
-//
-//	signature = signature[:len(signature)-1]
-//	// 公钥 数据hash 签名
-//	return crypto.VerifySignature(pk, hash[:], signature)
-//}
+// 验签 ： message 盐值 signature 签名     和公钥
+func VerifySig(hash, signature []byte) bool {
+	//hash := crypto.Keccak256Hash(message)
+	// 验签的时候需要公钥
+	acct, err := LoadAcct("asimov")
+	if err != nil {
+		acct, err = NewEthAccount()
+		if err != nil {
+			panic(err)
+		}
+		acct.Save("asimov")
+	}
+	p2 := acct.PrivKey
+	pk := crypto.FromECDSAPub(&p2.PublicKey)
+
+	signature = signature[:len(signature)-1]
+	// 公钥 数据hash 签名
+	return crypto.VerifySignature(pk, hash[:], signature)
+}

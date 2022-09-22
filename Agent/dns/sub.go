@@ -216,8 +216,6 @@ func BatchNewSub(start, end uint64) {
 				if errsub != nil {
 					log.Println("BatchNewSub save err", "save to db error")
 					continue
-				} else {
-					log.Println(fmt.Sprintf("%s register %s", owner.DnsOwner, ev.EntireName))
 				}
 				// SaveContractTokenIdName
 				contractkey := strings.ToLower(contract)

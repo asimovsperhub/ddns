@@ -6,7 +6,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"testing"
-	"time"
 )
 
 func Test(t *testing.T) {
@@ -35,12 +34,9 @@ func Test(t *testing.T) {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(signer)
+	// log.Println(signer)
 	// 验签
-	//log.Println("signer", hex.EncodeToString(signer), len(signer))
-	//f := VerifySig(hash[:], signer)
-	//fmt.Println("VerifySig", f)
-}
-func TestTime(t *testing.T) {
-	log.Println(int32(time.Now().Unix()))
+	log.Println("signer", hex.EncodeToString(signer), len(signer))
+	f := VerifySig(hash[:], signer)
+	fmt.Println("VerifySig", f)
 }

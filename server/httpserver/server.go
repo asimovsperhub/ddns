@@ -21,29 +21,27 @@ import (
 )
 
 const (
-	DnsName                     = "/dns/name"
-	DnsEthAddress               = "/dns/ethaddr"
-	DnsIP4                      = "/dns/ip4"
-	DnsBlockchainAddress        = "/dns/blockchainaddr"
-	DnsCName                    = "/dns/cname"
-	DnsIP6                      = "/dns/ip6"
-	DnsGetTotalBySubLen         = "/dns/totalbysub"
-	DnsQuerySubDomainByPage     = "/dns/querysub"
-	DnsGetTotalByPrice          = "/dns/totalbyprice"
-	DnsAddress                  = "/dns/addr"
-	GetEarningsByAddress        = "/dns/getincomebyaddr"
-	GetEarningsDetailsByAddress = "/dns/getincomedetails"
-	GetCashDetailsByAddress     = "/dns/getcashbyaddr"
-	GetQuerySignTldList         = "/dns/querysign"
-	ConfResolve                 = "/dns/confresolve"
-	AddrDomainsResolve          = "/dns/resolve"
-	DnsTokenId                  = "/opensea"
-	AddrTopList                 = "/dns/dids/top/get_list"
-	AddrSubList                 = "/dns/dids/second/get_list"
-	GetOpenRegister             = "/dns/dids/top/get_open_dids"
-	GetMyPassCardList           = "/dns/passcard/get_all"
-	PostSignMint                = "/dns/passcard/signed_mint"
-	SwitchSignMint              = "/dns/SwitchSignMint"
+	DnsName                 = "/dns/name"
+	DnsEthAddress           = "/dns/ethaddr"
+	DnsIP4                  = "/dns/ip4"
+	DnsBlockchainAddress    = "/dns/blockchainaddr"
+	DnsCName                = "/dns/cname"
+	DnsIP6                  = "/dns/ip6"
+	DnsGetTotalBySubLen     = "/dns/totalbysub"
+	DnsQuerySubDomainByPage = "/dns/querysub"
+	DnsGetTotalByPrice      = "/dns/totalbyprice"
+	DnsAddress              = "/dns/addr"
+	GetEarningsByAddress    = "/dns/multisign/dids/get_todos"
+	GetCashDetailsByAddress = "/dns/getcashbyaddr"
+	GetQuerySignTldList     = "/dns/querysign"
+	ConfResolve             = "/dns/confresolve"
+	AddrDomainsResolve      = "/dns/resolve"
+	DnsTokenId              = "/opensea"
+	AddrTopList             = "/dns/dids/top/get_list"
+	AddrSubList             = "/dns/dids/second/get_list"
+	GetOpenRegister         = "/dns/dids/top/get_open_dids"
+	GetMyPassCardList       = "/dns/passcard/get_all"
+	PostSignMint            = "/dns/passcard/signed_mint"
 )
 
 func Cors(f http.HandlerFunc) http.HandlerFunc {
@@ -110,20 +108,17 @@ func (ws *WebProxyServer) init() *WebProxyServer {
 		routes: make([]*route, 0),
 	}
 	wapi := api.NewApi()
-	//rh.HandleFunc(DnsEthAddress, Cors(ws.ethAddrResolve))
 	rh.HandleFunc(DnsName, Cors(ws.dnsNameResolve))
-	//rh.HandleFunc("/tokenId", ws.DnsTokenId)
 	rh.HandleFunc(DnsIP4, Cors(ws.ipv4Resolve))
 	rh.HandleFunc(DnsBlockchainAddress, Cors(wapi.Blockchain))
 	rh.HandleFunc(DnsCName, Cors(wapi.CName))
 	rh.HandleFunc(DnsIP6, Cors(wapi.Ipv6))
 	rh.HandleFunc(DnsGetTotalBySubLen, Cors(wapi.GetTotalBySubLen))
 	rh.HandleFunc(DnsQuerySubDomainByPage, Cors(wapi.QuerySubDomainByPage))
-	rh.HandleFunc(GetEarningsByAddress, Cors(wapi.GetEarningsByAddress))
 	rh.HandleFunc(DnsAddress, Cors(wapi.AddrResolve))
-	rh.HandleFunc(GetEarningsDetailsByAddress, Cors(wapi.GetEarningsDetailsByAddress))
+	rh.HandleFunc(GetEarningsByAddress, Cors(wapi.GetEarningsByAddress))
 	rh.HandleFunc(GetCashDetailsByAddress, Cors(wapi.GetCashDetailsByAddress))
-	rh.HandleFunc(GetQuerySignTldList, Cors(wapi.GetQuerySignTldList))
+	rh.HandleFunc(GetQuerySignTldList, Cors(wapi.GetSignTldListByDidName))
 	rh.HandleFunc(ConfResolve, Cors(wapi.ConfResolve))
 	rh.HandleFunc(AddrDomainsResolve, Cors(wapi.AddrDomainsResolve))
 	rh.HandleFunc(DnsTokenId, Cors(wapi.DnsTokenId))
@@ -132,7 +127,6 @@ func (ws *WebProxyServer) init() *WebProxyServer {
 	rh.HandleFunc(GetOpenRegister, Cors(wapi.GetOpenRegister))
 	rh.HandleFunc(GetMyPassCardList, Cors(wapi.GetMyPassCardList))
 	rh.HandleFunc(PostSignMint, Cors(wapi.PostSignMint))
-	rh.HandleFunc(SwitchSignMint, Cors(wapi.SwitchSignMint))
 	server := &http.Server{
 		Handler: rh,
 	}

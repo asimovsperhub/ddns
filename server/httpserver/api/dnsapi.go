@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dnsdao/dnsdao.resolver/Agent/dns"
+	"github.com/dnsdao/dnsdao.resolver/Agent/dnsv2"
 	"github.com/dnsdao/dnsdao.resolver/config"
 	"github.com/dnsdao/dnsdao.resolver/database/ldb"
 	"github.com/ethereum/go-ethereum/common"
@@ -15,7 +16,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
+	"unsafe"
 )
 
 type Api struct {
@@ -31,6 +32,12 @@ func isRoot(name string) bool {
 	}
 	return true
 }
+func byte32(s []byte) (a *[32]byte) {
+	if len(a) <= len(s) {
+		a = (*[len(a)]byte)(unsafe.Pointer(&s[0]))
+	}
+	return a
+}
 
 type QuerySub struct {
 	Name       string         `json:"name"`
@@ -38,13 +45,13 @@ type QuerySub struct {
 	Expiration *big.Int       `json:"expiration"`
 }
 type QuerySubDomainByPage struct {
-	TotalCount int         `json:"total_count"`
-	Result     []*QuerySub `json:"result"`
+	Total  int         `json:"total"`
+	Result []*QuerySub `json:"result"`
 }
 
 type QueryName struct {
-	TotalCount int      `json:"total_count"`
-	Result     []string `json:"result"`
+	Total  int      `json:"total"`
+	Result []string `json:"result"`
 }
 type GetTotalByPrice struct {
 	TotalPrice float64 `json:"total_price"`
@@ -58,15 +65,6 @@ func Paging(pageNumber int, pageSize int, resArr []string) []string {
 	}
 	start := pageNumber * pageSize
 	end := (pageNumber + 1) * pageSize
-	//if pageNumber <= len(resArr) {
-	//	if pageNumber+pageSize > len(resArr) {
-	//		res = resArr[pageNumber:]
-	//	} else {
-	//		res = resArr[pageNumber : pageSize+pageNumber]
-	//	}
-	//} else {
-	//	res = nil
-	//}
 	if start <= len(resArr) {
 		if end > len(resArr) {
 			res = resArr[start:]
@@ -234,15 +232,28 @@ func (a *Api) GetTotalBySubLen(writer http.ResponseWriter, request *http.Request
 		if err == nil {
 			RootNameInfo := new(dns.RootNameInfo)
 			json.Unmarshal([]byte(val), RootNameInfo)
-			res, _ := json.Marshal(RootNameInfo.SubNameCount)
-			msg = string(res)
+			res := &Res{
+				Code:    1,
+				Message: "ok",
+				Data:    RootNameInfo.SubNameCount,
+			}
+			resbyte, _ := json.Marshal(res)
+			msg = string(resbyte)
+			writer.WriteHeader(200)
+			writer.Write([]byte(msg))
+			return
+		} else {
+			res_ := NotDataRes(fmt.Sprintf("%s not data", name))
+			writer.WriteHeader(200)
+			writer.Write([]byte(res_))
+			return
 		}
 	} else {
-		msg = fmt.Sprintf("%s:is not root", name)
+		res_ := NotDataRes(fmt.Sprintf("%s:is not root", name))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
-
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
 }
 
 func (a *Api) QuerySubDomainByPage(writer http.ResponseWriter, request *http.Request) {
@@ -327,7 +338,6 @@ func (a *Api) QuerySubDomainByPage(writer http.ResponseWriter, request *http.Req
 			}
 			SubNameInfo := new(dns.SubNameInfo)
 			subnameList = Paging(number, size, resArr)
-			TotalCount := len(resArr)
 			SubInfoL := []*QuerySub{}
 			for _, sub := range subnameList {
 				subnameHash := crypto.Keccak256([]byte(sub))
@@ -335,80 +345,26 @@ func (a *Api) QuerySubDomainByPage(writer http.ResponseWriter, request *http.Req
 				json.Unmarshal([]byte(subval), SubNameInfo)
 				SubInfoL = append(SubInfoL, &QuerySub{Name: SubNameInfo.Name, Owner: SubNameInfo.Owner, Expiration: SubNameInfo.ExpireTime})
 			}
-
-			res := &QuerySubDomainByPage{TotalCount: TotalCount, Result: SubInfoL}
+			res := &Res{Code: 1, Message: "ok", Total: len(resArr), PageNumber: number, PageSize: size, Data: SubInfoL}
 			resbyte, _ := json.Marshal(res)
 			msg = string(resbyte)
+			writer.WriteHeader(200)
+			writer.Write([]byte(msg))
+			return
+		} else {
+			res_ := NotDataRes(fmt.Sprintf("%s not data", rootname))
+			writer.WriteHeader(200)
+			writer.Write([]byte(res_))
+			return
 		}
 	} else {
-		msg = fmt.Sprintf("%s:is not root", rootname)
+		res_ := NotDataRes(fmt.Sprintf("%s:is not root", rootname))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
 
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
-
 }
-
-//func (a *Api) GetTotalByPrice(writer http.ResponseWriter, request *http.Request) {
-//	if request.Method != "GET" {
-//		writer.WriteHeader(500)
-//		fmt.Fprintf(writer, "not a get request")
-//		return
-//	}
-//
-//	query := request.URL.Query()
-//	log.Println("/dns/totalbyprice query", query)
-//	var (
-//		v  []string
-//		ok bool
-//	)
-//
-//	if v, ok = query["tldName"]; !ok {
-//		writer.WriteHeader(200)
-//		fmt.Fprintf(writer, "not a valid request")
-//		return
-//	}
-//
-//	name := v[0]
-//
-//	ir := isRoot(name)
-//
-//	nameHash := crypto.Keccak256([]byte(name))
-//
-//	db := ldb.GetLdb()
-//
-//	msg := "not found tldName"
-//	countPrice := 0.0
-//	if ir {
-//		val, err := db.GetRootName(hex.EncodeToString(nameHash))
-//		if err == nil {
-//			RootNameInfo := new(dns.RootNameInfo)
-//			json.Unmarshal([]byte(val), RootNameInfo)
-//			//res, _ := json.Marshal(RootNameInfo.SubNameCount)
-//			sn := RootNameInfo.SubName
-//			pc := RootNameInfo.Price
-//			for k, value := range sn {
-//				if pc[k] != nil {
-//					price, _ := strconv.Atoi(pc[k].String())
-//					countPrice += (float64(price) / float64(1000000000000000000)) * float64(len(value))
-//				} else {
-//					price, _ := strconv.Atoi(pc["default"].String())
-//					countPrice += (float64(price) / float64(1000000000000000000)) * float64(len(value))
-//				}
-//			}
-//			res := &GetTotalByPrice{
-//				TotalPrice: countPrice,
-//			}
-//			resbyte, _ := json.Marshal(res)
-//			msg = string(resbyte)
-//		}
-//	} else {
-//		msg = fmt.Sprint("%s:is not root", name)
-//	}
-//
-//	writer.WriteHeader(200)
-//	writer.Write([]byte(msg))
-//}
 
 func (a *Api) AddrResolve(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
@@ -454,17 +410,21 @@ func (a *Api) AddrResolve(writer http.ResponseWriter, request *http.Request) {
 			in, _ := db.GetKey(v)
 			data = append(data, in)
 		}
-		res := &QueryName{TotalCount: len(val), Result: data}
+		res := &Res{Code: 1, Message: "ok", Total: len(val), PageNumber: number, PageSize: size, Data: data}
 		resbyte, _ := json.Marshal(res)
-		if err == nil {
-			msg = string(resbyte)
-		}
+		msg = string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
+		return
+	} else {
+		res_ := NotDataRes(fmt.Sprintf("not found %s data", addr))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
-
 }
 
+// 获取钱包地址收入
 func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		res_ := NotDataRes("not a get request")
@@ -473,82 +433,90 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 		return
 	}
 	addr := ""
+	pageNumber := "0"
+	pageSize := "100"
 	query := request.URL.Query()
-	log.Println("GetEarningsByAddress query ", query)
-	msg := "not found addr"
+	log.Println("GetCashDetailsByAddress query ", query)
 	var (
 		v  []string
 		ok bool
 	)
-	if v, ok = query["addr"]; ok {
+	if v, ok = query["coinbase"]; ok {
 		addr = v[0]
 	} else {
-		res_ := NotDataRes("not addr")
+		res_ := NotDataRes("not coinbase")
 		writer.WriteHeader(200)
 		writer.Write([]byte(res_))
 		return
 	}
+	if v, ok = query["pageNumber"]; ok {
+		pageNumber = v[0]
+	}
+	if v, ok = query["pageSize"]; ok {
+		pageSize = v[0]
+	}
+	cli, err := ethclient.Dial(config.GetRConf().GetRPCEndPoint())
+	if err != nil {
+		cli.Close()
+		log.Println("NewRootClient EthClient conn err", err)
+	}
+	defer cli.Close()
+	dnsaccountant, err := dnsv2.NewDnsAccountantClient(cli)
+	if err != nil {
+		log.Println("NewDnsOwnerClient", err)
+		return
+	}
 	db := ldb.GetLdb()
-	val, err := db.GetRootEarnings(strings.ToLower(addr))
+	val, err := db.GetAddressList(strings.ToLower(addr))
 	if err == nil {
-		cc := map[string]float64{}
-		for k, v := range val.RootNameMap {
-			cc[k] = v.Earnings
+		number, _ := strconv.Atoi(pageNumber)
+		size, _ := strconv.Atoi(pageSize)
+		var rndata []string
+		for _, name := range val {
+			if strings.Contains(name, "rnH_1_") {
+				rndata = append(rndata, name)
+			}
 		}
-		res := &GetEarningsByAddressRes{
+		var income []*GetEarningsByAddressIncome
+		var items []*GetEarningsByAddressItems
+		work := false
+		rndatares := Paging(number, size, rndata)
+		for _, name := range rndatares {
+			in, _ := db.GetKey(name)
+			root := new(dns.RootNameInfo)
+			errun := json.Unmarshal([]byte(in), &root)
+			if errun != nil {
+				log.Println("GetCashDetailsByAddress Json.Unmarshal err", errun)
+			} else {
+				// root
+				if root.Contract != common.HexToAddress("0x0000000000000000000000000000000000000000") {
+					usdt, _ := dnsaccountant.Get(nil, root.Contract, common.HexToAddress(config.GetRConf().Cconf.Usdt))
+					eth, _ := dnsaccountant.Get(nil, root.Contract, common.HexToAddress("0x0000000000000000000000000000000000000000"))
+					income = []*GetEarningsByAddressIncome{{Erc20Addr: common.HexToAddress(config.GetRConf().Cconf.Usdt), WithDrawWei: usdt},
+						{WithDrawWei: eth}}
+					multi, _ := dnsaccountant.MultiSignerStore(nil, root.Contract)
+					work = multi.Work
+				}
+				items = append(items, &GetEarningsByAddressItems{Name: root.Name, Owner: root.Owner, Erc721Addr: root.Owner, TokenId: root.TokenId, Work: work, Income: income})
+			}
+		}
+		res := &Res{
 			Code:    1,
 			Message: "ok",
-			Data: &GetEarningsByAddress{
-				IncomeSummary: val.Earnings,
-				Details:       cc,
-			},
+			Data:    &GetEarningsByAddressRes{PageNumber: number, PageSize: size, Items: items},
 		}
-		resbyte, errc := json.Marshal(res)
-		if errc == nil {
-			msg = string(resbyte)
-		}
-	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
-
-}
-
-func (a *Api) GetEarningsDetailsByAddress(writer http.ResponseWriter, request *http.Request) {
-	if request.Method != "GET" {
-		res_ := NotDataRes("not a get request")
-		writer.WriteHeader(500)
-		writer.Write([]byte(res_))
+		resbyte, _ := json.Marshal(res)
+		msg := string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
 		return
-	}
-	addr := ""
-	query := request.URL.Query()
-	log.Println("GetEarningsDetailsByAddress query ", query)
-	msg := "not found addr"
-	var (
-		v  []string
-		ok bool
-	)
-	if v, ok = query["addr"]; ok {
-		addr = v[0]
+
 	} else {
-		res_ := NotDataRes("not addr")
+		res_ := NotDataRes(fmt.Sprintf("not found %s data", addr))
 		writer.WriteHeader(200)
 		writer.Write([]byte(res_))
 		return
 	}
-	db := ldb.GetLdb()
-	val, err := db.GetRootEarnings(strings.ToLower(addr))
-	// log.Println(val)
-	if err == nil {
-		res := &GetEarningsDetailsByAddress{Code: 1, Message: "ok", Data: val}
-		resbyte, errc := json.Marshal(res)
-		if errc == nil {
-			msg = string(resbyte)
-		}
-	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
-
 }
 
 func (a *Api) GetCashDetailsByAddress(writer http.ResponseWriter, request *http.Request) {
@@ -577,40 +545,57 @@ func (a *Api) GetCashDetailsByAddress(writer http.ResponseWriter, request *http.
 	db := ldb.GetLdb()
 	val, err := db.GetAddressCash(strings.ToLower(addr))
 	if err == nil {
-		res := &GetCashDetailsByAddress{Code: 1, Message: "ok", Data: val}
-		resbyte, errc := json.Marshal(res)
-		if errc == nil {
-			msg = string(resbyte)
+		res := &Res{
+			Code:    1,
+			Message: "ok",
+			Data:    val,
 		}
-	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
+		resbyte, _ := json.Marshal(res)
+		msg = string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
+		return
 
+	} else {
+		res_ := NotDataRes(fmt.Sprintf("not found %s data", addr))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
 }
 
-func (a *Api) GetQuerySignTldList(writer http.ResponseWriter, request *http.Request) {
+// 获取didname多签列表
+func (a *Api) GetSignTldListByDidName(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
 		writer.Write([]byte(res_))
 		return
 	}
-	addr := ""
+	didName := ""
+	//pageNumber := "0"
+	//pageSize := "100"
 	query := request.URL.Query()
 	log.Println("GetQuerySignTldList query ", query)
-	msg := "not found addr"
+	// msg := "not found addr"
 	var (
 		v  []string
 		ok bool
 	)
-	if v, ok = query["addr"]; ok {
-		addr = v[0]
+	if v, ok = query["didName"]; ok {
+		didName = v[0]
 	} else {
-		res_ := NotDataRes("not addr")
+		res_ := NotDataRes("not didName")
 		writer.WriteHeader(200)
 		writer.Write([]byte(res_))
 		return
 	}
+	//if v, ok = query["pageNumber"]; ok {
+	//	pageNumber = v[0]
+	//}
+	//if v, ok = query["pageSize"]; ok {
+	//	pageSize = v[0]
+	//}
 	db := ldb.GetLdb()
 	cli, err := ethclient.Dial(config.GetRConf().GetRPCEndPoint())
 	if err != nil {
@@ -618,61 +603,66 @@ func (a *Api) GetQuerySignTldList(writer http.ResponseWriter, request *http.Requ
 		log.Println("NewRootClient EthClient conn err", err)
 	}
 	defer cli.Close()
-	dnsaccountant, err := dns.NewDnsAccountantClient(cli)
+	dnsaccountant, err := dnsv2.NewDnsAccountantClient(cli)
 	if err != nil {
 		log.Println("NewDnsOwnerClient", err)
 		return
 	}
-	Id_ := big.NewInt(int64(0))
-	length, count, list, err := dnsaccountant.GetContractList(nil, common.HexToAddress(addr), Id_)
-	if err != nil {
-		log.Println("dnsaccountant.GetContractList", err)
-	}
-	log.Println("GetContractList ", length, count, list)
 	data := []*Sign{}
-	for _, contract := range list {
-		if contract != common.HexToAddress("0x0000000000000000000000000000000000000000") {
-			multi, _ := dnsaccountant.MultiSignerStore(nil, contract)
-			signers, err1 := dnsaccountant.GetSignerSetAddress(nil, contract)
-			if err1 != nil {
-				log.Println("dnsaccountant.GetSignerSetAddress err", err1)
-			}
+	rootnamehash := hex.EncodeToString(crypto.Keccak256([]byte(didName)))
+	rootinfo, _ := db.GetRootName(rootnamehash)
+	Rootname := new(dnsv2.RootNameInfo)
+	err = json.Unmarshal([]byte(rootinfo), Rootname)
+	if err != nil {
+		log.Println("json Unmarshal ", err)
+	} else {
+		if Rootname.Contract != common.HexToAddress("0x0000000000000000000000000000000000000000") {
+			multi, _ := dnsaccountant.MultiSignerStore(nil, Rootname.Contract)
+			// signers, err1 := dnsaccountant.GetSignerSetAddress(nil, Rootname.Contract)
+			topnamehashbyte := byte32(crypto.Keccak256([]byte(Rootname.Name)))
+			maxsig, _, signers, _ := dnsaccountant.GetTaskInfo(nil, Rootname.Contract, *topnamehashbyte)
+			// 取多签列表地址 20个字节一个地址
 			countS := len(signers) / 20
-			signL := []common.Address{}
+			var signL []*GetSignTldListByDidNameSignList
+			// var  items []*GetSignTldListByDidNameItems
 			for i := 0; i < countS; i++ {
 				a, b := i*20, (i+1)*20
-				signL = append(signL, common.BytesToAddress(signers[a:b]))
+				// common.BytesToAddress(signers[a:b])
+				signL = append(signL, &GetSignTldListByDidNameSignList{
+					Signer: common.BytesToAddress(signers[a:b]),
+				})
 			}
-			nameHash, _ := db.GetContractAddr(contract.String())
-			rootname, _ := db.GetRootName(nameHash)
-			rootinfo := new(dns.RootNameInfo)
-			err = json.Unmarshal([]byte(rootname), rootinfo)
-			if err != nil {
-				log.Println("json Unmarshal ", err)
-				continue
-			} else {
-				var Earnings float64
-				owner := rootinfo.Owner
-				AddressEarnings, err2 := db.GetRootEarnings(strings.ToLower(owner.String()))
-				if err2 != nil {
-					log.Println("GetRootEarnings err", err2)
-				} else {
-					RootEarnings := AddressEarnings.RootNameMap[rootinfo.Name]
-					Earnings = RootEarnings.Earnings
-				}
-				data = append(data, &Sign{Name: rootinfo.Name, Work: multi.Work, Erc721Addr: contract.String(), Erc20Addr: "0x0000000000000000000000000000000000000000",
-					Income: Earnings, Singners: signL, Owner: rootinfo.Owner, TokenId: rootinfo.TokenId})
+			items := []*GetSignTldListByDidNameItems{{NameHash: Rootname.Hash, Work: multi.Work, Lock: multi.Lock, MaxSig: maxsig, SignerList: signL}}
+			res := &Res{
+				Code:    1,
+				Message: "ok",
+				Data:    &GetSignTldListByDidNameRes{Items: items},
 			}
+			resbyte, _ := json.Marshal(res)
+			msg := string(resbyte)
+			writer.WriteHeader(200)
+			writer.Write([]byte(msg))
+			return
 		}
 	}
-	res := &QuerySignTldList{Code: 1, Message: "ok", Data: data}
-	resbyte, errc := json.Marshal(res)
-	if errc == nil {
-		msg = string(resbyte)
-	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
 
+	if len(data) > 0 {
+		res := &Res{
+			Code:    1,
+			Message: "ok",
+			Data:    data,
+		}
+		resbyte, _ := json.Marshal(res)
+		msg := string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
+		return
+	} else {
+		res_ := NotDataRes(fmt.Sprintf("not found %s data", didName))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
 }
 
 func (a *Api) ConfResolve(writer http.ResponseWriter, request *http.Request) {
@@ -728,14 +718,18 @@ func (a *Api) ConfResolve(writer http.ResponseWriter, request *http.Request) {
 			in, _ := db.GetKey(v)
 			data = append(data, in)
 		}
-		res := &QueryName{TotalCount: len(val), Result: data}
+		res := &Res{Code: 1, Message: "ok", Total: len(val), PageNumber: number, PageSize: size, Data: data}
 		resbyte, _ := json.Marshal(res)
-		if err == nil {
-			msg = string(resbyte)
-		}
+		msg = string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
+		return
+	} else {
+		res_ := NotDataRes(fmt.Sprintf("not found %s data", confval))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
 
 }
 
@@ -753,9 +747,7 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 	query := request.URL.Query()
 	log.Println("AddrDomainsResolve query ", query)
 
-	notfoundRes := &AddrDomainsResolveRes{Code: 1, Message: "not found", TotalCount: 0, Data: []*AddrDomains{}}
-	notfoundresbyte, _ := json.Marshal(notfoundRes)
-	msg := string(notfoundresbyte)
+	msg := string("not found data")
 
 	var (
 		v  []string
@@ -816,14 +808,18 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 				}
 			}
 		}
-		res := &AddrDomainsResolveRes{Code: 1, Message: "ok", TotalCount: len(val), Data: data}
+		res := &Res{Code: 1, Message: "ok", Total: len(val), PageNumber: number, PageSize: size, Data: data}
 		resbyte, _ := json.Marshal(res)
-		if err == nil {
-			msg = string(resbyte)
-		}
+		msg = string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
+		return
+	} else {
+		res_ := NotDataRes(fmt.Sprintf("not found %s data", addrtype))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
 
 }
 
@@ -866,13 +862,13 @@ func (a *Api) AddrTopList(writer http.ResponseWriter, request *http.Request) {
 		number, _ := strconv.Atoi(pageNumber)
 		size, _ := strconv.Atoi(pageSize)
 		var rndata []string
-		var data []*AddrTopListDataItems
 		for _, name := range val {
 			if strings.Contains(name, "rnH_1_") {
 				rndata = append(rndata, name)
 			}
 		}
 		rndatares := Paging(number, size, rndata)
+		var data []*AddrTopListDataItems
 		for _, name := range rndatares {
 			in, _ := db.GetKey(name)
 			root := new(dns.RootNameInfo)
@@ -885,18 +881,20 @@ func (a *Api) AddrTopList(writer http.ResponseWriter, request *http.Request) {
 				})
 			}
 		}
-		addrtoplistdata := &AddrTopListData{Total: len(rndata), PageNumber: number, PageSize: size, Items: data}
-		addrtoplist := &Res{Code: 1, Message: "ok", Data: addrtoplistdata}
-		resbyte, _ := json.Marshal(addrtoplist)
-		if err == nil {
-			msg = string(resbyte)
-		}
+		res := &Res{Code: 1, Message: "ok", Total: len(rndata), PageNumber: number, PageSize: size, Data: data}
+		resbyte, _ := json.Marshal(res)
+		msg = string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
+		return
+	} else {
+		res_ := NotDataRes(fmt.Sprintf("not found %s data", addr))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
 
 }
-
 func (a *Api) AddrSubList(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		res_ := NotDataRes("not a get request")
@@ -955,15 +953,17 @@ func (a *Api) AddrSubList(writer http.ResponseWriter, request *http.Request) {
 				})
 			}
 		}
-		addrtoplistdata := &AddrTopListData{Total: len(rndata), PageNumber: number, PageSize: size, Items: data}
-		addrtoplist := &Res{Code: 1, Message: "ok", Data: addrtoplistdata}
-		resbyte, _ := json.Marshal(addrtoplist)
-		if err == nil {
-			msg = string(resbyte)
-		}
+		res := &Res{Code: 1, Message: "ok", Total: len(rndata), PageNumber: number, PageSize: size, Data: data}
+		resbyte, _ := json.Marshal(res)
+		msg = string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
+	} else {
+		res_ := NotDataRes(fmt.Sprintf("not found %s data", addr))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
 
 }
 
@@ -978,7 +978,7 @@ func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request)
 	pageSize := "10"
 	query := request.URL.Query()
 	log.Println("GetOpenRegister query ", query)
-	msg := "not found coinbase"
+	msg := "not found data"
 	var (
 		v  []string
 		ok bool
@@ -1004,20 +1004,26 @@ func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request)
 			if err != nil {
 				log.Println("GetOpenRegister Json.Unmarshal err", err)
 			} else {
+				hasprice := false
+				if rootinfo.Price != nil {
+					hasprice = true
+				}
 				data = append(data, &AddrTopListDataItems{
-					Name: rootinfo.Name, Erc721_Addr: rootinfo.Contract, TokenId: rootinfo.TokenId, ExpireTime: rootinfo.ExpireTime, OpenToReg: rootinfo.OpenToReg, Owner: rootinfo.Owner, PayTokens: []string{},
+					Name: rootinfo.Name, Erc721_Addr: rootinfo.Contract, TokenId: rootinfo.TokenId, ExpireTime: rootinfo.ExpireTime, OpenToReg: rootinfo.OpenToReg, HasPrice: hasprice, Owner: rootinfo.Owner, PayTokens: []string{},
 				})
 			}
 		}
-		addrtoplistdata := &AddrTopListData{Total: len(contractL), PageNumber: number, PageSize: size, Items: data}
-		addrtoplist := &Res{Code: 1, Message: "ok", Data: addrtoplistdata}
-		resbyte, _ := json.Marshal(addrtoplist)
-		if err == nil {
-			msg = string(resbyte)
-		}
+		res := &Res{Code: 1, Message: "ok", Total: len(contractL), PageNumber: number, PageSize: size, Data: data}
+		resbyte, _ := json.Marshal(res)
+		msg = string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
+	} else {
+		res_ := NotDataRes(fmt.Sprintf("not found data"))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
 
 }
 
@@ -1073,61 +1079,18 @@ func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Reques
 		} else {
 			data = nil
 		}
-		//todo 遍历data 查是否使用
-		rootC, cli, _ := dns.NewRootClient()
-		defer cli.Close()
-		subC, _, _ := dns.NewSubClient("0x111cFbc15FC56AD0aC8C7536BcA3347a558a0012")
-		for _, tkid := range data {
-			u64tk, _ := strconv.ParseUint(tkid.TokenId.String(), 10, 32)
-			isusedr, _ := rootC.PassCardUsed(nil, uint32(u64tk))
-			isuseds, _ := subC.PassCardUsed(nil, uint32(u64tk))
-			if isusedr {
-				tkid.RemainingTimes = 1
-				if addrpass[tkid.Owner.String()] != "" && addrpass[tkid.Owner.String()] == tkid.TokenId.String() {
-					tklen := len(tkid.TokenId.String())
-					tkid.RemainingTimes = 0
-					tkid.ExtTokenId = "10000"[:5-tklen] + tkid.TokenId.String()
-					u64tk2, _ := strconv.ParseUint(tkid.ExtTokenId, 10, 32)
-					isusedr2, _ := rootC.PassCardUsed(nil, uint32(u64tk2))
-					isuseds2, _ := subC.PassCardUsed(nil, uint32(u64tk2))
-					if isusedr2 {
-						tkid.RemainingTimes = 1
-					}
-					if isuseds2 {
-						tkid.RemainingTimes = 1
-					}
-
-				}
-
-			}
-			if isuseds {
-				tkid.RemainingTimes = 1
-				if addrpass[tkid.Owner.String()] != "" && addrpass[tkid.Owner.String()] == tkid.TokenId.String() {
-					tklen := len(tkid.TokenId.String())
-					tkid.RemainingTimes = 0
-					tkid.ExtTokenId = "10000"[:5-tklen] + tkid.TokenId.String()
-					u64tk2, _ := strconv.ParseUint(tkid.ExtTokenId, 10, 32)
-					isusedr2, _ := rootC.PassCardUsed(nil, uint32(u64tk2))
-					isuseds2, _ := subC.PassCardUsed(nil, uint32(u64tk2))
-					if isusedr2 {
-						tkid.RemainingTimes = 1
-					}
-					if isuseds2 {
-						tkid.RemainingTimes = 1
-					}
-				}
-			}
-		}
-		// db.SaveNftPass(strings.ToLower(coinbase), data)
-		addrtoplistdata := &AddrTopListData{Total: len(data), PageNumber: number, PageSize: size, Items: data}
-		addrtoplist := &Res{Code: 1, Message: "ok", Data: addrtoplistdata}
-		resbyte, _ := json.Marshal(addrtoplist)
-		if err == nil {
-			msg = string(resbyte)
-		}
+		res := &Res{Code: 1, Message: "ok", Total: len(val), PageNumber: number, PageSize: size, Data: data}
+		resbyte, _ := json.Marshal(res)
+		msg = string(resbyte)
+		writer.WriteHeader(200)
+		writer.Write([]byte(msg))
+		return
+	} else {
+		res_ := NotDataRes(fmt.Sprintf("not found %s data", coinbase))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
 
 }
 
@@ -1138,18 +1101,11 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte(res_))
 		return
 	}
-	db := ldb.GetLdb()
-	opensign, _ := db.GetKey("OpenSign")
-	if opensign != "1" {
-		res_ := NotDataRes("The signature mint service has not been started")
-		writer.WriteHeader(200)
-		writer.Write([]byte(res_))
-		return
-	}
 	msg := "not found"
 	decoder := json.NewDecoder(request.Body)
 	var reqparams map[string]string
 	decoder.Decode(&reqparams)
+	log.Println("PostSignMint query", reqparams)
 	name := reqparams["domain_name"]
 	if name == "" {
 		res_ := NotDataRes("not name")
@@ -1157,8 +1113,9 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte(res_))
 		return
 	}
+	db := ldb.GetLdb()
 	year := reqparams["year"]
-	if name == "" {
+	if year == "" {
 		res_ := NotDataRes("not year")
 		writer.WriteHeader(200)
 		writer.Write([]byte(res_))
@@ -1193,65 +1150,18 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	log.Println("PostSignMint query", reqparams, len(reqparams))
-	// todo 取消白名单限制
-	//for _, v := range domainslist {
-	//	if name == v {
-	//		res_ := NotDataRes("Domain name cannot be registered")
-	//		writer.WriteHeader(200)
-	//		writer.Write([]byte(res_))
-	//		return
-	//	}
-	//}
-	//rootC, cli, _ := dns.NewRootClient()
-	//defer cli.Close()
-	//u64tk, _ := strconv.ParseUint(token_id, 10, 32)
-	//isusedr, _ := rootC.PassCardUsed(nil, uint32(u64tk))
-	//subC, _, _ := dns.NewSubClient("0x111cFbc15FC56AD0aC8C7536BcA3347a558a0012")
-	//isuseds, _ := subC.PassCardUsed(nil, uint32(u64tk))
-	//if isusedr {
-	//	res_ := NotDataRes(fmt.Sprintf("The cardid %s has already been used", token_id))
-	//	writer.WriteHeader(200)
-	//	writer.Write([]byte(res_))
-	//	return
-	//}
-	//if isuseds {
-	//	res_ := NotDataRes(fmt.Sprintf("The cardid %s has already been used", token_id))
-	//	writer.WriteHeader(200)
-	//	writer.Write([]byte(res_))
-	//	return
-	//}
-	nameHash := crypto.Keccak256([]byte(name))
-	namer, _ := db.GetRootName(hex.EncodeToString(nameHash))
-	if namer != "" {
-		res_ := NotDataRes(fmt.Sprintf("The domain %s has been registered", name))
-		writer.WriteHeader(200)
-		writer.Write([]byte(res_))
-		return
-	}
-	names, _ := db.GetSubName(hex.EncodeToString(nameHash))
-	if names != "" {
-		res_ := NotDataRes(fmt.Sprintf("The domain %s has been registered", name))
-		writer.WriteHeader(200)
-		writer.Write([]byte(res_))
-		return
-	}
-	lock, _ := db.GetSignLock(name)
-	if lock != nil {
-		if lock.MsgSender != strings.ToLower(msg_sender) {
-			if int32(time.Now().Unix())-lock.LockTime < 300 {
-				res_ := NotDataRes(fmt.Sprintf("Domain %s being registered", name))
-				writer.WriteHeader(200)
-				writer.Write([]byte(res_))
-				return
-			}
+	// 保存name对应的pass卡信息
+	callparms, _ := db.GetSignMintCallParams(name)
+	if callparms == nil {
+		callparms = &ldb.SignMintCallParams{
+			TokenId: token_id, DomainsName: name, MsgSender: msg_sender,
 		}
-		if lock.TokenId != token_id {
-			if int32(time.Now().Unix())-lock.LockTime < 300 {
-				res_ := NotDataRes(fmt.Sprintf("Domain %s being registered", name))
-				writer.WriteHeader(200)
-				writer.Write([]byte(res_))
-				return
-			}
+		err := db.SaveSignMintCallParams(name, callparms)
+		if err != nil {
+			log.Println("SaveSignMintCallParams err", err)
+		} else {
+			log.Println("SaveSignMintCallParams", callparms)
+			//CallNftPass(token_id, name)
 		}
 	}
 	if token_id != "9999" {
@@ -1323,60 +1233,8 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 	resbyte, _ := json.Marshal(res)
 	if err == nil {
 		msg = string(resbyte)
-		// todo 加锁
-		timeUnix := int32(time.Now().Unix())
-		errsign := db.SaveSignLock(name, &ldb.SignLock{LockTime: timeUnix, Name: name, MsgSender: strings.ToLower(msg_sender), TokenId: token_id})
-		if errsign != nil {
-			log.Println("SaveSignLock ", name)
-		}
 	}
 	writer.WriteHeader(200)
 	writer.Write([]byte(msg))
-
-}
-
-// todo mint 开关暂留
-func (a *Api) SwitchSignMint(writer http.ResponseWriter, request *http.Request) {
-	if request.Method != "POST" {
-		res_ := NotDataRes("not a get request")
-		writer.WriteHeader(500)
-		writer.Write([]byte(res_))
-		return
-	}
-	db := ldb.GetLdb()
-	decoder := json.NewDecoder(request.Body)
-	var reqparams map[string]string
-	decoder.Decode(&reqparams)
-	opensign := reqparams["opensign"]
-	if opensign == "" {
-		res_ := NotDataRes("not opensign")
-		writer.WriteHeader(200)
-		writer.Write([]byte(res_))
-		return
-	}
-	log.Println("SwitchSignMint query", reqparams, len(reqparams))
-	if opensign == "asimov" {
-		err := db.SaveKey("OpenSign", "1")
-		if err == nil {
-			writer.WriteHeader(200)
-			writer.Write([]byte("open success"))
-			return
-		} else {
-			writer.WriteHeader(200)
-			writer.Write([]byte("open save err"))
-			return
-		}
-	} else {
-		err := db.SaveKey("OpenSign", "0")
-		if err == nil {
-			writer.WriteHeader(200)
-			writer.Write([]byte("shutdown success"))
-			return
-		} else {
-			writer.WriteHeader(200)
-			writer.Write([]byte("shutdown save err"))
-			return
-		}
-	}
 
 }

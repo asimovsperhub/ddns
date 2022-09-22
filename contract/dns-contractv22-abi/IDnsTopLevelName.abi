@@ -1,0 +1,1 @@
+[{"inputs":[{"internalType":"bytes32","name":"fatherHash","type":"bytes32"}],"name":"getErc721Contract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getOperator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]

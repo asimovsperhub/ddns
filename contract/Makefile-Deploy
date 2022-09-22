@@ -1,0 +1,36 @@
+SHELL=PATH='$(PATH)' /bin/sh
+
+.PHONY: all
+all:
+	abigen --abi ./dns-deploy/abi/EthUsdt.abi --bin ./dns-deploy/abi/EthUsdt.bin --pkg chainlink --type EthUsdt --out ./dns-deploy/chainlink/EthUsdt.go
+	abigen --abi ./dns-deploy/abi/FakeUSDT6.abi --bin ./dns-deploy/abi/FakeUSDT6.bin --pkg chainlink --type FakeUSDT6 --out ./dns-deploy/chainlink/FakeUSDT6.go
+	abigen --abi ./dns-deploy/abi/FakeSol.abi --bin ./dns-deploy/abi/FakeSol.bin --pkg chainlink --type FakeSol --out ./dns-deploy/chainlink/FakeSol.go
+	abigen --abi ./dns-deploy/abi/SolUSDT.abi --bin ./dns-deploy/abi/SolUSDT.bin --pkg chainlink --type SolUSDT --out ./dns-deploy/chainlink/SolUSDT.go
+	abigen --abi ./dns-deploy/abi/FakeUSDC.abi --bin ./dns-deploy/abi/FakeUSDC.bin --pkg chainlink --type FakeUSDC --out ./dns-deploy/chainlink/FakeUSDC.go
+	abigen --abi ./dns-deploy/abi/USDCUSDT.abi --bin ./dns-deploy/abi/USDCUSDT.bin --pkg chainlink --type USDCUSDT --out ./dns-deploy/chainlink/USDCUSDT.go
+	abigen --bin ./dns-deploy/abi/DnsTopLevelName.bin --combined-json=./dns-deploy/abi/DnsTopLevelName.json --pkg top -type DnsTopLevelName --out ./dns-deploy/udiddeploy/top/DnsTopLevelName.go
+	abigen --bin ./dns-deploy/abi/DnsSecondLevelName.bin --combined-json=./dns-deploy/abi/DnsSecondLevelName.json --pkg second -type DnsSecondLevelName --out ./dns-deploy/udiddeploy/second/DnsSecondLevelName.go
+	abigen --bin ./dns-deploy/abi/cost.bin --combined-json=./dns-deploy/abi/cost.json --pkg cost -type DnsCost --out ./dns-deploy/udiddeploy/cost/DnsCost.go
+	abigen --bin ./dns-deploy/abi/DnsAccountant.bin --combined-json=./dns-deploy/abi/DnsAccountant.json --pkg accountant -type DnsAccountant --out ./dns-deploy/udiddeploy/accountant/DnsAccountant.go
+	abigen --bin ./dns-deploy/abi/DnsNameErc721.bin --combined-json=./dns-deploy/abi/dnsNameErc721.json --pkg erc721 -type DnsNameErc721 --out ./dns-deploy/udiddeploy/erc721/DnsNameErc721.go
+
+
+abi:
+	solc --abi --overwrite --bin ./dns-contractv2/dnsProjectV22/chainlink/ethtest.sol -o ./dns-deploy/abi --allow-paths *,
+	solc --abi --overwrite --bin ./dns-contractv2/dnsProjectV22/chainlink/fakeusdt6.sol -o ./dns-deploy/abi --allow-paths *,
+	solc --abi --overwrite --bin ./dns-contractv2/dnsProjectV22/chainlink/soltest.sol -o ./dns-deploy/abi --allow-paths *,
+	solc --abi --overwrite --bin ./dns-contractv2/dnsProjectV22/chainlink/usdctest.sol -o ./dns-deploy/abi --allow-paths *,
+	solc --overwrite --combined-json=abi,bin --bin  -o ./dns-deploy/abi/ ./dns-contractv2/dnsProjectV22/DnsTopLevelName.sol --allow-paths *,
+	mv ./dns-deploy/abi/combined.json ./dns-deploy/abi/DnsTopLevelName.json
+	solc --overwrite --combined-json=abi,bin --bin  -o ./dns-deploy/abi/ ./dns-contractv2/dnsProjectV22/DnsSecondLevelName.sol --allow-paths *,
+	mv ./dns-deploy/abi/combined.json ./dns-deploy/abi/DnsSecondLevelName.json
+	solc --overwrite --combined-json=abi,bin --bin  -o ./dns-deploy/abi/ ./dns-contractv2/dnsProjectV22/cost/cost.sol --allow-paths *,
+	mv ./dns-deploy/abi/combined.json ./dns-deploy/abi/cost.json
+	solc --overwrite --combined-json=abi,bin --bin  -o ./dns-deploy/abi/ ./dns-contractv2/dnsProjectV22/accountant/DnsAccountant.sol --allow-paths *,
+	mv ./dns-deploy/abi/combined.json ./dns-deploy/abi/DnsAccountant.json
+	solc --overwrite --combined-json=abi,bin --bin  -o ./dns-deploy/abi/ ./dns-contractv2/dnsProjectV22/dnserc721/dnsNameErc721.sol --allow-paths *,
+	mv ./dns-deploy/abi/combined.json ./dns-deploy/abi/dnsNameErc721.json
+
+clean:
+#	rm -f *.abi
+	rm -f *.go

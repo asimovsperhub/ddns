@@ -4,6 +4,7 @@
 package dnscontract
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -26,8 +28,14 @@ var (
 	_ = event.NewSubscription
 )
 
+// BasSetMetaData contains all meta data concerning the BasSet contract.
+var BasSetMetaData = &bind.MetaData{
+	ABI: "[]",
+}
+
 // BasSetABI is the input ABI used to generate the binding from.
-const BasSetABI = "[]"
+// Deprecated: Use BasSetMetaData.ABI instead.
+var BasSetABI = BasSetMetaData.ABI
 
 // BasSet is an auto generated Go binding around an Ethereum contract.
 type BasSet struct {

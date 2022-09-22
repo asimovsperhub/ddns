@@ -36,12 +36,17 @@ func defaultConf() *RConfig {
 			RpcMainEndPoint:      "https://mainnet.infura.io/v3/",
 			WsRPCEndPoint:        "wss://ropsten.infura.io/ws/v3/",
 			RpcEndPointID:        "ced16671f5894b2796224e49062999ca",
-			DnsName:              "0x45419EcDBe2B0419372510d3da5149b88BDcBEe6",
-			DnsOwner:             "0x20d86efD2CB75967Acfa24C9580298c0c3D0c684",
-			DnsPrice:             "0x5Ae881f69847C47DAaaEdD5864FEef9aBAf763bA",
-			DnsConf:              "0xfCaD0039d54E6034588bF28Bfa3d869b6FAf7baB",
-			DnsAccountant:        "0xE7Ef2FC9B298CAd19184613fc39F93a79e9ff25B",
+			DnsName:              "0x3Bb534461b700A752aac8dCe9363E16910d5F66a",
+			DnsOwner:             "0xbfdAF6EcD61f078D4f52b75679D89320c00d2368",
+			DnsPrice:             "0x39f8817db77Fc26C0B2EE1C8f841868e811d4375",
+			DnsConf:              "0xa8764D4109607955dA14bfEc62bbD9a76339db52",
+			DnsAccountant:        "0xB9E7ECCfb7f48f9bCd10BC8F768ca3ab43E46E37",
 			ColdBoot:             "0x22871b977AAe43d44FE50dF03f632134c3e3e490",
+			TopName:              "0x95F744e4212493ddB5768092024DE9f1971278E7",
+			Cost:                 "0xA447b990a60678081F6B8De9828f958Bb364591c",
+			Accountant:           "0x2163942fb170F7Ac5EafCFdE9A238DA860cA897f",
+			SecondName:           "0x5d39452E4d6BBaFBa10AFD2A8310dB6e6C121CB0",
+			Usdt:                 "0x4f4f07917e13785bfd55cd3485b254bde6f09265",
 		},
 		SConf: &SysConf{
 			DBPath: "ldb",
@@ -152,6 +157,11 @@ type ContractConf struct {
 	DnsConf              string
 	DnsAccountant        string
 	ColdBoot             string
+	TopName              string
+	Cost                 string
+	Accountant           string
+	SecondName           string
+	Usdt                 string
 }
 
 type SysConf struct {

@@ -33,6 +33,17 @@ all:
 	abigen --abi dns-contractv2-abi/DnsPayment.abi --pkg udidc --type DnsPayment --out ./dnscontractv2/DnsPayment.go
 	abigen --abi dns-contractv2-abi/DnsPrice.abi --pkg udidc --type DnsPrice --out ./dnscontractv2/DnsPrice.go
 	abigen --abi dns-contractv2-abi/DnsSubName.abi --pkg udidc --type DnsSubName --out ./dnscontractv2/DnsSubName.go
+	abigen --abi dns-contractv22-abi/DnsTopLevelName.abi --pkg udidc22 --type DnsTopLevelName --out ./dnscontractv22/DnsTopLevelName.go
+	abigen --abi dns-contractv22-abi/DnsSecondLevelName.abi --pkg udidc22 --type DnsSecondLevelName --out ./dnscontractv22/DnsSecondLevelName.go
+	abigen --abi dns-contractv22-abi/DnsCost.abi --pkg udidc22 --type DnsCost --out ./dnscontractv22/DnsCost.go
+	abigen --abi dns-contractv22-abi/DnsAccountant.abi --pkg udidc22 --type DnsAccountant --out ./dnscontractv22/DnsAccountant.go
+	abigen --abi dns-contractv22-abi/DnsNameErc721.abi --pkg udidc22 --type DnsNameErc721 --out ./dnscontractv22/DnsNameErc721.go
+	abigen --abi dns-contractv22-abi/EthUsdt.abi --pkg udidc22 --type EthUsdt --out ./dnscontractv22/EthUsdt.go
+	abigen --abi dns-contractv22-abi/SolUSDT.abi --pkg udidc22 --type SolUSDT --out ./dnscontractv22/SolUSDT.go
+	abigen --abi dns-contractv22-abi/USDCUSDT.abi --pkg udidc22 --type USDCUSDT --out ./dnscontractv22/USDCUSDT.go
+	abigen --abi dns-contractv22-abi/AggregatorV3Interface.abi --pkg udidc22 --type AggregatorV3Interface --out ./dnscontractv22/AggregatorV3Interface.go
+
+
 
 abi:
 	solc --abi --overwrite dns-contract/BasDomain.sol -o ./dns-contract-abi
@@ -54,6 +65,15 @@ abi:
 	solc --abi --overwrite dns-contractv2/dnsProject/payment/DnsPayment.sol -o ./dns-contractv2-abi --allow-paths *,
 	solc --abi --overwrite dns-contractv2/dnsProject/price/DnsPrice.sol -o ./dns-contractv2-abi --allow-paths *,
 	solc --abi --overwrite dns-contractv2/dnsProject/tax/DaoTax.sol -o ./dns-contractv2-abi --allow-paths *,
+	solc --abi --overwrite dns-contractv2/dnsProjectV22/DnsTopLevelName.sol -o ./dns-contractv22-abi --allow-paths *,
+	solc --abi --overwrite dns-contractv2/dnsProjectV22/DnsSecondLevelName.sol -o ./dns-contractv22-abi --allow-paths *,
+	solc --abi --overwrite dns-contractv2/dnsProjectV22/cost/cost.sol -o ./dns-contractv22-abi --allow-paths *,
+	solc --abi --overwrite dns-contractv2/dnsProjectV22/accountant/DnsAccountant.sol -o ./dns-contractv22-abi --allow-paths *,
+	solc --abi --overwrite dns-contractv2/dnsProjectV22/dnserc721/dnsNameErc721.sol -o ./dns-contractv22-abi --allow-paths *,
+	solc --abi --overwrite dns-contractv2/dnsProjectV22/chainlink/ethtest.sol -o ./dns-contractv22-abi --allow-paths *,
+	solc --abi --overwrite dns-contractv2/dnsProjectV22/chainlink/soltest.sol -o ./dns-contractv22-abi --allow-paths *,
+	solc --abi --overwrite dns-contractv2/dnsProjectV22/chainlink/usdctest.sol -o ./dns-contractv22-abi --allow-paths *,
+	solc --abi --overwrite dns-contractv2/dnsProjectV22/chainlink/AggregatorV3Interface.sol -o ./dns-contractv22-abi --allow-paths *,
 
 clean:
 #	rm -f *.abi

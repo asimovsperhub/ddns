@@ -51,13 +51,13 @@ func BatchNewColdBootClient(start, end uint64) {
 		End:     &e,
 		Context: context.TODO(),
 	}
-	db := ldb.GetLdb()
 	var iter *udidc.ColdBootEVMintCardIterator
 	iter, err = coldBoot.FilterEVMintCard(op)
 	if err != nil {
-		log.Println("BatchNewColdBootClient FilterEVMintCard", err)
+		log.Println("BatchNewColdBootClient", err)
 		return
 	}
+	db := ldb.GetLdb()
 	defer iter.Close()
 	for iter.Next() {
 		ev := iter.Event
@@ -100,69 +100,13 @@ func BatchNewColdBootClient(start, end uint64) {
 		}
 		db.SaveNftPassTokenIdName(addrkey, tokenname)
 		log.Println("BatchNewColdBootClient SaveNftPassTokenIdName ", ev.User.String(), ev.CardId)
-	}
 
-	var tra *udidc.ColdBootTransferIterator
-	tra, err = coldBoot.FilterTransfer(op, nil, nil, nil)
-	if err != nil {
-		log.Println("BatchNewColdBootClient FilterTransfer", err)
-		return
-	}
-	defer tra.Close()
-	for tra.Next() {
-		ev := tra.Event
-		if ev.From != common.HexToAddress("0x0000000000000000000000000000000000000000") {
-			fromnft, _ := db.GetNftPass(strings.ToLower(ev.From.String()))
-			if fromnft != nil {
-				for index, data := range fromnft {
-					// log.Println(data.TokenId.String(), ev.TokenId.String())
-					if data.TokenId.String() == ev.TokenId.String() {
-						log.Println(ev.From, ev.To, ev.TokenId)
-						fromnft = append(fromnft[:index], fromnft[index+1:]...)
-						errf := db.SaveNftPass(strings.ToLower(ev.From.String()), fromnft)
-						if errf != nil {
-							log.Println("Update from SaveNftPass err", errf)
-						} else {
-							log.Println("Update from SaveNftPass success")
-						}
-						// 加新的
-						tonft, _ := db.GetNftPass(strings.ToLower(ev.To.String()))
-						data.Owner = ev.To
-						tonft = append(tonft, data)
-						errt := db.SaveNftPass(strings.ToLower(ev.To.String()), tonft)
-						if errt != nil {
-							log.Println("Update to SaveNftPass err", errt)
-						} else {
-							log.Println("Update to SaveNftPass success")
-						}
-					}
-				}
-			}
-			fromtokenname, _ := db.GetNftPassTokenIdName(strings.ToLower(ev.From.String()))
-			if fromtokenname != nil {
-				// 删除
-				delete(fromtokenname.TokenName, ev.TokenId.String())
-				errsn := db.SaveNftPassTokenIdName(strings.ToLower(ev.From.String()), fromtokenname)
-				if errsn != nil {
-					log.Println("Update from SaveNftPassTokenIdName err", errsn)
-				} else {
-					log.Println("Update from SaveNftPassTokenIdName success")
-				}
-				//新增
-				totokenname, _ := db.GetNftPassTokenIdName(strings.ToLower(ev.To.String()))
-				if totokenname == nil {
-					totokenname = &ldb.NftPassTokenIdName{map[string]string{ev.TokenId.String(): ""}}
-				} else {
-					totokenname.TokenName[ev.TokenId.String()] = ""
-				}
-				errsnt := db.SaveNftPassTokenIdName(strings.ToLower(ev.To.String()), totokenname)
-				if errsnt != nil {
-					log.Println("Update to SaveNftPassTokenIdName err", errsnt)
-				} else {
-					log.Println("Update to SaveNftPassTokenIdName success")
-				}
-			}
+		if ev.Color > 0 {
+			//path := "./passcard/" + cn[0] + ev.User.String() + "_" + cardId + ".svg"
+			//info := fmt.Sprintf(svg, "http://31.12.95.78:8080/images/"+ColorList[ev.Color]+".gif", label)
+			//writeFile(info, path)
+			// 存储 钱包地址_cardId
+			//CreatePassImage("./image/"+ColorList[ev.Color]+".png", "./passcard/"+cn[0]+ev.User.String()+"_"+cardId+".png", label)
 		}
-		//log.Println(ev.From, ev.To, ev.TokenId)
 	}
 }

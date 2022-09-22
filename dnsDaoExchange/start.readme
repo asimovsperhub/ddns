@@ -1,0 +1,1 @@
+nohup ./data2rinkeby > d2r.log 2>&1 &

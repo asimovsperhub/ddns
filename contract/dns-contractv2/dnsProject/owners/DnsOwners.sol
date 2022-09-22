@@ -39,8 +39,6 @@ contract DnsOwners is IDnsOwnerPub,IDnsDaoOwner,owned{
         _;
     }
 
-
-
     function getEntireName(bytes32 nameHash_) external view override returns(string memory){
         return string(dnsOwners[nameHash_].entireName);
     }

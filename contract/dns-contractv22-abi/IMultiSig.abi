@@ -1,0 +1,1 @@
+[{"inputs":[{"internalType":"address","name":"contractAddr_","type":"address"},{"internalType":"bytes32","name":"hash_","type":"bytes32"},{"internalType":"address","name":"candidate_","type":"address"}],"name":"getSafeSig","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]

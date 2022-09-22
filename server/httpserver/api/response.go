@@ -2,31 +2,98 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/dnsdao/dnsdao.resolver/database/ldb"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 )
 
-type GetEarningsByAddress struct {
-	IncomeSummary float64            `json:"income_summary"`
-	Details       map[string]float64 `json:"details"`
+/*
+	{
+    code:1,  // 1 服务正常返回，0 服务端异常
+    message:'ok',// 异常时 描述
+    data:{  // 异常时 data null 或 无此字段
+        total:32,
+        "page_size": 100,
+        "page_number": 0,
+        items:[
+            {
+                name:"did",
+                owner:'0x...865',
+                erc_721_addr:'0x67...98Fd', //
+                token_id:1,
+                "work": false,
+                "erc_20_addr": "0x0000000000000000000000000000000000000000",
+                income:[
+                  {
+                    erc20_addr:'0x000...00', // eth address, required
+                    withdraw_wei:'12000500000000000000000000',  // eth withdraw balance, wei  required
+                    decimals:18, // optional
+                    symbol:'ETH',// optional
+                    withdraw_value: 12.0005,// optional show value
+                  },
+
+*/
+
+type GetEarningsByAddressIncome struct {
+	Erc20Addr     common.Address `json:"erc_20_addr"`
+	WithDrawWei   *big.Int       `json:"with_draw_wei"`
+	Decimals      int            `json:"decimals"`
+	Symbol        string         `json:"symbol"`
+	WithdrawValue *big.Int       `json:"withdraw_value"`
+}
+
+type GetEarningsByAddressItems struct {
+	Name       string                        `json:"name"`
+	Owner      common.Address                `json:"owner"`
+	Erc721Addr common.Address                `json:"erc_721_addr"`
+	TokenId    *big.Int                      `json:"token_id"`
+	Work       bool                          `json:"work"`
+	Erc20Addr  common.Address                `json:"erc_20_addr"`
+	Income     []*GetEarningsByAddressIncome `json:"income"`
 }
 type GetEarningsByAddressRes struct {
-	Code    int                   `json:"code"`
-	Message string                `json:"message"`
-	Data    *GetEarningsByAddress `json:"data"`
+	Total      int                          `json:"total"`
+	PageSize   int                          `json:"page_size"`
+	PageNumber int                          `json:"page_number"`
+	Items      []*GetEarningsByAddressItems `json:"items"`
 }
 
-type GetEarningsDetailsByAddress struct {
-	Code    int                  `json:"code"`
-	Message string               `json:"message"`
-	Data    *ldb.AddressEarnings `json:"data"`
-}
+/*
+	data:{  // 异常时 data null 或 无此字段
+      total:4,
+      "page_size": 100,
+      "page_number": 0,
+      items:[
+        {
+          namehash: '0x....abs',        //多签任务 对应域名 的 namehash,如 `did` hash
+          task_hash:'0x....abc', //
+          max_sig:3,                    // 最少签名数量
+          work:true,                    // 对应合约 contracts\dnsProject\multisig\LibMultiSig.sol work
+          lock:true,                    //
+          signer_list:[                 // 已参与签名的 list
+            {
+              signer: '0x...ac',        // 操作签名的地址
+              sign_type:1,              // 操作类型 ，Agree 1 ，Disagree： 0
+            },
+            {
 
-type GetCashDetailsByAddress struct {
-	Code    int              `json:"code"`
-	Message string           `json:"message"`
-	Data    *ldb.AddressCash `json:"data"`
+*/
+type GetSignTldListByDidNameSignList struct {
+	Signer   common.Address `json:"signer"`
+	SignType int            `json:"sign_type"`
+}
+type GetSignTldListByDidNameItems struct {
+	NameHash   string                             `json:"name_hash"`
+	TaskHash   string                             `json:"task_hash"`
+	MaxSig     *big.Int                           `json:"max_sig"`
+	Work       bool                               `json:"work"`
+	Lock       bool                               `json:"lock"`
+	SignerList []*GetSignTldListByDidNameSignList `json:"signer_list"`
+}
+type GetSignTldListByDidNameRes struct {
+	Total      int                             `json:"total"`
+	PageSize   int                             `json:"page_size"`
+	PageNumber int                             `json:"page_number"`
+	Items      []*GetSignTldListByDidNameItems `json:"items"`
 }
 
 type Sign struct {
@@ -34,7 +101,7 @@ type Sign struct {
 	Work       bool             `json:"work"`
 	Erc721Addr string           `json:"erc_721_addr"`
 	Erc20Addr  string           `json:"erc_20_addr"`
-	Income     float64          `json:"income"`
+	Income     *big.Int         `json:"income"`
 	Singners   []common.Address `json:"singners"`
 	Owner      common.Address   `json:"owner"`
 	TokenId    *big.Int         `json:"token_id"`
@@ -63,6 +130,7 @@ type AddrTopListDataItems struct {
 	Erc721_Addr common.Address `json:"erc_721_addr"`
 	TokenId     *big.Int       `json:"token_id"`
 	OpenToReg   bool           `json:"open_to_reg"`
+	HasPrice    bool           `json:"has_price"`
 	ExpireTime  *big.Int       `json:"expire_time"`
 	Owner       common.Address `json:"owner"`
 	PayTokens   []string       `json:"pay_tokens"`
@@ -76,9 +144,12 @@ type AddrTopListData struct {
 }
 
 type Res struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Code       int         `json:"code"`
+	Message    string      `json:"message"`
+	Total      int         `json:"total"`
+	PageSize   int         `json:"page_size"`
+	PageNumber int         `json:"page_number"`
+	Data       interface{} `json:"data"`
 }
 
 type PostSignMintParams struct {
@@ -90,15 +161,16 @@ type PostSignMintParams struct {
 	TokenId    int32          `json:"token_id"`
 }
 type PostSignMintData struct {
-	Signature string              `json:"signature"`
-	PAddr     common.Address      `json:"p_addr"`
-	Params    *PostSignMintParams `json:"params"`
+	Signature string `json:"signature"`
+	// PAddr     common.Address      `json:"p_addr"`
+	Params *PostSignMintParams `json:"params"`
 }
 
 func NotDataRes(msg string) string {
 	res := &Res{
 		Code:    0,
 		Message: msg,
+		Data:    []string{},
 	}
 	resbyte, err := json.Marshal(res)
 	if err == nil {

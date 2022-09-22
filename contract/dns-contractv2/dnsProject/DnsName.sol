@@ -14,7 +14,6 @@ import "./lib/LibDnsSig.sol";
 import "./owners/IDnsDaoOwner.sol";
 import "./owners/IDnsErc721Owner.sol";
 
-//import "./INamePub.sol";
 
 contract DnsName is ERC721,owned{
     using Strings for uint256;
@@ -60,9 +59,9 @@ contract DnsName is ERC721,owned{
     }
 
     function setRegistered(bool open_,bytes32 hash_) external {
-        require(nameStore[hash_].tokenId>0,"name was not registered");
-        require(super.ownerOf(nameStore[hash_].tokenId) == msg.sender,"not a valid user");
-        require(nameStore[hash_].openToReg != open_,"nothing to do..");
+        require(nameStore[hash_].tokenId>0,"nnr");
+        require(super.ownerOf(nameStore[hash_].tokenId) == msg.sender,"nu");
+        require(nameStore[hash_].openToReg != open_,"ntt");
         if(open_ && nameStore[hash_].erc721Addr == address(0)){
             nameStore[hash_].erc721Addr = LibDnsName.NewDnsSubName(
                 hash_,
@@ -119,8 +118,8 @@ contract DnsName is ERC721,owned{
     }
 
     function _dnsTransfer(address from, address to, uint256 tokenId) internal {
-        require(nameStore[id2Hash[tokenId]].expireTime>block.timestamp,"not a valid token");
-        require(from != to,"same address error");
+        require(nameStore[id2Hash[tokenId]].expireTime>block.timestamp,"nvt");
+        require(from != to,"sae");
         IDnsDaoOwner(ownerC).UpdateOwner(id2Hash[tokenId],to);
         if(nameStore[id2Hash[tokenId]].erc721Addr != address(0)){
             IDnsErc721Owner(nameStore[id2Hash[tokenId]].erc721Addr).transferOwnership(payable(to));
@@ -158,14 +157,14 @@ contract DnsName is ERC721,owned{
 
     function _chargeTopName(address erc20Addr_, bytes32 nameHash_,uint8 year_) internal{
         uint256 cost = year_*IDnsPrice(priceC).Price(bytes32(0),erc20Addr_,nameStore[nameHash_].entireName.length);
-        require(cost>0,"payment not support");
+        require(cost>0,"pns");
         if (erc20Addr_ == address(0)){
-            require( msg.value>=cost,"payout is not enough");
+            require( msg.value>=cost,"pne");
             IDnsAccountant(accountantC).deposit(erc20Addr_,msg.value);
             payable(accountantC).transfer(msg.value);
         }else{
             require(IERC20(erc20Addr_).balanceOf(msg.sender)>=cost &&
-                IERC20(erc20Addr_).allowance(msg.sender,address(this))>= cost,"payout is not enough");
+                IERC20(erc20Addr_).allowance(msg.sender,address(this))>= cost,"pne");
             IDnsAccountant(accountantC).deposit(erc20Addr_,cost);
             IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),cost);
         }
@@ -173,7 +172,7 @@ contract DnsName is ERC721,owned{
     }
 
     function ChargeName(address erc20Addr_, bytes32 nameHash_,uint8 year_, bool transfer_) external payable{
-        require(nameStore[nameHash_].tokenId > 0,"name was registered");
+        require(nameStore[nameHash_].tokenId > 0,"nnwr");
         _chargeTopName(erc20Addr_,nameHash_,year_);
         _extendExpire(nameHash_,year_,transfer_);
         emit EvChargeDnsName(erc20Addr_,nameHash_,year_,transfer_);
@@ -210,22 +209,25 @@ contract DnsName is ERC721,owned{
     function MintNameBySig(string memory entireName_,
         uint8 year_, address erc20Addr_,
         uint256 price_, uint32 passId_,bytes memory sig) external payable{
-        require(nameStore[LibDnsToolKit.entireNameHash(entireName_)].tokenId == 0,"name was registered");
+        require(nameStore[LibDnsToolKit.entireNameHash(entireName_)].tokenId == 0,"nwr");
         // require(timeStamp_+10 > block.timestamp,"sig is expired");
         //require sig is right
-        require(!passCardUsed[passId_],"pass card is used");
+
+        require(!passCardUsed[passId_] || msg.sender == owner,"pu");
         require(LibDnsSignature.SigUserAddr(
             keccak256(abi.encodePacked(entireName_,year_,erc20Addr_,price_,msg.sender,passId_)),
-            sig) == sigUser,"sig not correct");
+            sig) == sigUser,"snc");
+
+        passCardUsed[passId_] = true;
 
         if (erc20Addr_ == address(0)){
-            require(msg.value>=price_,"payout is not enough");
+            require(msg.value>=price_,"pne");
             IDnsAccountant(accountantC).deposit(erc20Addr_,msg.value);
             payable(accountantC).transfer(msg.value);
 
         }else{
             require(IERC20(erc20Addr_).balanceOf(msg.sender)>=price_ &&
-                IERC20(erc20Addr_).allowance(msg.sender,address(this))>= price_,"payout is not enough");
+                IERC20(erc20Addr_).allowance(msg.sender,address(this))>= price_,"pne");
             IDnsAccountant(accountantC).deposit(erc20Addr_,price_);
             IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),price_);
         }

@@ -26,7 +26,6 @@ const (
 	dnsNftPass             = "dnsNftPass"
 	SignMintCall           = "SignMintCallParams"
 	PassTokenIdName        = "PassTokenIdName"
-	SignLockP              = "SignLockP"
 )
 
 type Ldb struct {
@@ -197,13 +196,6 @@ func (db *Ldb) GetKey(key string) (string, error) {
 	} else {
 		return string(v), nil
 	}
-}
-func (db *Ldb) SaveKey(key, value string) error {
-	// v, _ := json.Marshal(ct)
-	if err := db.db.Put([]byte(key), []byte(value), &opt.WriteOptions{Sync: true}); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (db *Ldb) GetContractList() ([]string, error) {
@@ -456,30 +448,6 @@ func (db *Ldb) GetSignMintCallParams(name string) (*SignMintCallParams, error) {
 func (db *Ldb) SaveSignMintCallParams(name string, ct *SignMintCallParams) error {
 	v, _ := json.Marshal(ct)
 	k := fmt.Sprintf(SignMintCall, name)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (db *Ldb) GetSignLock(name string) (*SignLock, error) {
-	var ret *SignLock
-	k := fmt.Sprintf(SignLockP, name)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
-		return nil, err
-	} else {
-		err = json.Unmarshal(v, &ret)
-		if err != nil {
-			return nil, err
-		}
-
-		return ret, nil
-	}
-}
-
-func (db *Ldb) SaveSignLock(name string, ct *SignLock) error {
-	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(SignLockP, name)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}

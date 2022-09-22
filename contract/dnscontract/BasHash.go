@@ -4,6 +4,7 @@
 package dnscontract
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -26,8 +28,14 @@ var (
 	_ = event.NewSubscription
 )
 
+// BasHashMetaData contains all meta data concerning the BasHash contract.
+var BasHashMetaData = &bind.MetaData{
+	ABI: "[]",
+}
+
 // BasHashABI is the input ABI used to generate the binding from.
-const BasHashABI = "[]"
+// Deprecated: Use BasHashMetaData.ABI instead.
+var BasHashABI = BasHashMetaData.ABI
 
 // BasHash is an auto generated Go binding around an Ethereum contract.
 type BasHash struct {
