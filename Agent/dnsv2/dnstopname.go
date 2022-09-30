@@ -12,6 +12,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"math/big"
 	"strings"
@@ -62,19 +64,22 @@ func NewRootClient() (*udidc22.DnsTopLevelName, *ethclient.Client, error) {
 
 func BatchNewRoot(start, end uint64) {
 	var err error
-	rootC, cli, err := NewRootClient()
+	rootC, _, err := NewRootClient()
 	if err != nil {
 		log.Println("BatchNewRoot", err)
 		return
 	}
-	dnsnameerc, cli, err := NewDnsNameErcClient()
+	erc721, err := rootC.Erc721Store(nil, common.Hash{})
+	if err != nil {
+		log.Println(err)
+	}
+	dnsnameerc, _, err := NewDnsNameErcClient(erc721.String())
 	if err != nil {
 		log.Println("NewDnsNameErcClient", err)
 		return
 	}
-	defer cli.Close()
+	//defer cli.Close()
 	b, e := start, end
-
 	op := &bind.FilterOpts{
 		Start:   b,
 		End:     &e,
@@ -83,7 +88,6 @@ func BatchNewRoot(start, end uint64) {
 	db := ldb.GetLdb()
 	var mintiter *udidc22.DnsTopLevelNameEvMintTopLevelNameIterator
 	mintiter, err = rootC.FilterEvMintTopLevelName(op)
-	log.Println(mintiter)
 	if err != nil {
 		log.Println("FilterEvMintDnsName", err)
 		return
@@ -92,6 +96,7 @@ func BatchNewRoot(start, end uint64) {
 		defer mintiter.Close()
 		for mintiter.Next() {
 			ev := mintiter.Event
+			log.Println(ev.EntireName, ev.TokenId, ev.Year)
 			nameHash := byte32(crypto.Keccak256([]byte(ev.EntireName)))
 			nameHashStr := hex.EncodeToString(nameHash[:])
 			owner, _ := dnsnameerc.OwnerOf(nil, ev.TokenId)
@@ -104,7 +109,7 @@ func BatchNewRoot(start, end uint64) {
 				ExpireTime: nameStore.ExpireTime,
 			}
 			j, _ := json.Marshal(rn)
-
+			log.Println("register rootname ", string(j))
 			err = db.SaveRootName(rn.Hash, string(j))
 			if err != nil {
 				log.Println("BatchNewRoot", "save to db error")
@@ -113,7 +118,6 @@ func BatchNewRoot(start, end uint64) {
 			// coinbase:[namehash]
 			addrkey := strings.ToLower(rn.Owner.String())
 			addrL, _ := db.GetAddressList(addrkey)
-
 			if addrL == nil {
 				log.Println("BatchNewRoot New Root AddressList ", addrL)
 				err = db.SaveAddressList(addrkey, []string{fmt.Sprintf("rnH_1_%s", rn.Hash)})
@@ -148,6 +152,83 @@ func BatchNewRoot(start, end uint64) {
 			}
 		}
 	}
+
+	var mintitersig *udidc22.DnsTopLevelNameEvMintTopLevelNameBySigIterator
+	mintitersig, err = rootC.FilterEvMintTopLevelNameBySig(op)
+	if err != nil {
+		log.Println("FilterEvMintDnsName", err)
+		return
+	}
+	if mintitersig != nil {
+		defer mintiter.Close()
+		for mintitersig.Next() {
+			ev := mintitersig.Event
+			log.Println(ev.EntireName, ev.TokenId, ev.Year)
+			nameHash := byte32(crypto.Keccak256([]byte(ev.EntireName)))
+			nameHashStr := hex.EncodeToString(nameHash[:])
+			owner, _ := dnsnameerc.OwnerOf(nil, ev.TokenId)
+			nameStore, _ := rootC.NameStore(nil, *nameHash)
+			rn := &RootNameInfo{
+				Name:       ev.EntireName,
+				Hash:       nameHashStr,
+				TokenId:    ev.TokenId,
+				Owner:      owner,
+				ExpireTime: nameStore.ExpireTime,
+			}
+			j, _ := json.Marshal(rn)
+			log.Println("register rootname ", string(j))
+			err = db.SaveRootName(rn.Hash, string(j))
+			if err != nil {
+				log.Println("BatchNewRoot", "save to db error")
+				continue
+			}
+			// coinbase:[namehash]
+			addrkey := strings.ToLower(rn.Owner.String())
+			addrL, _ := db.GetAddressList(addrkey)
+			if addrL == nil {
+				log.Println("BatchNewRoot New Root AddressList ", addrL)
+				err = db.SaveAddressList(addrkey, []string{fmt.Sprintf("rnH_1_%s", rn.Hash)})
+				if err != nil {
+					log.Println("BatchNewRoot SaveAddressList", "save to db error")
+					continue
+				}
+			} else {
+				addrL = append(addrL, fmt.Sprintf("rnH_1_%s", rn.Hash))
+				log.Println("BatchNewRoot Append Root AddressList ", addrL)
+				err = db.SaveAddressList(addrkey, addrL)
+				if err != nil {
+					log.Println("BatchNewRoot SaveAddressList", "save to db error")
+					continue
+				}
+			}
+			// SaveContractTokenIdName 给open sea接口提供的 合约地址:{tokenid:name}
+			contractkey := strings.ToLower(config.GetRConf().Cconf.DnsName)
+			tokenIdName, _ := db.GetContractTokenIdName(contractkey)
+			if tokenIdName == nil {
+				tokenIdName = &ldb.ContractTokenIdName{
+					TokenName: map[string]string{ev.TokenId.String(): ev.EntireName},
+				}
+			} else {
+				tokenIdName.TokenName[ev.TokenId.String()] = ev.EntireName
+			}
+			log.Println("BatchNewRoot SaveContractTokenIdName ", ev.TokenId.String(), ev.EntireName)
+			err = db.SaveContractTokenIdName(contractkey, tokenIdName)
+			if err != nil {
+				log.Println("BatchNewRoot SaveContractTokenIdName", "save to db error")
+				continue
+			}
+			// 验证pass卡签名接口注册的域名
+			filter := bson.M{"name": ev.EntireName, "msg_sender": strings.ToLower(owner.String())}
+			opm := &options.FindOptions{Skip: func(i int64) *int64 { return &i }(0), Limit: func(i int64) *int64 { return &i }(1), Sort: bson.M{"_id": -1}}
+			selectres, _ := ldb.SELECT("signcoll", filter, opm)
+			if selectres == nil {
+				log.Println("The signed interface has not passed. Procedure", ev.EntireName)
+			} else {
+				ldb.UPDATEOne("signcoll", filter, bson.M{"status": "2"})
+			}
+		}
+	}
+
 	// 开启子域名注册记录 添加合约地址
 	var openreg *udidc22.DnsTopLevelNameEvOpen2RegIterator
 	openreg, err = rootC.FilterEvOpen2Reg(op)
@@ -200,6 +281,7 @@ func BatchNewRoot(start, end uint64) {
 				continue
 			} else {
 				rootname.Contract = contract
+				log.Println("Open2Reg   Name------>Contract", rootname.Name, contract)
 				j, _ := json.Marshal(rootname)
 
 				err = db.SaveRootName(rootname.Hash, string(j))

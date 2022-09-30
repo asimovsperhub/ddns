@@ -4,11 +4,14 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
+	"fmt"
 	"github.com/dnsdao/dnsdao.resolver/contract/dns-deploy/udiddeploy/second"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"log"
+	"math/big"
 	"strings"
 )
 
@@ -93,11 +96,100 @@ func (c *Contract) SetDnsSecondContract(priv *ecdsa.PrivateKey) (r *types.Receip
 	}
 	defer ds.Destroy()
 	var t *second.DnsSecondLevelName
-	if t, err = second.NewDnsSecondLevelName(c.TopName, ds.cli); err != nil {
+	if t, err = second.NewDnsSecondLevelName(c.SecondName, ds.cli); err != nil {
 		return
 	}
 	var tx *types.Transaction
 	if tx, err = t.SetContract(ds.auth, c.Cost, c.Accountant, c.TopName, 0); err != nil {
+		return
+	}
+
+	if r, err = bind.WaitMined(context.Background(), ds.cli, tx); err != nil {
+		return
+	}
+
+	return
+}
+
+func GetTLNameFromNormalName(name string) (tlName, slName string, err error) {
+	dotArr := strings.Split(name, ".")
+	if len(dotArr) != 2 {
+		err = errors.New("not a second level name")
+		return
+	}
+
+	return dotArr[1], dotArr[0], nil
+
+}
+
+func (c *Contract) MintSecondLevelName(priv *ecdsa.PrivateKey, entireName string, year uint8, erc20Addr common.Address) (r *types.Receipt, err error) {
+	var (
+		tlName, slName string
+	)
+	if tlName, slName, err = GetTLNameFromNormalName(entireName); err != nil {
+		return
+	}
+	var price *big.Int
+	if _, price, err = c.GetSecondLevelNameUsdtPrice(uint8(len(slName)), year, crypto.Keccak256Hash([]byte(tlName))); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	var (
+		exPrice, roundId *big.Int
+	)
+
+	if erc20Addr != c.UsdtAddr {
+		exPrice, roundId, err = c.GetLatestPrice(erc20Addr, price)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+	} else {
+		exPrice = price
+		roundId = &big.Int{}
+	}
+
+	ds := NewDeploySession(priv)
+	if AddrIsZero(erc20Addr) {
+		if err = ds.GetSessionWithEthValue(0, nil, exPrice); err != nil {
+			return
+		}
+		defer ds.Destroy()
+		var balance *big.Int
+		if balance, err = ds.cli.BalanceAt(context.Background(), crypto.PubkeyToAddress(priv.PublicKey), nil); err != nil {
+			fmt.Println(err)
+
+			return nil, err
+		}
+		if balance.Cmp(exPrice) < 0 {
+			fmt.Println("eth not enough")
+
+			return nil, errors.New("eth not enough")
+		}
+
+	} else {
+		//var r *types.Receipt
+		fmt.Println("approve from", erc20Addr.String(), "to:", c.SecondName.String(), "amount:", exPrice.String())
+		if _, err = Approve(priv, erc20Addr, c.SecondName, exPrice); err != nil {
+			fmt.Println(err)
+			return
+		}
+		if err = ds.GetSession(0, nil); err != nil {
+			return
+		}
+
+		defer ds.Destroy()
+
+	}
+
+	var t *second.DnsSecondLevelName
+	if t, err = second.NewDnsSecondLevelName(c.SecondName, ds.cli); err != nil {
+		return
+	}
+	fmt.Println("begin mint", entireName, "for", year, "year")
+	var tx *types.Transaction
+	if tx, err = t.MintSecondLevelName(ds.auth, entireName, year, erc20Addr, roundId); err != nil {
 		return
 	}
 

@@ -21,4 +21,10 @@ contract Erc721Owner is IDnsErc721Owner {
         require(msg.sender == erc721Owner,"not allowed");
         owner = newOwner;
     }
+
+    function transferErc721Owner(address payable erc721Owner_) external {
+        require(msg.sender == owner,"not the owner");
+        erc721Owner = erc721Owner_;
+    }
+
 }

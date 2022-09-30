@@ -30,7 +30,7 @@ var (
 
 // DnsCostMetaData contains all meta data concerning the DnsCost contract.
 var DnsCostMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"top_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"SLPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"SLTax\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"tax_\",\"type\":\"uint256[8]\"}],\"name\":\"SetSecondLevelNameTax\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"price_\",\"type\":\"uint256[8]\"}],\"name\":\"SetTopLevelNamePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"TLPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"chainLinkContact_\",\"type\":\"address\"}],\"name\":\"addChainLinkAddr\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"decimal_\",\"type\":\"uint8\"}],\"name\":\"addPayment\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"baseDecimal\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"chainLinkRateAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"}],\"name\":\"delPayment\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllPayments\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"ownerNameHash_\",\"type\":\"bytes32\"}],\"name\":\"getAllSecondLevelNamePrice\",\"outputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"\",\"type\":\"uint256[8]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllSecondLevelNameTax\",\"outputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"\",\"type\":\"uint256[8]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllTopLevelNamePrice\",\"outputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"\",\"type\":\"uint256[8]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint80\",\"name\":\"lastPriceId_\",\"type\":\"uint80\"},{\"internalType\":\"uint256\",\"name\":\"price_\",\"type\":\"uint256\"}],\"name\":\"getExchangeWithId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price_\",\"type\":\"uint256\"}],\"name\":\"getLatestExchangeValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint80\",\"name\":\"\",\"type\":\"uint80\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getPaymentsCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"fatherHash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint80\",\"name\":\"lastPriceId_\",\"type\":\"uint80\"},{\"internalType\":\"uint8\",\"name\":\"nameLength_\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"year_\",\"type\":\"uint8\"}],\"name\":\"getSecondLevelNamePrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint80\",\"name\":\"lastPriceId_\",\"type\":\"uint80\"},{\"internalType\":\"uint8\",\"name\":\"nameLength_\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"year_\",\"type\":\"uint8\"}],\"name\":\"getTopLevelNamePrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"}],\"name\":\"paymentIsExist\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"paymentList\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"paymentMap\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"decimal\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"enable\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint80\",\"name\":\"lastPriceId\",\"type\":\"uint80\"}],\"name\":\"priceIdIsValid\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"decimal_\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"enable\",\"type\":\"bool\"}],\"name\":\"setPayment\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"dnstop_\",\"type\":\"address\"}],\"name\":\"setRelation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"ownerNameHash_\",\"type\":\"bytes32\"},{\"internalType\":\"uint256[8]\",\"name\":\"prices_\",\"type\":\"uint256[8]\"}],\"name\":\"setSecondLevelNamePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"usdtTokenAddr_\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"baseDecimal_\",\"type\":\"uint8\"}],\"name\":\"setUsdtAddr\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"usdtAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"top_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"SLPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"SLTax\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"tax_\",\"type\":\"uint256[8]\"}],\"name\":\"SetSecondLevelNameTax\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"price_\",\"type\":\"uint256[8]\"}],\"name\":\"SetTopLevelNamePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"TLPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"decimal_\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"chainLinkContact_\",\"type\":\"address\"}],\"name\":\"addPayment\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"baseDecimal\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"chainLinkRateAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"dnsTop\",\"outputs\":[{\"internalType\":\"contractIDnsTopLevelName\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllPayments\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"ownerNameHash_\",\"type\":\"bytes32\"}],\"name\":\"getAllSecondLevelNamePrice\",\"outputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"\",\"type\":\"uint256[8]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllSecondLevelNameTax\",\"outputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"\",\"type\":\"uint256[8]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllTopLevelNamePrice\",\"outputs\":[{\"internalType\":\"uint256[8]\",\"name\":\"\",\"type\":\"uint256[8]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint80\",\"name\":\"lastPriceId_\",\"type\":\"uint80\"},{\"internalType\":\"uint256\",\"name\":\"price_\",\"type\":\"uint256\"}],\"name\":\"getExchangeWithId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price_\",\"type\":\"uint256\"}],\"name\":\"getLatestExchangeValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint80\",\"name\":\"\",\"type\":\"uint80\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getPaymentsCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"fatherHash_\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint80\",\"name\":\"lastPriceId_\",\"type\":\"uint80\"},{\"internalType\":\"uint8\",\"name\":\"nameLength_\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"year_\",\"type\":\"uint8\"}],\"name\":\"getSecondLevelNamePrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint80\",\"name\":\"lastPriceId_\",\"type\":\"uint80\"},{\"internalType\":\"uint8\",\"name\":\"nameLength_\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"year_\",\"type\":\"uint8\"}],\"name\":\"getTopLevelNamePrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"}],\"name\":\"paymentIsExist\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"paymentList\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"paymentMap\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"decimal\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"enable\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint80\",\"name\":\"lastPriceId\",\"type\":\"uint80\"}],\"name\":\"priceIdIsValid\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Addr_\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"decimal_\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"enable\",\"type\":\"bool\"}],\"name\":\"setPayment\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"dnstop_\",\"type\":\"address\"}],\"name\":\"setRelation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"ownerNameHash_\",\"type\":\"bytes32\"},{\"internalType\":\"uint256[8]\",\"name\":\"prices_\",\"type\":\"uint256[8]\"}],\"name\":\"setSecondLevelNamePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"usdtTokenAddr_\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"baseDecimal_\",\"type\":\"uint8\"}],\"name\":\"setUsdtAddr\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"usdtAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // DnsCostABI is the input ABI used to generate the binding from.
@@ -332,6 +332,37 @@ func (_DnsCost *DnsCostSession) ChainLinkRateAddr(arg0 common.Address) (common.A
 // Solidity: function chainLinkRateAddr(address ) view returns(address)
 func (_DnsCost *DnsCostCallerSession) ChainLinkRateAddr(arg0 common.Address) (common.Address, error) {
 	return _DnsCost.Contract.ChainLinkRateAddr(&_DnsCost.CallOpts, arg0)
+}
+
+// DnsTop is a free data retrieval call binding the contract method 0xf3c8bb0c.
+//
+// Solidity: function dnsTop() view returns(address)
+func (_DnsCost *DnsCostCaller) DnsTop(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _DnsCost.contract.Call(opts, &out, "dnsTop")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// DnsTop is a free data retrieval call binding the contract method 0xf3c8bb0c.
+//
+// Solidity: function dnsTop() view returns(address)
+func (_DnsCost *DnsCostSession) DnsTop() (common.Address, error) {
+	return _DnsCost.Contract.DnsTop(&_DnsCost.CallOpts)
+}
+
+// DnsTop is a free data retrieval call binding the contract method 0xf3c8bb0c.
+//
+// Solidity: function dnsTop() view returns(address)
+func (_DnsCost *DnsCostCallerSession) DnsTop() (common.Address, error) {
+	return _DnsCost.Contract.DnsTop(&_DnsCost.CallOpts)
 }
 
 // GetAllPayments is a free data retrieval call binding the contract method 0xf8defa3c.
@@ -829,67 +860,25 @@ func (_DnsCost *DnsCostTransactorSession) SetTopLevelNamePrice(price_ [8]*big.In
 	return _DnsCost.Contract.SetTopLevelNamePrice(&_DnsCost.TransactOpts, price_)
 }
 
-// AddChainLinkAddr is a paid mutator transaction binding the contract method 0xbffe2b60.
+// AddPayment is a paid mutator transaction binding the contract method 0x3325d51c.
 //
-// Solidity: function addChainLinkAddr(address erc20Addr_, address chainLinkContact_) returns()
-func (_DnsCost *DnsCostTransactor) AddChainLinkAddr(opts *bind.TransactOpts, erc20Addr_ common.Address, chainLinkContact_ common.Address) (*types.Transaction, error) {
-	return _DnsCost.contract.Transact(opts, "addChainLinkAddr", erc20Addr_, chainLinkContact_)
+// Solidity: function addPayment(address erc20Addr_, uint8 decimal_, address chainLinkContact_) returns()
+func (_DnsCost *DnsCostTransactor) AddPayment(opts *bind.TransactOpts, erc20Addr_ common.Address, decimal_ uint8, chainLinkContact_ common.Address) (*types.Transaction, error) {
+	return _DnsCost.contract.Transact(opts, "addPayment", erc20Addr_, decimal_, chainLinkContact_)
 }
 
-// AddChainLinkAddr is a paid mutator transaction binding the contract method 0xbffe2b60.
+// AddPayment is a paid mutator transaction binding the contract method 0x3325d51c.
 //
-// Solidity: function addChainLinkAddr(address erc20Addr_, address chainLinkContact_) returns()
-func (_DnsCost *DnsCostSession) AddChainLinkAddr(erc20Addr_ common.Address, chainLinkContact_ common.Address) (*types.Transaction, error) {
-	return _DnsCost.Contract.AddChainLinkAddr(&_DnsCost.TransactOpts, erc20Addr_, chainLinkContact_)
+// Solidity: function addPayment(address erc20Addr_, uint8 decimal_, address chainLinkContact_) returns()
+func (_DnsCost *DnsCostSession) AddPayment(erc20Addr_ common.Address, decimal_ uint8, chainLinkContact_ common.Address) (*types.Transaction, error) {
+	return _DnsCost.Contract.AddPayment(&_DnsCost.TransactOpts, erc20Addr_, decimal_, chainLinkContact_)
 }
 
-// AddChainLinkAddr is a paid mutator transaction binding the contract method 0xbffe2b60.
+// AddPayment is a paid mutator transaction binding the contract method 0x3325d51c.
 //
-// Solidity: function addChainLinkAddr(address erc20Addr_, address chainLinkContact_) returns()
-func (_DnsCost *DnsCostTransactorSession) AddChainLinkAddr(erc20Addr_ common.Address, chainLinkContact_ common.Address) (*types.Transaction, error) {
-	return _DnsCost.Contract.AddChainLinkAddr(&_DnsCost.TransactOpts, erc20Addr_, chainLinkContact_)
-}
-
-// AddPayment is a paid mutator transaction binding the contract method 0x3600a5df.
-//
-// Solidity: function addPayment(address erc20Addr_, uint8 decimal_) returns()
-func (_DnsCost *DnsCostTransactor) AddPayment(opts *bind.TransactOpts, erc20Addr_ common.Address, decimal_ uint8) (*types.Transaction, error) {
-	return _DnsCost.contract.Transact(opts, "addPayment", erc20Addr_, decimal_)
-}
-
-// AddPayment is a paid mutator transaction binding the contract method 0x3600a5df.
-//
-// Solidity: function addPayment(address erc20Addr_, uint8 decimal_) returns()
-func (_DnsCost *DnsCostSession) AddPayment(erc20Addr_ common.Address, decimal_ uint8) (*types.Transaction, error) {
-	return _DnsCost.Contract.AddPayment(&_DnsCost.TransactOpts, erc20Addr_, decimal_)
-}
-
-// AddPayment is a paid mutator transaction binding the contract method 0x3600a5df.
-//
-// Solidity: function addPayment(address erc20Addr_, uint8 decimal_) returns()
-func (_DnsCost *DnsCostTransactorSession) AddPayment(erc20Addr_ common.Address, decimal_ uint8) (*types.Transaction, error) {
-	return _DnsCost.Contract.AddPayment(&_DnsCost.TransactOpts, erc20Addr_, decimal_)
-}
-
-// DelPayment is a paid mutator transaction binding the contract method 0x3ed2e3e8.
-//
-// Solidity: function delPayment(address erc20Addr_) returns()
-func (_DnsCost *DnsCostTransactor) DelPayment(opts *bind.TransactOpts, erc20Addr_ common.Address) (*types.Transaction, error) {
-	return _DnsCost.contract.Transact(opts, "delPayment", erc20Addr_)
-}
-
-// DelPayment is a paid mutator transaction binding the contract method 0x3ed2e3e8.
-//
-// Solidity: function delPayment(address erc20Addr_) returns()
-func (_DnsCost *DnsCostSession) DelPayment(erc20Addr_ common.Address) (*types.Transaction, error) {
-	return _DnsCost.Contract.DelPayment(&_DnsCost.TransactOpts, erc20Addr_)
-}
-
-// DelPayment is a paid mutator transaction binding the contract method 0x3ed2e3e8.
-//
-// Solidity: function delPayment(address erc20Addr_) returns()
-func (_DnsCost *DnsCostTransactorSession) DelPayment(erc20Addr_ common.Address) (*types.Transaction, error) {
-	return _DnsCost.Contract.DelPayment(&_DnsCost.TransactOpts, erc20Addr_)
+// Solidity: function addPayment(address erc20Addr_, uint8 decimal_, address chainLinkContact_) returns()
+func (_DnsCost *DnsCostTransactorSession) AddPayment(erc20Addr_ common.Address, decimal_ uint8, chainLinkContact_ common.Address) (*types.Transaction, error) {
+	return _DnsCost.Contract.AddPayment(&_DnsCost.TransactOpts, erc20Addr_, decimal_, chainLinkContact_)
 }
 
 // SetPayment is a paid mutator transaction binding the contract method 0xd3443c62.

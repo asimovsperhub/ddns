@@ -3,8 +3,10 @@ package api
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 	"log"
+	"math/big"
 	"testing"
 )
 
@@ -39,4 +41,15 @@ func Test(t *testing.T) {
 	log.Println("signer", hex.EncodeToString(signer), len(signer))
 	f := VerifySig(hash[:], signer)
 	fmt.Println("VerifySig", f)
+}
+func EncodeUint256(v string) []byte {
+	bn := new(big.Int)
+	bn.SetString(v, 10)
+	return math.U256Bytes(bn)
+}
+func TestUint256(t *testing.T) {
+	log.Println(EncodeUint256("88")[32-10:])
+	a := big.NewInt(88)
+	v := a.FillBytes(make([]byte, 10))
+	log.Println(v)
 }

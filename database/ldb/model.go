@@ -50,6 +50,7 @@ type NftPass struct {
 	Owner          common.Address `json:"owner"`
 	CardColor      uint8          `json:"card_color"`
 	RemainingTimes int            `json:"remaining_times"`
+	Status         int            `json:"status"`
 }
 
 type NftPassTokenIdName struct {
@@ -60,4 +61,10 @@ type SignMintCallParams struct {
 	TokenId     string `json:"token_id"`
 	DomainsName string `json:"domains_name"`
 	MsgSender   string `json:"msg_sender"`
+}
+type SignLock struct {
+	Name      string `json:"name"`
+	MsgSender string `json:"msg_sender"`
+	TokenId   string `json:"token_id"`
+	LockTime  int32  `json:"lock_time"`
 }

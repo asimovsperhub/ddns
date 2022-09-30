@@ -4,31 +4,16 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
+	"fmt"
 	"github.com/dnsdao/dnsdao.resolver/contract/dns-deploy/udiddeploy/top"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"log"
+	"math/big"
 	"strings"
 )
-
-//type TopLevelContract struct {
-//	LibSig     common.Address
-//	LibToolKit common.Address
-//	LibErc721  common.Address
-//	TopName    common.Address
-//	Tx         *types.Transaction
-//}
-
-//func (tc *TopLevelContract) String() string {
-//	msg := ""
-//	msg += fmt.Sprintf("libsig contract address: %s\r\n", tc.LibSig.String())
-//	msg += fmt.Sprintf("libToolKit contract address: %s\r\n", tc.LibToolKit.String())
-//	msg += fmt.Sprintf("libErc721 contract address: %s\r\n", tc.LibErc721.String())
-//	msg += fmt.Sprintf("TopLevelName contract address: %s\r\n", tc.TopName.String())
-//	msg += fmt.Sprintf("TopLevelName contract success tx: %s\r\n", tc.Tx.Hash().String())
-//	return msg
-//}
 
 func (c *Contract) DeployDnsTopLevelName(priv *ecdsa.PrivateKey) error {
 	log.Println("begin to deploy dns top level name")
@@ -84,7 +69,7 @@ func (c *Contract) DeployDnsTopLevelName(priv *ecdsa.PrivateKey) error {
 
 }
 
-func (c *Contract) SetDnsTopContract(priv *ecdsa.PrivateKey) (r *types.Receipt, err error) {
+func (c *Contract) SetDnsTopContract(priv *ecdsa.PrivateKey, nswitch uint8) (r *types.Receipt, err error) {
 	ds := NewDeploySession(priv)
 	if err = ds.GetSession(0, nil); err != nil {
 		return
@@ -95,7 +80,7 @@ func (c *Contract) SetDnsTopContract(priv *ecdsa.PrivateKey) (r *types.Receipt, 
 		return
 	}
 	var tx *types.Transaction
-	if tx, err = t.SetContract(ds.auth, c.Cost, c.Accountant, c.SecondName, 0); err != nil {
+	if tx, err = t.SetContract(ds.auth, c.Cost, c.Accountant, c.SecondName, nswitch); err != nil {
 		return
 	}
 
@@ -106,9 +91,9 @@ func (c *Contract) SetDnsTopContract(priv *ecdsa.PrivateKey) (r *types.Receipt, 
 	return
 }
 
-func (c *Contract) GetOwner(priv *ecdsa.PrivateKey) (addr common.Address, err error) {
-	ds := NewDeploySession(priv)
-	if err = ds.GetSession(0, nil); err != nil {
+func (c *Contract) GetOwner() (addr common.Address, err error) {
+	ds := NewDeploySession(nil)
+	if err = ds.GetClient(); err != nil {
 		return
 	}
 	defer ds.Destroy()
@@ -118,4 +103,166 @@ func (c *Contract) GetOwner(priv *ecdsa.PrivateKey) (addr common.Address, err er
 	}
 
 	return t.Owner(nil)
+}
+
+func (c *Contract) MintName(priv *ecdsa.PrivateKey, entireName string, year uint8, erc20Addr common.Address) (r *types.Receipt, err error) {
+
+	var price *big.Int
+	price, err = c.GetTopLevelNameUsdtPrice(uint8(len(param.name)), year)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	var (
+		exPrice, roundId *big.Int
+	)
+
+	if erc20Addr != c.UsdtAddr {
+		exPrice, roundId, err = c.GetLatestPrice(erc20Addr, price)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+	} else {
+		exPrice = price
+		roundId = &big.Int{}
+	}
+
+	ds := NewDeploySession(priv)
+	if AddrIsZero(erc20Addr) {
+		if err = ds.GetSessionWithEthValue(0, nil, exPrice); err != nil {
+			return
+		}
+		defer ds.Destroy()
+		var balance *big.Int
+		if balance, err = ds.cli.BalanceAt(context.Background(), crypto.PubkeyToAddress(priv.PublicKey), nil); err != nil {
+			fmt.Println(err)
+
+			return nil, err
+		}
+		if balance.Cmp(exPrice) < 0 {
+			fmt.Println("eth not enough")
+
+			return nil, errors.New("eth not enough")
+		}
+
+	} else {
+		//var r *types.Receipt
+		fmt.Println("approve to", erc20Addr.String(), "amount:", exPrice.String())
+		if _, err = Approve(priv, erc20Addr, c.TopName, exPrice); err != nil {
+			fmt.Println(err)
+			return
+		}
+		if err = ds.GetSession(0, nil); err != nil {
+			return
+		}
+
+		defer ds.Destroy()
+
+	}
+
+	var t *top.DnsTopLevelName
+	if t, err = top.NewDnsTopLevelName(c.TopName, ds.cli); err != nil {
+		return
+	}
+	fmt.Println("begin mint", entireName, "for", year, "year")
+	var tx *types.Transaction
+	if tx, err = t.MintTopLevelName(ds.auth, entireName, year, erc20Addr, roundId); err != nil {
+		return
+	}
+
+	if r, err = bind.WaitMined(context.Background(), ds.cli, tx); err != nil {
+		return
+	}
+
+	return
+}
+
+func (c *Contract) NameHashIsExists(nameHash common.Hash) (b bool, err error) {
+	ds := NewDeploySession(nil)
+	if err = ds.GetClient(); err != nil {
+		return
+	}
+	defer ds.Destroy()
+
+	var t *top.DnsTopLevelName
+	if t, err = top.NewDnsTopLevelName(c.TopName, ds.cli); err != nil {
+		return
+	}
+
+	n, err1 := t.NameStore(nil, nameHash)
+	if err1 != nil {
+		return false, err1
+	}
+
+	if n.ExpireTime > 0 {
+		return true, nil
+	}
+
+	return false, nil
+
+}
+
+func (c *Contract) NameIsExists(name string) (bool, error) {
+	hash := crypto.Keccak256Hash([]byte(name))
+	return c.NameHashIsExists(hash)
+}
+
+func (c *Contract) GetErc721Addr(nameHash common.Hash) (erc721Addr common.Address, err error) {
+	ds := NewDeploySession(nil)
+	if err = ds.GetClient(); err != nil {
+		return
+	}
+	defer ds.Destroy()
+
+	var t *top.DnsTopLevelName
+	if t, err = top.NewDnsTopLevelName(c.TopName, ds.cli); err != nil {
+		return
+	}
+	return t.Erc721Store(nil, nameHash)
+}
+
+func (c *Contract) GetDnsInfo(nameHash common.Hash) (entireName string, expTime uint32, tokenId *big.Int, err error) {
+	ds := NewDeploySession(nil)
+	if err = ds.GetClient(); err != nil {
+		return
+	}
+	defer ds.Destroy()
+
+	var t *top.DnsTopLevelName
+	if t, err = top.NewDnsTopLevelName(c.TopName, ds.cli); err != nil {
+		return
+	}
+	var r struct {
+		EntireName string
+		ExpireTime uint32
+		TokenId    *big.Int
+	}
+	if r, err = t.NameStore(nil, nameHash); err != nil {
+		return
+	}
+
+	return r.EntireName, r.ExpireTime, r.TokenId, nil
+}
+
+func (c *Contract) Open2Reg(priv *ecdsa.PrivateKey, nameHash common.Hash) (r *types.Receipt, err error) {
+	ds := NewDeploySession(priv)
+	if err = ds.GetSession(0, nil); err != nil {
+		return
+	}
+	defer ds.Destroy()
+	var t *top.DnsTopLevelName
+	if t, err = top.NewDnsTopLevelName(c.TopName, ds.cli); err != nil {
+		return
+	}
+	var tx *types.Transaction
+	if tx, err = t.Open2Reg(ds.auth, nameHash); err != nil {
+		return
+	}
+
+	if r, err = bind.WaitMined(context.Background(), ds.cli, tx); err != nil {
+		return
+	}
+
+	return
 }

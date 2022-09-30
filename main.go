@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/dnsdao/dnsdao.resolver/Agent/dns"
+	"github.com/dnsdao/dnsdao.resolver/Agent/dnsv2"
 	"github.com/dnsdao/dnsdao.resolver/cmd"
 	"github.com/dnsdao/dnsdao.resolver/cmd/cmdclient"
 	"github.com/dnsdao/dnsdao.resolver/cmd/cmdserver"
@@ -72,7 +73,7 @@ func mainRun(_ *cobra.Command, _ []string) {
 	//go server.GetServerInstance().StartDaemon()
 
 	go cmdserver.StartCmdService()
-	go dns.GetDNSAgent().DNSLoopEvent()
+	go dnsv2.GetDNSAgent().DNSLoopEvent()
 	go httpserver.StartWebDaemon()
 
 	waitShutdownSignal()

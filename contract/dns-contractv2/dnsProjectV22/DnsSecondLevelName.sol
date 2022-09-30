@@ -59,27 +59,30 @@ contract DnsSecondLevelName {
     }
 
     function _secondLevelName(bytes32 fHash_,address erc20Addr_,uint256 tax_,uint256 cost_) internal{
-        uint256 max = cost_;
+        uint256 left = 0;
         if (tax_ > cost_){
-            max = tax_;
+            tax_ = cost_;
+        }else{
+            left = cost_ - tax_;
         }
-        uint256 left = max - tax_;
         if (erc20Addr_ == address (0)){
-            require(msg.value >= max,"payout is not enough");
+            require(msg.value >= cost_,"payout is not enough");
             accountantC.deposit(dnsTop.getErc721Contract(bytes32(0)),erc20Addr_,tax_);
-            if(msg.value > max){
+            if(msg.value > cost_){
                 left = msg.value - tax_;
             }
-            accountantC.deposit(dnsTop.getErc721Contract(fHash_),erc20Addr_,tax_);
+            if (left>0){
+                accountantC.deposit(dnsTop.getErc721Contract(fHash_),erc20Addr_,left);
+            }
             payable(address(accountantC)).transfer(msg.value);
         }else{
-            require(IERC20(erc20Addr_).balanceOf(msg.sender)>=max &&
-                IERC20(erc20Addr_).allowance(msg.sender,address(this))>= max,"payout is not enough");
+            require(IERC20(erc20Addr_).balanceOf(msg.sender)>=cost_ &&
+                IERC20(erc20Addr_).allowance(msg.sender,address(this))>= cost_,"payout is not enough");
             accountantC.deposit(dnsTop.getErc721Contract(bytes32(0)),erc20Addr_,tax_);
             if(left>0){
                 accountantC.deposit(dnsTop.getErc721Contract(fHash_),erc20Addr_,left);
             }
-            IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),max);
+            IERC20(erc20Addr_).transferFrom(msg.sender,address(accountantC),cost_);
         }
     }
 
@@ -107,8 +110,10 @@ contract DnsSecondLevelName {
         (uint256 tax,uint256 cost,) = costContractAddr.getSecondLevelNamePrice(fhash,erc20Addr_,
             lastPriceId,
             uint8(sName.length),year_);
-        _secondLevelName(fhash,erc20Addr_,tax,cost);
         bytes32 nameHash = keccak256(bytes(entireName_));
+        require(nameStore[fhash][nameHash].expireTime==0,"name is exist");
+        _secondLevelName(fhash,erc20Addr_,tax,cost);
+
         nameStore[fhash][nameHash] = NameItem(entireName_,uint32(block.timestamp )+ uint32(year_)*uint32(365 days),
             IDnsNameErc721(dnsTop.getErc721Contract(fhash)).MintId(nameHash,
             uint32(block.timestamp )+ uint32(year_)*uint32(365 days),msg.sender));
@@ -132,6 +137,23 @@ contract DnsSecondLevelName {
         emit EvChargeSecondLevelName( fatherHash_, nameHash_, year_,  erc20Addr_, isTransfer_);
     }
 
+    function sigIsValid(uint256 price_,address suser,bytes32 fhash,string memory entireName_, address erc20Addr_,uint80 lastPriceId,uint8 year_) internal {
+        if (price_ == 0){
+            require(suser == IDnsNameErc721(dnsTop.getErc721Contract(bytes32(0))).SigUserAddr(),"sig not dao user");
+            require(block.timestamp<uint32(lastPriceId),"sig expired");
+        }else{
+            bytes memory sName = LibDnsToolKit.getSecondLevelName(bytes(entireName_));
+            (uint256 tax,,) = costContractAddr.getSecondLevelNamePrice(fhash,erc20Addr_,
+                lastPriceId,
+                uint8(sName.length),year_);
+            require((suser == IDnsNameErc721(dnsTop.getErc721Contract(fhash)).SigUserAddr() && price_>=tax) ||
+                suser == IDnsNameErc721(dnsTop.getErc721Contract(bytes32(0))).SigUserAddr()
+            ,"sig not match");
+//            require(,"not a valid price");
+            _secondLevelName(fhash,erc20Addr_,tax,price_);
+        }
+    }
+
     function MintSecondLevelNameBySig(string memory entireName_, uint8 year_, address erc20Addr_, uint80 lastPriceId,
         uint256 nonce, uint256 price_, bytes memory sig) external payable{
         require(mintSwitch&SecondSigMintClose == 0,"can't mint");
@@ -139,27 +161,9 @@ contract DnsSecondLevelName {
         bytes32 nameHash = keccak256(bytes(entireName_));
         require(nameStore[fhash][nameHash].expireTime==0,"name was registered");
         require(dnsTop.getErc721Contract(fhash)!=address(0),"not open to reg");
-        require(IDnsNameErc721(dnsTop.getErc721Contract(fhash)).SigUserAddr() ==
-            LibDnsSignature.SigUserAddr(keccak256(abi.encodePacked(entireName_,
-                year_,
-                erc20Addr_,
-                lastPriceId,
-                nonce,
-                price_,
-                msg.sender)),sig),"sig not match");
-        bytes memory sName = LibDnsToolKit.getSecondLevelName(bytes(entireName_));
-
-        if(price_ > 0){
-            (uint256 tax,,) = costContractAddr.getSecondLevelNamePrice(fhash,erc20Addr_,
-                lastPriceId,
-                uint8(sName.length),uint8(year_));
-            require(price_>=tax,"not a valid price");
-            if (price_ < tax){
-                tax = price_;
-            }
-            _secondLevelName(fhash,erc20Addr_,tax,price_);
-        }
-
+        address suser = LibDnsSignature.SigUserAddr(keccak256(abi.encodePacked(entireName_,
+            year_, erc20Addr_,lastPriceId,nonce, price_,msg.sender)),sig);
+        sigIsValid(price_,suser,fhash,entireName_, erc20Addr_,lastPriceId,year_);
         nameStore[fhash][nameHash] = NameItem(entireName_,uint32(block.timestamp )+ uint32(year_)*uint32(365 days),
             IDnsNameErc721(dnsTop.getErc721Contract(fhash)).MintId(nameHash,
             uint32(block.timestamp )+ uint32(year_)*uint32(365 days),msg.sender));
@@ -175,27 +179,9 @@ contract DnsSecondLevelName {
         bool isTransfer_) external payable{
         require(mintSwitch&SecondSigChargeClose == 0,"can't charge");
         require(nameStore[fatherHash_][nameHash_].expireTime>0,"name not exist");
-        require(IDnsNameErc721(dnsTop.getErc721Contract(fatherHash_)).SigUserAddr() ==
-            LibDnsSignature.SigUserAddr(keccak256(abi.encodePacked(fatherHash_,
-                year_,
-                erc20Addr_,
-                lastPriceId,
-                nonce,
-                price_,
-                msg.sender)),sig),"sig not match");
-        bytes memory sName = LibDnsToolKit.getSecondLevelName(bytes(nameStore[fatherHash_][nameHash_].entireName));
-
-        if(price_ > 0){
-            (uint256 tax,,) = costContractAddr.getSecondLevelNamePrice(fatherHash_,erc20Addr_,
-                lastPriceId,
-                uint8(sName.length),uint8(year_));
-            require(price_>=tax,"not a valid price");
-            if (price_ < tax){
-                tax = price_;
-            }
-            _secondLevelName(fatherHash_,erc20Addr_,tax,price_);
-        }
-
+        address suser = LibDnsSignature.SigUserAddr(keccak256(abi.encodePacked(fatherHash_,
+            year_, erc20Addr_,lastPriceId,nonce, price_,msg.sender)),sig);
+        sigIsValid(price_,suser,fatherHash_,nameStore[fatherHash_][nameHash_].entireName, erc20Addr_,lastPriceId,year_);
         _extendExpire(fatherHash_,nameHash_,year_,isTransfer_);
         emit EvChargeSecondLevelNameBySig( fatherHash_,  nameHash_, year_, erc20Addr_,
             nonce, price_, isTransfer_);
@@ -215,7 +201,6 @@ contract DnsSecondLevelName {
         ownerOf(nameStore[topHash_][level2FatherHash_].tokenId),"not owner");
 
         delete subNameStore[level2FatherHash_][nameHash_];
-
         emit EvDelSubName(nameHash_, level2FatherHash_, topHash_);
     }
 

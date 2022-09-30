@@ -12,6 +12,7 @@ import (
 
 const (
 	ethsavefile     = "./ethaccount.acct"
+	signfile        = "./ethaccount"
 	InfuraPoint     = "https://goerli.infura.io/v3/cbc6ef92e0714bf39f4397904f3f15d2"
 	InfuraMainPoint = "https://mainnet.infura.io/v3/cbc6ef92e0714bf39f4397904f3f15d2"
 	//rinkeby
@@ -117,6 +118,18 @@ func (acct *EthAccount) Save(auth string) error {
 func LoadAcct(auth string) (*EthAccount, error) {
 	account := &EthAccount{}
 	if data, err := tools.OpenAndReadAll(ethsavefile); err != nil {
+		return nil, err
+	} else {
+		if err = account.Unmarshal(data, auth); err != nil {
+			return nil, err
+		}
+		return account, nil
+	}
+}
+
+func LoadAcctFromFile(auth string) (*EthAccount, error) {
+	account := &EthAccount{}
+	if data, err := tools.OpenAndReadAll(signfile); err != nil {
 		return nil, err
 	} else {
 		if err = account.Unmarshal(data, auth); err != nil {

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package pbs;
+option go_package = "github.com/dnsdao/dnsdao.resolver/cmd/pbs/";
+
+service CmdService {
+    rpc ShowConfig (EmptyMessage) returns (CommonResponse) {}
+}
+
+
+message EmptyMessage {
+
+}
+
+message CommonResponse {
+    string msg = 1;
+}

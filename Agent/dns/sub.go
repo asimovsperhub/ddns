@@ -16,7 +16,6 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type SubNameInfo struct {
@@ -147,39 +146,39 @@ func BatchNewSub(start, end uint64) {
 						}
 
 					}
-					// root收益
-					addrkey := strings.ToLower(Rootname.Owner.String())
-					earnings, _ := db.GetRootEarnings(addrkey)
-					// uint8 不会超过int
-					price, earn := GetLenPrice(Rootname, len(c[0]), int(ev.Year))
-					log.Println("price,earn", price, earn)
-					if earnings != nil {
-						earnings.Earnings += earn
-						rootearn := earnings.RootNameMap[Rootname.Name]
-						if rootearn != nil {
-							rootearn.Earnings += earn
-							rootearn.Details = append(rootearn.Details, &ldb.RootEarningsDetails{Price: price, Contract: Rootname.Contract, RegisterName: ev.EntireName,
-								RegisterOwner: owner.DnsOwner, RegisterTime: time.Now().Unix()})
-						} else {
-							earnings.RootNameMap[Rootname.Name] = &ldb.RootEarnings{earn, []*ldb.RootEarningsDetails{&ldb.RootEarningsDetails{Price: price, Contract: Rootname.Contract, RegisterName: ev.EntireName,
-								RegisterOwner: owner.DnsOwner, RegisterTime: time.Now().Unix()}}}
-						}
-						errsave := db.SaveRootEarnings(addrkey, earnings)
-						log.Println("BatchNewSub SaveRootEarnings", addrkey, earnings)
-						if errsave != nil {
-							log.Println("BatchNewSub SaveRootEarnings err", errsave)
-						}
-					} else {
-						earningsN := new(ldb.AddressEarnings)
-						earningsN.Earnings = earn
-						earningsN.RootNameMap = map[string]*ldb.RootEarnings{rootname: &ldb.RootEarnings{Earnings: earn, Details: []*ldb.RootEarningsDetails{&ldb.RootEarningsDetails{Price: price, Contract: Rootname.Contract, RegisterName: ev.EntireName,
-							RegisterOwner: owner.DnsOwner, RegisterTime: time.Now().Unix()}}}}
-						errsave := db.SaveRootEarnings(addrkey, earningsN)
-						log.Println("BatchNewSub SaveRootEarnings", addrkey, earningsN)
-						if errsave != nil {
-							log.Println("SaveRootEarnings err", errsave)
-						}
-					}
+					//// root收益
+					//addrkey := strings.ToLower(Rootname.Owner.String())
+					//earnings, _ := db.GetRootEarnings(addrkey)
+					//// uint8 不会超过int
+					//price, earn := GetLenPrice(Rootname, len(c[0]), int(ev.Year))
+					//log.Println("price,earn", price, earn)
+					//if earnings != nil {
+					//	earnings.Earnings += earn
+					//	rootearn := earnings.RootNameMap[Rootname.Name]
+					//	if rootearn != nil {
+					//		rootearn.Earnings += earn
+					//		rootearn.Details = append(rootearn.Details, &ldb.RootEarningsDetails{Price: price, Contract: Rootname.Contract, RegisterName: ev.EntireName,
+					//			RegisterOwner: owner.DnsOwner, RegisterTime: time.Now().Unix()})
+					//	} else {
+					//		earnings.RootNameMap[Rootname.Name] = &ldb.RootEarnings{earn, []*ldb.RootEarningsDetails{&ldb.RootEarningsDetails{Price: price, Contract: Rootname.Contract, RegisterName: ev.EntireName,
+					//			RegisterOwner: owner.DnsOwner, RegisterTime: time.Now().Unix()}}}
+					//	}
+					//	errsave := db.SaveRootEarnings(addrkey, earnings)
+					//	log.Println("BatchNewSub SaveRootEarnings", addrkey, earnings)
+					//	if errsave != nil {
+					//		log.Println("BatchNewSub SaveRootEarnings err", errsave)
+					//	}
+					//} else {
+					//	earningsN := new(ldb.AddressEarnings)
+					//	earningsN.Earnings = earn
+					//	earningsN.RootNameMap = map[string]*ldb.RootEarnings{rootname: &ldb.RootEarnings{Earnings: earn, Details: []*ldb.RootEarningsDetails{&ldb.RootEarningsDetails{Price: price, Contract: Rootname.Contract, RegisterName: ev.EntireName,
+					//		RegisterOwner: owner.DnsOwner, RegisterTime: time.Now().Unix()}}}}
+					//	errsave := db.SaveRootEarnings(addrkey, earningsN)
+					//	log.Println("BatchNewSub SaveRootEarnings", addrkey, earningsN)
+					//	if errsave != nil {
+					//		log.Println("SaveRootEarnings err", errsave)
+					//	}
+					//}
 
 					// coinbase:[namehash]
 					addrnamehash := strings.ToLower(owner.DnsOwner.String())

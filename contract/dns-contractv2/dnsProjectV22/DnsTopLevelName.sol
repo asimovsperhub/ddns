@@ -108,7 +108,7 @@ contract DnsTopLevelName is owned,IDnsTopLevelName {
         require(mintSwitch&TopMintClose == 0,"can't mint");
         require(LibDnsToolKit.verifyRoot(bytes(entireName_)),"not a root Name");
         bytes32 nameHash = LibDnsToolKit.entireNameHash(entireName_);
-        require(nameStore[nameHash].tokenId == 0,"name was registered");
+        require(nameStore[nameHash].expireTime == 0,"name was registered");
         (uint256 cost, bool valid) = costContractAddr.getTopLevelNamePrice(erc20Addr_,lastPriceId,uint8(bytes(entireName_).length),year_);
         require(valid,"price not valid");
         _topLevelNamePrice(erc20Addr_,cost);

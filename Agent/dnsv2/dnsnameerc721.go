@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func NewDnsNameErcClient() (*udidc22.DnsNameErc721, *ethclient.Client, error) {
+func NewDnsNameErcClient(contract string) (*udidc22.DnsNameErc721, *ethclient.Client, error) {
 	var (
 		cli  *ethclient.Client
 		root *udidc22.DnsNameErc721
@@ -20,7 +20,7 @@ func NewDnsNameErcClient() (*udidc22.DnsNameErc721, *ethclient.Client, error) {
 		log.Println("NewDnsNameErcClient EthClient conn err", err)
 		return nil, nil, err
 	}
-	root, err = udidc22.NewDnsNameErc721(common.HexToAddress(config.GetRConf().Cconf.DnsName), cli)
+	root, err = udidc22.NewDnsNameErc721(common.HexToAddress(contract), cli)
 	if err != nil {
 		cli.Close()
 		log.Println("NewDnsNameErcClient NewDnsNameErc721  err", err)

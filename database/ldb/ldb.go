@@ -14,8 +14,8 @@ import (
 const (
 	dnsResolveBlKnumber    = "dnsResolveBlKnumber"
 	dnsResolveTypes        = "dnsResolveTypes"
-	dnsRootNameHead        = "rnH_1_%s"
-	dnsSubNameHead         = "snH_1_%s"
+	dnsRootNameHead        = "rnH_1_"
+	dnsSubNameHead         = "snH_1_"
 	dnsContract            = "dnsOpenContract"
 	dnsAddress             = "dnsAddress"
 	dnsRootEarnings        = "dnsRootEarnings"
@@ -26,6 +26,7 @@ const (
 	dnsNftPass             = "dnsNftPass"
 	SignMintCall           = "SignMintCallParams"
 	PassTokenIdName        = "PassTokenIdName"
+	SignLockP              = "SignLockP"
 )
 
 type Ldb struct {
@@ -87,7 +88,7 @@ func (db *Ldb) SaveLatestBlkNum(network string, blk uint64) error {
 }
 
 func (db *Ldb) SaveRootName(name string, val string) error {
-	k := fmt.Sprintf(dnsRootNameHead, name)
+	k := fmt.Sprintf(dnsRootNameHead + name)
 	if err := db.db.Put([]byte(k), []byte(val), &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
@@ -96,7 +97,7 @@ func (db *Ldb) SaveRootName(name string, val string) error {
 }
 
 func (db *Ldb) GetRootName(name string) (string, error) {
-	k := fmt.Sprintf(dnsRootNameHead, name)
+	k := fmt.Sprintf(dnsRootNameHead + name)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return "", err
 	} else {
@@ -105,7 +106,7 @@ func (db *Ldb) GetRootName(name string) (string, error) {
 }
 
 func (db *Ldb) SaveSubName(name string, val string) error {
-	k := fmt.Sprintf(dnsSubNameHead, name)
+	k := fmt.Sprintf(dnsSubNameHead + name)
 	if err := db.db.Put([]byte(k), []byte(val), &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
@@ -114,7 +115,7 @@ func (db *Ldb) SaveSubName(name string, val string) error {
 }
 
 func (db *Ldb) GetSubName(name string) (string, error) {
-	k := fmt.Sprintf(dnsSubNameHead, name)
+	k := fmt.Sprintf(dnsSubNameHead + name)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return "", err
 	} else {
@@ -147,9 +148,9 @@ func (db *Ldb) GetTypeNames() ([]string, error) {
 func (db *Ldb) SaveTypeNameHash(conf_data string, name string, name_type string) error {
 	var val string
 	if name_type == "root" {
-		val = fmt.Sprintf(dnsRootNameHead, name)
+		val = fmt.Sprintf(dnsRootNameHead + name)
 	} else {
-		val = fmt.Sprintf(dnsSubNameHead, name)
+		val = fmt.Sprintf(dnsSubNameHead + name)
 	}
 	if err := db.db.Put([]byte(conf_data), []byte(val), &opt.WriteOptions{Sync: true}); err != nil {
 		return err
@@ -222,7 +223,7 @@ func (db *Ldb) SaveContractList(ct []string) error {
 
 func (db *Ldb) GetAddressList(address string) ([]string, error) {
 	var ret []string
-	k := fmt.Sprintf(dnsAddress, address)
+	k := fmt.Sprintf(dnsAddress + address)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return nil, err
 	} else {
@@ -237,7 +238,7 @@ func (db *Ldb) GetAddressList(address string) ([]string, error) {
 
 func (db *Ldb) SaveAddressList(address string, ct []string) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsAddress, address)
+	k := fmt.Sprintf(dnsAddress + address)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
@@ -246,7 +247,7 @@ func (db *Ldb) SaveAddressList(address string, ct []string) error {
 
 func (db *Ldb) GetRootEarnings(address string) (*AddressEarnings, error) {
 	var ret *AddressEarnings
-	k := fmt.Sprintf(dnsRootEarnings, address)
+	k := fmt.Sprintf(dnsRootEarnings + address)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return nil, err
 	} else {
@@ -261,7 +262,7 @@ func (db *Ldb) GetRootEarnings(address string) (*AddressEarnings, error) {
 
 func (db *Ldb) SaveRootEarnings(address string, ct *AddressEarnings) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsRootEarnings, address)
+	k := fmt.Sprintf(dnsRootEarnings + address)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
@@ -270,7 +271,7 @@ func (db *Ldb) SaveRootEarnings(address string, ct *AddressEarnings) error {
 
 func (db *Ldb) GetAddressCash(address string) (*AddressCash, error) {
 	var ret *AddressCash
-	k := fmt.Sprintf(dnsAddressCash, address)
+	k := fmt.Sprintf(dnsAddressCash + address)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return nil, err
 	} else {
@@ -285,7 +286,7 @@ func (db *Ldb) GetAddressCash(address string) (*AddressCash, error) {
 
 func (db *Ldb) SaveAddressCash(address string, ct *AddressCash) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsAddressCash, address)
+	k := fmt.Sprintf(dnsAddressCash + address)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
@@ -293,7 +294,7 @@ func (db *Ldb) SaveAddressCash(address string, ct *AddressCash) error {
 }
 
 func (db *Ldb) GetContractAddr(contract string) (string, error) {
-	k := fmt.Sprintf(dnsContractAddr, contract)
+	k := fmt.Sprintf(dnsContractAddr + contract)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return "", err
 	} else {
@@ -302,7 +303,7 @@ func (db *Ldb) GetContractAddr(contract string) (string, error) {
 }
 
 func (db *Ldb) SaveContractAddr(contract string, addr string) error {
-	k := fmt.Sprintf(dnsContractAddr, contract)
+	k := fmt.Sprintf(dnsContractAddr + contract)
 	if err := db.db.Put([]byte(k), []byte(addr), &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	} else {
@@ -312,7 +313,7 @@ func (db *Ldb) SaveContractAddr(contract string, addr string) error {
 
 func (db *Ldb) GetConfNameHashList(conftype string) ([]string, error) {
 	var ret []string
-	k := fmt.Sprintf(dnsConf, conftype)
+	k := fmt.Sprintf(dnsConf + conftype)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return nil, err
 	} else {
@@ -327,7 +328,7 @@ func (db *Ldb) GetConfNameHashList(conftype string) ([]string, error) {
 
 func (db *Ldb) SaveConfNameHashList(conftype string, ct []string) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsConf, conftype)
+	k := fmt.Sprintf(dnsConf + conftype)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
@@ -336,7 +337,7 @@ func (db *Ldb) SaveConfNameHashList(conftype string, ct []string) error {
 
 func (db *Ldb) GetContractTokenIdName(contract string) (*ContractTokenIdName, error) {
 	var ret *ContractTokenIdName
-	k := fmt.Sprintf(dnsContractTokenIdName, contract)
+	k := fmt.Sprintf(dnsContractTokenIdName + contract)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return nil, err
 	} else {
@@ -351,7 +352,7 @@ func (db *Ldb) GetContractTokenIdName(contract string) (*ContractTokenIdName, er
 
 func (db *Ldb) SaveContractTokenIdName(contract string, ct *ContractTokenIdName) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsContractTokenIdName, contract)
+	k := fmt.Sprintf(dnsContractTokenIdName + contract)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
@@ -384,7 +385,7 @@ func (db *Ldb) SaveS3(ct *S3) error {
 
 func (db *Ldb) GetNftPass(owner string) ([]*NftPass, error) {
 	var ret []*NftPass
-	k := fmt.Sprintf(dnsNftPass, owner)
+	k := fmt.Sprintf(dnsNftPass + owner)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return nil, err
 	} else {
@@ -399,7 +400,7 @@ func (db *Ldb) GetNftPass(owner string) ([]*NftPass, error) {
 
 func (db *Ldb) SaveNftPass(owner string, ct []*NftPass) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsNftPass, owner)
+	k := fmt.Sprintf(dnsNftPass + owner)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
@@ -409,7 +410,7 @@ func (db *Ldb) SaveNftPass(owner string, ct []*NftPass) error {
 //NftPassTokenIdName
 func (db *Ldb) GetNftPassTokenIdName(owner string) (*NftPassTokenIdName, error) {
 	var ret *NftPassTokenIdName
-	k := fmt.Sprintf(PassTokenIdName, owner)
+	k := fmt.Sprintf(PassTokenIdName + owner)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return nil, err
 	} else {
@@ -424,7 +425,7 @@ func (db *Ldb) GetNftPassTokenIdName(owner string) (*NftPassTokenIdName, error) 
 
 func (db *Ldb) SaveNftPassTokenIdName(owner string, ct *NftPassTokenIdName) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(PassTokenIdName, owner)
+	k := fmt.Sprintf(PassTokenIdName + owner)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
@@ -432,7 +433,7 @@ func (db *Ldb) SaveNftPassTokenIdName(owner string, ct *NftPassTokenIdName) erro
 }
 func (db *Ldb) GetSignMintCallParams(name string) (*SignMintCallParams, error) {
 	var ret *SignMintCallParams
-	k := fmt.Sprintf(SignMintCall, name)
+	k := fmt.Sprintf(SignMintCall + name)
 	if v, err := db.db.Get([]byte(k), nil); err != nil {
 		return nil, err
 	} else {
@@ -447,7 +448,31 @@ func (db *Ldb) GetSignMintCallParams(name string) (*SignMintCallParams, error) {
 
 func (db *Ldb) SaveSignMintCallParams(name string, ct *SignMintCallParams) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(SignMintCall, name)
+	k := fmt.Sprintf(SignMintCall + name)
+	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (db *Ldb) GetSignLock(name string) (*SignLock, error) {
+	var ret *SignLock
+	k := fmt.Sprintf(SignLockP + name)
+	if v, err := db.db.Get([]byte(k), nil); err != nil {
+		return nil, err
+	} else {
+		err = json.Unmarshal(v, &ret)
+		if err != nil {
+			return nil, err
+		}
+
+		return ret, nil
+	}
+}
+
+func (db *Ldb) SaveSignLock(name string, ct *SignLock) error {
+	v, _ := json.Marshal(ct)
+	k := fmt.Sprintf(SignLockP + name)
 	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}

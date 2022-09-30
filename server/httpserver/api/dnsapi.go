@@ -11,11 +11,14 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 	"unsafe"
 )
 
@@ -195,32 +198,36 @@ func (a *Api) Ipv6(writer http.ResponseWriter, request *http.Request) {
 
 }
 
+// 获取二级域名每个长度的数量
 func (a *Api) GetTotalBySubLen(writer http.ResponseWriter, request *http.Request) {
-	if request.Method != "GET" {
+	if request.Method != "POST" {
 		res_ := NotDataRes("not a get request")
 		writer.WriteHeader(500)
 		writer.Write([]byte(res_))
 		return
 	}
-
-	query := request.URL.Query()
-	log.Println("/dns/totalbysub query", query)
-	var (
-		v  []string
-		ok bool
-	)
-
-	if v, ok = query["tldName"]; !ok {
-		res_ := NotDataRes("not tldName")
+	decoder := json.NewDecoder(request.Body)
+	var reqparams map[string]string
+	decoder.Decode(&reqparams)
+	log.Println("/dns/totalbysub query query", reqparams)
+	name := reqparams["tldName"]
+	if name == "" {
+		res_ := NotDataRes("not tldName ")
 		writer.WriteHeader(200)
 		writer.Write([]byte(res_))
 		return
 	}
-
-	name := v[0]
+	rules := reqparams["rules"]
+	if rules == "" {
+		res_ := NotDataRes("not rules")
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
+	var ru []map[string]string
+	json.Unmarshal([]byte(rules), &ru)
 
 	ir := isRoot(name)
-
 	nameHash := crypto.Keccak256([]byte(name))
 
 	db := ldb.GetLdb()
@@ -232,16 +239,65 @@ func (a *Api) GetTotalBySubLen(writer http.ResponseWriter, request *http.Request
 		if err == nil {
 			RootNameInfo := new(dns.RootNameInfo)
 			json.Unmarshal([]byte(val), RootNameInfo)
-			res := &Res{
-				Code:    1,
-				Message: "ok",
-				Data:    RootNameInfo.SubNameCount,
+			var totalbysb []*TotalBySubRules
+			all := int64(0)
+			for _, total := range RootNameInfo.SubNameCount {
+				all += total
 			}
-			resbyte, _ := json.Marshal(res)
-			msg = string(resbyte)
-			writer.WriteHeader(200)
-			writer.Write([]byte(msg))
-			return
+			if ru == nil {
+				log.Println("ru", ru)
+				for rule, count := range RootNameInfo.SubNameCount {
+					ruleint, _ := strconv.Atoi(rule)
+					totalbysb = append(totalbysb, &TotalBySubRules{Rule: rule, Min: int64(ruleint), Max: int64(ruleint + 1), Total: count})
+				}
+				res := &Res{
+					Code:    1,
+					Message: "ok",
+					Data:    &TotalBySubLenResData{All: all, Rules: totalbysb},
+				}
+				resbyte, _ := json.Marshal(res)
+				msg = string(resbyte)
+				writer.WriteHeader(200)
+				writer.Write([]byte(msg))
+				return
+			} else {
+				log.Println(RootNameInfo.SubNameCount)
+				for _, rulemap := range ru {
+					min, _ := strconv.Atoi(rulemap["min"])
+					max, _ := strconv.Atoi(rulemap["max"])
+					if max > 8 {
+						total := int64(0)
+						for rule, count := range RootNameInfo.SubNameCount {
+							ruleint, _ := strconv.Atoi(rule)
+							if ruleint >= min {
+								total += count
+							}
+
+						}
+						totalbysb = append(totalbysb, &TotalBySubRules{Rule: rulemap["rule"], Min: int64(min), Max: int64(max), Total: total})
+					} else {
+						total := int64(0)
+						for rule, count := range RootNameInfo.SubNameCount {
+							ruleint, _ := strconv.Atoi(rule)
+							if ruleint >= min && ruleint < max {
+								total += count
+							}
+
+						}
+						totalbysb = append(totalbysb, &TotalBySubRules{Rule: rulemap["rule"], Min: int64(min), Max: int64(max), Total: total})
+					}
+				}
+				res := &Res{
+					Code:    1,
+					Message: "ok",
+					Data:    &TotalBySubLenResData{All: all, Rules: totalbysb},
+				}
+				resbyte, _ := json.Marshal(res)
+				msg = string(resbyte)
+				writer.WriteHeader(200)
+				writer.Write([]byte(msg))
+				return
+			}
 		} else {
 			res_ := NotDataRes(fmt.Sprintf("%s not data", name))
 			writer.WriteHeader(200)
@@ -256,6 +312,7 @@ func (a *Api) GetTotalBySubLen(writer http.ResponseWriter, request *http.Request
 	}
 }
 
+// 获取指定长度的二级域名信息
 func (a *Api) QuerySubDomainByPage(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		res_ := NotDataRes("not a get request")
@@ -336,16 +393,16 @@ func (a *Api) QuerySubDomainByPage(writer http.ResponseWriter, request *http.Req
 					}
 				}
 			}
-			SubNameInfo := new(dns.SubNameInfo)
 			subnameList = Paging(number, size, resArr)
 			SubInfoL := []*QuerySub{}
 			for _, sub := range subnameList {
+				SubNameInfo := new(dns.SubNameInfo)
 				subnameHash := crypto.Keccak256([]byte(sub))
 				subval, _ := db.GetSubName(hex.EncodeToString(subnameHash))
 				json.Unmarshal([]byte(subval), SubNameInfo)
 				SubInfoL = append(SubInfoL, &QuerySub{Name: SubNameInfo.Name, Owner: SubNameInfo.Owner, Expiration: SubNameInfo.ExpireTime})
 			}
-			res := &Res{Code: 1, Message: "ok", Total: len(resArr), PageNumber: number, PageSize: size, Data: SubInfoL}
+			res := &Res{Code: 1, Message: "ok", Data: &ResData{Total: len(resArr), PageNumber: number, PageSize: size, Items: SubInfoL}}
 			resbyte, _ := json.Marshal(res)
 			msg = string(resbyte)
 			writer.WriteHeader(200)
@@ -404,13 +461,24 @@ func (a *Api) AddrResolve(writer http.ResponseWriter, request *http.Request) {
 	if err == nil {
 		number, _ := strconv.Atoi(pageNumber)
 		size, _ := strconv.Atoi(pageSize)
-		var data []string
+		var data []interface{}
 		hasharr := Paging(number, size, val)
 		for _, v := range hasharr {
 			in, _ := db.GetKey(v)
-			data = append(data, in)
+			r := new(dnsv2.RootNameInfo)
+			n := new(dnsv2.SubNameInfo)
+			rr := json.Unmarshal([]byte(in), r)
+			if rr == nil {
+				data = append(data, r)
+			} else {
+				nn := json.Unmarshal([]byte(in), n)
+				if nn == nil {
+					data = append(data, n)
+				}
+			}
+
 		}
-		res := &Res{Code: 1, Message: "ok", Total: len(val), PageNumber: number, PageSize: size, Data: data}
+		res := &Res{Code: 1, Message: "ok", Data: &ResData{Total: len(val), PageNumber: number, PageSize: size, Items: data}}
 		resbyte, _ := json.Marshal(res)
 		msg = string(resbyte)
 		writer.WriteHeader(200)
@@ -488,12 +556,16 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 			if errun != nil {
 				log.Println("GetCashDetailsByAddress Json.Unmarshal err", errun)
 			} else {
-				// root
 				if root.Contract != common.HexToAddress("0x0000000000000000000000000000000000000000") {
 					usdt, _ := dnsaccountant.Get(nil, root.Contract, common.HexToAddress(config.GetRConf().Cconf.Usdt))
 					eth, _ := dnsaccountant.Get(nil, root.Contract, common.HexToAddress("0x0000000000000000000000000000000000000000"))
-					income = []*GetEarningsByAddressIncome{{Erc20Addr: common.HexToAddress(config.GetRConf().Cconf.Usdt), WithDrawWei: usdt},
-						{WithDrawWei: eth}}
+					usdc, _ := dnsaccountant.Get(nil, root.Contract, common.HexToAddress("0x571787b5E033bF8bb2A1e5930265828ef3fFca00"))
+					sol, _ := dnsaccountant.Get(nil, root.Contract, common.HexToAddress("0x65eEdD3b0B0A7c5cfBe97b22bBF19Cd492f2237E"))
+					income = []*GetEarningsByAddressIncome{{Erc20Addr: common.HexToAddress(config.GetRConf().Cconf.Usdt), WithDrawWei: usdt, Symbol: "USDT", Decimals: 6},
+						{Erc20Addr: common.HexToAddress("0x0000000000000000000000000000000000000000"), WithDrawWei: eth, Symbol: "ETH", Decimals: 18},
+						{Erc20Addr: common.HexToAddress("0x571787b5E033bF8bb2A1e5930265828ef3fFca00"), WithDrawWei: usdc, Symbol: "USDC", Decimals: 18},
+						{Erc20Addr: common.HexToAddress("0x65eEdD3b0B0A7c5cfBe97b22bBF19Cd492f2237E"), WithDrawWei: sol, Symbol: "SOL", Decimals: 6},
+					}
 					multi, _ := dnsaccountant.MultiSignerStore(nil, root.Contract)
 					work = multi.Work
 				}
@@ -503,7 +575,7 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 		res := &Res{
 			Code:    1,
 			Message: "ok",
-			Data:    &GetEarningsByAddressRes{PageNumber: number, PageSize: size, Items: items},
+			Data:    &ResData{PageNumber: number, PageSize: size, Items: items},
 		}
 		resbyte, _ := json.Marshal(res)
 		msg := string(resbyte)
@@ -548,7 +620,7 @@ func (a *Api) GetCashDetailsByAddress(writer http.ResponseWriter, request *http.
 		res := &Res{
 			Code:    1,
 			Message: "ok",
-			Data:    val,
+			Data:    &ResData{Items: val},
 		}
 		resbyte, _ := json.Marshal(res)
 		msg = string(resbyte)
@@ -608,19 +680,24 @@ func (a *Api) GetSignTldListByDidName(writer http.ResponseWriter, request *http.
 		log.Println("NewDnsOwnerClient", err)
 		return
 	}
-	data := []*Sign{}
 	rootnamehash := hex.EncodeToString(crypto.Keccak256([]byte(didName)))
-	rootinfo, _ := db.GetRootName(rootnamehash)
+	rootinfo, err := db.GetRootName(rootnamehash)
 	Rootname := new(dnsv2.RootNameInfo)
-	err = json.Unmarshal([]byte(rootinfo), Rootname)
+	json.Unmarshal([]byte(rootinfo), Rootname)
 	if err != nil {
 		log.Println("json Unmarshal ", err)
+		res_ := NotDataRes(fmt.Sprintf("not found %s MultiSign data", didName))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	} else {
+		// 开启了注册
 		if Rootname.Contract != common.HexToAddress("0x0000000000000000000000000000000000000000") {
 			multi, _ := dnsaccountant.MultiSignerStore(nil, Rootname.Contract)
 			// signers, err1 := dnsaccountant.GetSignerSetAddress(nil, Rootname.Contract)
 			topnamehashbyte := byte32(crypto.Keccak256([]byte(Rootname.Name)))
 			maxsig, _, signers, _ := dnsaccountant.GetTaskInfo(nil, Rootname.Contract, *topnamehashbyte)
+			taskhash, _ := dnsaccountant.GetAllTask(nil, Rootname.Contract)
 			// 取多签列表地址 20个字节一个地址
 			countS := len(signers) / 20
 			var signL []*GetSignTldListByDidNameSignList
@@ -632,36 +709,24 @@ func (a *Api) GetSignTldListByDidName(writer http.ResponseWriter, request *http.
 					Signer: common.BytesToAddress(signers[a:b]),
 				})
 			}
-			items := []*GetSignTldListByDidNameItems{{NameHash: Rootname.Hash, Work: multi.Work, Lock: multi.Lock, MaxSig: maxsig, SignerList: signL}}
+			items := []*GetSignTldListByDidNameItems{{NameHash: Rootname.Hash, TaskHash: taskhash, Work: multi.Work, Lock: multi.Lock, MaxSig: maxsig, SignerList: signL}}
 			res := &Res{
 				Code:    1,
 				Message: "ok",
-				Data:    &GetSignTldListByDidNameRes{Items: items},
+				Data:    &ResData{Items: items},
 			}
+
 			resbyte, _ := json.Marshal(res)
 			msg := string(resbyte)
 			writer.WriteHeader(200)
 			writer.Write([]byte(msg))
 			return
+		} else {
+			res_ := NotDataRes(fmt.Sprintf("The domain %s is not registered", didName))
+			writer.WriteHeader(200)
+			writer.Write([]byte(res_))
+			return
 		}
-	}
-
-	if len(data) > 0 {
-		res := &Res{
-			Code:    1,
-			Message: "ok",
-			Data:    data,
-		}
-		resbyte, _ := json.Marshal(res)
-		msg := string(resbyte)
-		writer.WriteHeader(200)
-		writer.Write([]byte(msg))
-		return
-	} else {
-		res_ := NotDataRes(fmt.Sprintf("not found %s data", didName))
-		writer.WriteHeader(200)
-		writer.Write([]byte(res_))
-		return
 	}
 }
 
@@ -718,7 +783,7 @@ func (a *Api) ConfResolve(writer http.ResponseWriter, request *http.Request) {
 			in, _ := db.GetKey(v)
 			data = append(data, in)
 		}
-		res := &Res{Code: 1, Message: "ok", Total: len(val), PageNumber: number, PageSize: size, Data: data}
+		res := &Res{Code: 1, Message: "ok", Data: &ResData{Total: len(val), PageNumber: number, PageSize: size, Items: data}}
 		resbyte, _ := json.Marshal(res)
 		msg = string(resbyte)
 		writer.WriteHeader(200)
@@ -808,7 +873,7 @@ func (a *Api) AddrDomainsResolve(writer http.ResponseWriter, request *http.Reque
 				}
 			}
 		}
-		res := &Res{Code: 1, Message: "ok", Total: len(val), PageNumber: number, PageSize: size, Data: data}
+		res := &Res{Code: 1, Message: "ok", Data: &ResData{Total: len(val), PageNumber: number, PageSize: size, Items: data}}
 		resbyte, _ := json.Marshal(res)
 		msg = string(resbyte)
 		writer.WriteHeader(200)
@@ -871,17 +936,18 @@ func (a *Api) AddrTopList(writer http.ResponseWriter, request *http.Request) {
 		var data []*AddrTopListDataItems
 		for _, name := range rndatares {
 			in, _ := db.GetKey(name)
+			log.Println("in", in)
 			root := new(dns.RootNameInfo)
 			errun := json.Unmarshal([]byte(in), &root)
 			if errun != nil {
 				log.Println("AddrTopList Json.Unmarshal err", errun)
 			} else {
 				data = append(data, &AddrTopListDataItems{
-					Name: root.Name, Erc721_Addr: root.Contract, TokenId: root.TokenId, OpenToReg: root.OpenToReg, ExpireTime: root.ExpireTime, Owner: root.Owner, PayTokens: []string{},
+					Name: root.Name, Erc721Addr: root.Contract, TokenId: root.TokenId, ExpireTime: root.ExpireTime, Owner: root.Owner,
 				})
 			}
 		}
-		res := &Res{Code: 1, Message: "ok", Total: len(rndata), PageNumber: number, PageSize: size, Data: data}
+		res := &Res{Code: 1, Message: "ok", Data: &ResData{Total: len(rndata), PageNumber: number, PageSize: size, Items: data}}
 		resbyte, _ := json.Marshal(res)
 		msg = string(resbyte)
 		writer.WriteHeader(200)
@@ -949,11 +1015,11 @@ func (a *Api) AddrSubList(writer http.ResponseWriter, request *http.Request) {
 				log.Println("AddrSubList Json.Unmarshal err", errun)
 			} else {
 				data = append(data, &AddrTopListDataItems{
-					Name: sub.Name, Erc721_Addr: sub.Contract, TokenId: sub.TokenId, ExpireTime: sub.ExpireTime, Owner: sub.Owner, PayTokens: []string{},
+					Name: sub.Name, Erc721Addr: sub.Contract, TokenId: sub.TokenId, ExpireTime: sub.ExpireTime, Owner: sub.Owner,
 				})
 			}
 		}
-		res := &Res{Code: 1, Message: "ok", Total: len(rndata), PageNumber: number, PageSize: size, Data: data}
+		res := &Res{Code: 1, Message: "ok", Data: &ResData{Total: len(rndata), PageNumber: number, PageSize: size, Items: data}}
 		resbyte, _ := json.Marshal(res)
 		msg = string(resbyte)
 		writer.WriteHeader(200)
@@ -967,6 +1033,7 @@ func (a *Api) AddrSubList(writer http.ResponseWriter, request *http.Request) {
 
 }
 
+// 开启注册的所有域名
 func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		res_ := NotDataRes("not a get request")
@@ -995,6 +1062,7 @@ func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request)
 		number, _ := strconv.Atoi(pageNumber)
 		size, _ := strconv.Atoi(pageSize)
 		contractlist := Paging(number, size, contractL)
+		cost, _, _ := dnsv2.NewCostClient()
 		var data []*AddrTopListDataItems
 		for _, contract := range contractlist {
 			nameHash, _ := db.GetContractAddr(contract)
@@ -1004,20 +1072,39 @@ func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request)
 			if err != nil {
 				log.Println("GetOpenRegister Json.Unmarshal err", err)
 			} else {
+				log.Println("GetOpenRegister rootinfo", rootinfo)
 				hasprice := false
-				if rootinfo.Price != nil {
-					hasprice = true
+				topnamehashbyte := byte32(crypto.Keccak256([]byte(rootinfo.Name)))
+				cc, _ := cost.GetAllSecondLevelNamePrice(nil, *topnamehashbyte)
+				for _, price := range cc {
+					if price.String() != "0" {
+						hasprice = true
+						break
+					}
 				}
-				data = append(data, &AddrTopListDataItems{
-					Name: rootinfo.Name, Erc721_Addr: rootinfo.Contract, TokenId: rootinfo.TokenId, ExpireTime: rootinfo.ExpireTime, OpenToReg: rootinfo.OpenToReg, HasPrice: hasprice, Owner: rootinfo.Owner, PayTokens: []string{},
-				})
+				log.Println("rootinfo.Name", rootinfo.Name)
+				log.Println("GetAllSecondLevelNamePrice", cc)
+				if hasprice {
+					data = append(data, &AddrTopListDataItems{
+						Name: rootinfo.Name, Erc721Addr: rootinfo.Contract, TokenId: rootinfo.TokenId, ExpireTime: rootinfo.ExpireTime, Owner: rootinfo.Owner, UsdtPrices: cc,
+					})
+				}
 			}
 		}
-		res := &Res{Code: 1, Message: "ok", Total: len(contractL), PageNumber: number, PageSize: size, Data: data}
-		resbyte, _ := json.Marshal(res)
-		msg = string(resbyte)
-		writer.WriteHeader(200)
-		writer.Write([]byte(msg))
+		if data != nil {
+			res := &Res{Code: 1, Message: "ok", Data: &ResData{Total: len(data), PageNumber: number, PageSize: size, Items: data}}
+			resbyte, _ := json.Marshal(res)
+			msg = string(resbyte)
+			writer.WriteHeader(200)
+			writer.Write([]byte(msg))
+			return
+		} else {
+			res_ := NotDataRes(fmt.Sprintf("No data or set prices"))
+			writer.WriteHeader(200)
+			writer.Write([]byte(res_))
+			return
+		}
+
 	} else {
 		res_ := NotDataRes(fmt.Sprintf("not found data"))
 		writer.WriteHeader(200)
@@ -1027,6 +1114,7 @@ func (a *Api) GetOpenRegister(writer http.ResponseWriter, request *http.Request)
 
 }
 
+// 获取钱包地址pass卡
 func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		res_ := NotDataRes("not a get request")
@@ -1079,7 +1167,26 @@ func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Reques
 		} else {
 			data = nil
 		}
-		res := &Res{Code: 1, Message: "ok", Total: len(val), PageNumber: number, PageSize: size, Data: data}
+		for _, pass := range data {
+			// 验证pass卡是否使用
+			//"msg_sender": strings.ToLower(pass.Owner.String()),
+			filter := bson.M{"tokenid": pass.TokenId.String()}
+			opm := &options.FindOptions{Skip: func(i int64) *int64 { return &i }(0), Limit: func(i int64) *int64 { return &i }(1), Sort: bson.M{"_id": -1}}
+			selectres, _ := ldb.SELECT("signcoll", filter, opm)
+			if selectres != nil {
+				if selectres[0]["status"] == "2" {
+					pass.Status = 2
+				}
+			}
+			// 验证lock tokenid 是否在使用中
+			locktk, _ := db.GetSignLock("token_id_tk" + pass.TokenId.String())
+			if locktk != nil {
+				if int32(time.Now().Unix())-locktk.LockTime < 600 {
+					pass.Status = 1
+				}
+			}
+		}
+		res := &Res{Code: 1, Message: "ok", Data: &ResData{Total: len(val), PageNumber: number, PageSize: size, Items: data}}
 		resbyte, _ := json.Marshal(res)
 		msg = string(resbyte)
 		writer.WriteHeader(200)
@@ -1094,6 +1201,7 @@ func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Reques
 
 }
 
+// v2签名接口
 func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
 		res_ := NotDataRes("not a get request")
@@ -1101,19 +1209,17 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte(res_))
 		return
 	}
-	msg := "not found"
 	decoder := json.NewDecoder(request.Body)
 	var reqparams map[string]string
 	decoder.Decode(&reqparams)
 	log.Println("PostSignMint query", reqparams)
 	name := reqparams["domain_name"]
 	if name == "" {
-		res_ := NotDataRes("not name")
+		res_ := NotDataRes("not domain_name ")
 		writer.WriteHeader(200)
 		writer.Write([]byte(res_))
 		return
 	}
-	db := ldb.GetLdb()
 	year := reqparams["year"]
 	if year == "" {
 		res_ := NotDataRes("not year")
@@ -1143,27 +1249,45 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	token_id := reqparams["token_id"]
-	if token_id == "" {
-		res_ := NotDataRes("not token_id")
+	//if token_id == "" {
+	//	res_ := NotDataRes("not token_id")
+	//	writer.WriteHeader(200)
+	//	writer.Write([]byte(res_))
+	//	return
+	//}
+	nonce := reqparams["nonce"]
+	if nonce == "" {
+		res_ := NotDataRes("not nonce")
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
+	//lastPriceId
+	lastPriceId := reqparams["lastPriceId"]
+	if lastPriceId == "" {
+		res_ := NotDataRes("not lastPriceId")
 		writer.WriteHeader(200)
 		writer.Write([]byte(res_))
 		return
 	}
 	log.Println("PostSignMint query", reqparams, len(reqparams))
-	// 保存name对应的pass卡信息
-	callparms, _ := db.GetSignMintCallParams(name)
-	if callparms == nil {
-		callparms = &ldb.SignMintCallParams{
-			TokenId: token_id, DomainsName: name, MsgSender: msg_sender,
-		}
-		err := db.SaveSignMintCallParams(name, callparms)
-		if err != nil {
-			log.Println("SaveSignMintCallParams err", err)
-		} else {
-			log.Println("SaveSignMintCallParams", callparms)
-			//CallNftPass(token_id, name)
-		}
+	db := ldb.GetLdb()
+	nameHash := crypto.Keccak256([]byte(name))
+	namer, _ := db.GetRootName(hex.EncodeToString(nameHash))
+	if namer != "" {
+		res_ := NotDataRes(fmt.Sprintf("The domain %s has been registered", name))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
+	names, _ := db.GetSubName(hex.EncodeToString(nameHash))
+	if names != "" {
+		res_ := NotDataRes(fmt.Sprintf("The domain %s has been registered", name))
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
+	}
+	// todo  验证token_id
 	if token_id != "9999" {
 		PassList, _ := db.GetNftPass(strings.ToLower(msg_sender))
 		if PassList == nil {
@@ -1202,13 +1326,93 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 		}
 	}
 
+	// 验证lock name
+	lock, _ := db.GetSignLock(name)
+	if lock != nil {
+		if lock.MsgSender != strings.ToLower(msg_sender) {
+			if int32(time.Now().Unix())-lock.LockTime < 600 {
+				res_ := NotDataRes(fmt.Sprintf("Domain %s being registered", name))
+				writer.WriteHeader(200)
+				writer.Write([]byte(res_))
+				return
+			}
+		}
+		if lock.TokenId != token_id {
+			if int32(time.Now().Unix())-lock.LockTime < 600 {
+				res_ := NotDataRes(fmt.Sprintf("Domain %s being registered", name))
+				writer.WriteHeader(200)
+				writer.Write([]byte(res_))
+				return
+			}
+		}
+
+	}
+	// 查最新的pass卡id 数据
+	op := &options.FindOptions{Skip: func(i int64) *int64 { return &i }(0), Limit: func(i int64) *int64 { return &i }(1), Sort: bson.M{"_id": -1}}
+	// find pass卡
+	selectpass, _ := ldb.SELECT("signcoll", bson.M{"tokenid": token_id}, op)
+	log.Println("find pass ", selectpass)
+	if selectpass != nil {
+		if selectpass[0]["status"] == "2" {
+			res_ := NotDataRes(fmt.Sprintf("The %s pass card has been used", token_id))
+			writer.WriteHeader(200)
+			writer.Write([]byte(res_))
+			return
+		} else {
+			// 验证lock tokenid
+			locktk, _ := db.GetSignLock("token_id_tk" + token_id)
+			if locktk != nil {
+				// 这个假数据 没查pass所属，有pass检查话 不用这个验证
+				if locktk.MsgSender != strings.ToLower(msg_sender) {
+					if int32(time.Now().Unix())-locktk.LockTime < 600 {
+						res_ := NotDataRes(fmt.Sprintf("The card %s is registering a domain name", token_id))
+						writer.WriteHeader(200)
+						writer.Write([]byte(res_))
+						return
+					}
+				}
+				if locktk.Name != name {
+					if int32(time.Now().Unix())-locktk.LockTime < 600 {
+						res_ := NotDataRes(fmt.Sprintf("The card %s is registering a domain name", token_id))
+						writer.WriteHeader(200)
+						writer.Write([]byte(res_))
+						return
+					}
+				}
+			}
+		}
+	}
+	// save sign info
+	filter := bson.M{"name": name}
+	selectres, _ := ldb.SELECT("signcoll", filter, op)
+	if selectres == nil {
+		ldb.INSERTOne("signcoll", bson.M{"name": name, "msg_sender": strings.ToLower(msg_sender), "tokenid": token_id})
+	} else {
+		if selectres[0]["msg_sender"] == strings.ToLower(msg_sender) && selectres[0]["tokenid"] == token_id {
+		} else {
+			// 更新sender和token签名加锁10分钟如果还没监听到注册该域名 则更改name的注册信息(ps注册过的name的tokenid数据会有has_registered标记不会走到这)
+			ldb.UPDATEOne("signcoll", filter, bson.M{"msg_sender": strings.ToLower(msg_sender), "tokenid": token_id})
+		}
+	}
+	/*
+		keccak256(abi.encodePacked(entireName_,
+		                                                    year_,
+		                                                    erc20Addr_,
+		                                                    lastPriceId,
+		                                                    nonce,
+		                                                    price_,
+		                                                    msg.sender)
+	*/
 	result := encodePacked(
 		encodeBytesString(hex.EncodeToString([]byte(name))),
 		encodeUint256(year)[32-1:],
 		encodeBytesString(erc_20_addr[2:]),
+		//uint80
+		encodeUint256(lastPriceId)[32-10:],
+		encodeUint256(nonce),
 		encodeUint256(price),
 		encodeBytesString(msg_sender[2:]),
-		encodeUint256(token_id)[32-4:],
+		//encodeUint256(token_id)[32-4:],
 	)
 	hash := crypto.Keccak256Hash(result)
 	log.Println("Hash", hex.EncodeToString(hash[:]))
@@ -1221,20 +1425,30 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 	}
 	year_int, _ := strconv.Atoi(year)
 	token_id_int, _ := strconv.Atoi(token_id)
-	// db := ldb.GetLdb()
 	params := &PostSignMintParams{DomainName: name, Year: int32(year_int), Erc20Addr: common.HexToAddress(erc_20_addr), Price: price,
-		MsgSender: common.HexToAddress(msg_sender), TokenId: int32(token_id_int)}
+		MsgSender: common.HexToAddress(msg_sender), TokenId: int32(token_id_int), Nonce: nonce, LastPriceId: lastPriceId}
 	data := &PostSignMintData{Signature: hex.EncodeToString(signer), Params: params}
 	res := &Res{
 		Code:    1,
 		Message: "ok",
-		Data:    data,
+		Data:    &ResData{Items: data},
 	}
 	resbyte, _ := json.Marshal(res)
-	if err == nil {
-		msg = string(resbyte)
+	msg := string(resbyte)
+	// 加锁
+	timeUnix := int32(time.Now().Unix())
+	errsign := db.SaveSignLock(name, &ldb.SignLock{LockTime: timeUnix, Name: name, MsgSender: strings.ToLower(msg_sender), TokenId: token_id})
+	if errsign != nil {
+		log.Println("SaveSignLock ", name)
 	}
+	errsigntk := db.SaveSignLock("token_id_tk"+token_id, &ldb.SignLock{LockTime: timeUnix, Name: name, MsgSender: strings.ToLower(msg_sender), TokenId: token_id})
+	if errsigntk != nil {
+		log.Println("SaveSignLock tokenid", name)
+	}
+	// 加锁更新tokenid status
+	// ldb.UPDATEOne("signcoll", bson.M{"tokenid": token_id}, bson.M{"status": "1"})
 	writer.WriteHeader(200)
 	writer.Write([]byte(msg))
+	return
 
 }

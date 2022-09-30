@@ -71,6 +71,7 @@ func loopForNewName() {
 		return
 	}
 	BatchNewRoot(dbblk, currentBlkNumber)
+	BatchNewSub(dbblk, currentBlkNumber)
 	db.SaveLatestBlkNum("rinkeby", currentBlkNumber)
 }
 

@@ -13,7 +13,6 @@ contract DnsNameErc721 is ERC721,Erc721Owner,IDnsNameErc721{
     bytes32 private ownerHash;
     bytes public baseUri;
     address private sigUser;
-//    address private operator;
 
     struct IDInfo{
         uint32 expireTime;

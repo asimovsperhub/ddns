@@ -83,7 +83,7 @@ type GetSignTldListByDidNameSignList struct {
 }
 type GetSignTldListByDidNameItems struct {
 	NameHash   string                             `json:"name_hash"`
-	TaskHash   string                             `json:"task_hash"`
+	TaskHash   []byte                             `json:"task_hash"`
 	MaxSig     *big.Int                           `json:"max_sig"`
 	Work       bool                               `json:"work"`
 	Lock       bool                               `json:"lock"`
@@ -126,14 +126,14 @@ type AddrDomainsResolveRes struct {
 }
 
 type AddrTopListDataItems struct {
-	Name        string         `json:"name"`
-	Erc721_Addr common.Address `json:"erc_721_addr"`
-	TokenId     *big.Int       `json:"token_id"`
-	OpenToReg   bool           `json:"open_to_reg"`
-	HasPrice    bool           `json:"has_price"`
-	ExpireTime  *big.Int       `json:"expire_time"`
-	Owner       common.Address `json:"owner"`
-	PayTokens   []string       `json:"pay_tokens"`
+	Name       string         `json:"name"`
+	Erc721Addr common.Address `json:"erc_721_addr"`
+	TokenId    *big.Int       `json:"token_id"`
+	//OpenToReg   bool           `json:"open_to_reg"`
+	//HasPrice    bool           `json:"has_price"`
+	ExpireTime *big.Int       `json:"expire_time"`
+	Owner      common.Address `json:"owner"`
+	UsdtPrices [8]*big.Int    `json:"usdt_prices"`
 }
 
 type AddrTopListData struct {
@@ -142,23 +142,27 @@ type AddrTopListData struct {
 	PageNumber int         `json:"page_number"`
 	Items      interface{} `json:"items"`
 }
-
-type Res struct {
-	Code       int         `json:"code"`
-	Message    string      `json:"message"`
+type ResData struct {
 	Total      int         `json:"total"`
 	PageSize   int         `json:"page_size"`
 	PageNumber int         `json:"page_number"`
-	Data       interface{} `json:"data"`
+	Items      interface{} `json:"items"`
+}
+type Res struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
 type PostSignMintParams struct {
-	DomainName string         `json:"domain_name"`
-	Year       int32          `json:"year"`
-	Erc20Addr  common.Address `json:"erc_20_addr"`
-	Price      string         `json:"price"`
-	MsgSender  common.Address `json:"msg_sender"`
-	TokenId    int32          `json:"token_id"`
+	DomainName  string         `json:"domain_name"`
+	Year        int32          `json:"year"`
+	Erc20Addr   common.Address `json:"erc_20_addr"`
+	Price       string         `json:"price"`
+	MsgSender   common.Address `json:"msg_sender"`
+	TokenId     int32          `json:"token_id"`
+	Nonce       string         `json:"nonce"`
+	LastPriceId string         `json:"lastPriceId"`
 }
 type PostSignMintData struct {
 	Signature string `json:"signature"`
@@ -170,11 +174,22 @@ func NotDataRes(msg string) string {
 	res := &Res{
 		Code:    0,
 		Message: msg,
-		Data:    []string{},
+		Data:    &ResData{Total: 0, PageNumber: 0, PageSize: 0},
 	}
 	resbyte, err := json.Marshal(res)
 	if err == nil {
 		return string(resbyte)
 	}
 	return ""
+}
+
+type TotalBySubLenResData struct {
+	All   int64              `json:"all"`
+	Rules []*TotalBySubRules `json:"rules"`
+}
+type TotalBySubRules struct {
+	Rule  string `json:"rule"`
+	Min   int64  `json:"min"`
+	Max   int64  `json:"max"`
+	Total int64  `json:"total"`
 }
