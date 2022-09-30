@@ -42,13 +42,14 @@ type GetEarningsByAddressIncome struct {
 }
 
 type GetEarningsByAddressItems struct {
-	Name       string                        `json:"name"`
-	Owner      common.Address                `json:"owner"`
-	Erc721Addr common.Address                `json:"erc_721_addr"`
-	TokenId    *big.Int                      `json:"token_id"`
-	Work       bool                          `json:"work"`
-	Erc20Addr  common.Address                `json:"erc_20_addr"`
-	Income     []*GetEarningsByAddressIncome `json:"income"`
+	Name       string                             `json:"name"`
+	Owner      common.Address                     `json:"owner"`
+	Erc721Addr common.Address                     `json:"erc_721_addr"`
+	TokenId    *big.Int                           `json:"token_id"`
+	Work       bool                               `json:"work"`
+	Erc20Addr  common.Address                     `json:"erc_20_addr"`
+	Income     []*GetEarningsByAddressIncome      `json:"income"`
+	Signers    []*GetSignTldListByDidNameSignList `json:"signers"`
 }
 type GetEarningsByAddressRes struct {
 	Total      int                          `json:"total"`

@@ -504,7 +504,7 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 	pageNumber := "0"
 	pageSize := "100"
 	query := request.URL.Query()
-	log.Println("GetCashDetailsByAddress query ", query)
+	log.Println("GetEarningsByAddress query ", query)
 	var (
 		v  []string
 		ok bool
@@ -547,6 +547,7 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 		}
 		var income []*GetEarningsByAddressIncome
 		var items []*GetEarningsByAddressItems
+		var signL []*GetSignTldListByDidNameSignList
 		work := false
 		rndatares := Paging(number, size, rndata)
 		for _, name := range rndatares {
@@ -554,7 +555,7 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 			root := new(dns.RootNameInfo)
 			errun := json.Unmarshal([]byte(in), &root)
 			if errun != nil {
-				log.Println("GetCashDetailsByAddress Json.Unmarshal err", errun)
+				log.Println("GetEarningsByAddress Json.Unmarshal err", errun)
 			} else {
 				if root.Contract != common.HexToAddress("0x0000000000000000000000000000000000000000") {
 					usdt, _ := dnsaccountant.Get(nil, root.Contract, common.HexToAddress(config.GetRConf().Cconf.Usdt))
@@ -568,8 +569,21 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 					}
 					multi, _ := dnsaccountant.MultiSignerStore(nil, root.Contract)
 					work = multi.Work
+					topnamehashbyte := byte32(crypto.Keccak256([]byte(root.Name)))
+					_, _, signers, _ := dnsaccountant.GetTaskInfo(nil, root.Contract, *topnamehashbyte)
+					//taskhash, _ := dnsaccountant.GetAllTask(nil, root.Contract)
+					// 取多签列表地址 20个字节一个地址
+					countS := len(signers) / 20
+					// var  items []*GetSignTldListByDidNameItems
+					for i := 0; i < countS; i++ {
+						a, b := i*20, (i+1)*20
+						// common.BytesToAddress(signers[a:b])
+						signL = append(signL, &GetSignTldListByDidNameSignList{
+							Signer: common.BytesToAddress(signers[a:b]),
+						})
+					}
 				}
-				items = append(items, &GetEarningsByAddressItems{Name: root.Name, Owner: root.Owner, Erc721Addr: root.Owner, TokenId: root.TokenId, Work: work, Income: income})
+				items = append(items, &GetEarningsByAddressItems{Name: root.Name, Owner: root.Owner, Erc721Addr: root.Contract, TokenId: root.TokenId, Work: work, Income: income, Signers: signL})
 			}
 		}
 		res := &Res{

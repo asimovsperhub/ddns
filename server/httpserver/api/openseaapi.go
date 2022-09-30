@@ -60,7 +60,7 @@ func (a *Api) DnsTokenId(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	// root
-	if contractaddr == strings.ToLower(config.GetRConf().Cconf.DnsName) {
+	if contractaddr == strings.ToLower(config.GetRConf().Cconf.TopName) {
 		nametype = "root"
 	} else {
 		nametype = "sub"

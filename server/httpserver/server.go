@@ -36,7 +36,7 @@ const (
 	GetCashDetailsByAddress = "/dns/getcashbyaddr"
 	ConfResolve             = "/dns/confresolve"
 	AddrDomainsResolve      = "/dns/resolve"
-	DnsTokenId              = "/opensea"
+	DnsTokenId              = "/udid"
 	AddrTopList             = "/dns/dids/top/get_list"
 	AddrSubList             = "/dns/dids/second/get_list"
 	GetOpenRegister         = "/dns/dids/top/get_open_dids"

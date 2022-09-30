@@ -26,7 +26,7 @@ func NewDnsAccountantClient(client *ethclient.Client) (*udidc22.DnsAccountant, e
 		dnsaccountant *udidc22.DnsAccountant
 		err           error
 	)
-	dnsaccountant, err = udidc22.NewDnsAccountant(common.HexToAddress(config.GetRConf().Cconf.DnsAccountant), client)
+	dnsaccountant, err = udidc22.NewDnsAccountant(common.HexToAddress(config.GetRConf().Cconf.Accountant), client)
 	if err != nil {
 		client.Close()
 		log.Println("NewRootClient NewDnsName  err", err)
