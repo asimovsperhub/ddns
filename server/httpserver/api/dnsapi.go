@@ -582,15 +582,17 @@ func (a *Api) GetEarningsByAddress(writer http.ResponseWriter, request *http.Req
 							Signer: common.BytesToAddress(signers[a:b]),
 						})
 					}
+					items = append(items, &GetEarningsByAddressItems{Name: root.Name, Owner: root.Owner, Erc721Addr: root.Contract, TokenId: root.TokenId, Work: work, Income: income, Signers: signL})
 				}
-				items = append(items, &GetEarningsByAddressItems{Name: root.Name, Owner: root.Owner, Erc721Addr: root.Contract, TokenId: root.TokenId, Work: work, Income: income, Signers: signL})
 			}
 		}
 		res := &Res{
 			Code:    1,
 			Message: "ok",
-			Data:    &ResData{PageNumber: number, PageSize: size, Items: items},
+			Data:    &ResData{Total: len(items), PageNumber: number, PageSize: size, Items: items},
 		}
+		log.Println("Items data", items)
+		log.Println("len Items", len(items))
 		resbyte, _ := json.Marshal(res)
 		msg := string(resbyte)
 		writer.WriteHeader(200)
