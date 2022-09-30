@@ -10,6 +10,7 @@ require (
 	github.com/kprc/nbsnetwork v0.0.0-20210413001421-be5dd1f08982
 	github.com/spf13/cobra v1.2.1
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+	go.mongodb.org/mongo-driver v1.10.2
 	golang.org/x/image v0.0.0-20220413100746-70e8d0d3baa9
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.26.0
@@ -22,6 +23,7 @@ require (
 	github.com/ipfs/go-cid v0.0.7 // indirect
 	github.com/ipfs/go-ipfs-files v0.0.9 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
 	github.com/libp2p/go-flow-metrics v0.0.3 // indirect
 	github.com/libp2p/go-libp2p-core v0.6.1 // indirect
@@ -30,6 +32,7 @@ require (
 	github.com/minio/sha256-simd v0.1.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/multiformats/go-base32 v0.0.3 // indirect
 	github.com/multiformats/go-base36 v0.1.0 // indirect
@@ -42,9 +45,14 @@ require (
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/whyrusleeping/tar-utils v0.0.0-20180509141711-8c6c8ba81d5c // indirect
+	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
+	github.com/xdg-go/scram v1.1.1 // indirect
+	github.com/xdg-go/stringprep v1.0.3 // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
+	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	go.opencensus.io v0.23.0 // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 )
 
 require (

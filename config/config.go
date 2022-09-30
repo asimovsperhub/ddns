@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/kprc/nbsnetwork/tools"
+	"math/rand"
 	"path"
 	"sync"
 )
 
 const (
-	resolveHome = ".dev_resolve"
+	resolveHome = ".resolve"
 	confFile    = "conf.json"
 	cmdSock     = ".cmd-sock"
 )
@@ -22,7 +23,7 @@ var (
 func defaultConf() *RConfig {
 	return &RConfig{
 		WConf: &WebSeverConf{
-			ListenServer: ":30500",
+			ListenServer: ":30518",
 		},
 		Cconf: &ContractConf{
 			ChainName:            "rinkeby",
@@ -35,13 +36,14 @@ func defaultConf() *RConfig {
 			RpcEndPoint:          "https://rinkeby.infura.io/v3/",
 			RpcMainEndPoint:      "https://mainnet.infura.io/v3/",
 			WsRPCEndPoint:        "wss://ropsten.infura.io/ws/v3/",
-			RpcEndPointID:        "ced16671f5894b2796224e49062999ca",
-			DnsName:              "0x45419EcDBe2B0419372510d3da5149b88BDcBEe6",
-			DnsOwner:             "0x20d86efD2CB75967Acfa24C9580298c0c3D0c684",
-			DnsPrice:             "0x5Ae881f69847C47DAaaEdD5864FEef9aBAf763bA",
-			DnsConf:              "0xfCaD0039d54E6034588bF28Bfa3d869b6FAf7baB",
-			DnsAccountant:        "0xE7Ef2FC9B298CAd19184613fc39F93a79e9ff25B",
-			ColdBoot:             "0x22871b977AAe43d44FE50dF03f632134c3e3e490",
+			RpcEndPointID: []string{"45c3b62303004dc08aeb7f1bf2a875b5", "135eed6e983843e3b90ae667a1d6a3b6", "5ac1f01fe23347fb9fd7ab0ceb2817cf",
+				"ee1f72c75a3f46768cf0f6cea3830881"},
+			DnsName:       "0x45419EcDBe2B0419372510d3da5149b88BDcBEe6",
+			DnsOwner:      "0x20d86efD2CB75967Acfa24C9580298c0c3D0c684",
+			DnsPrice:      "0x5Ae881f69847C47DAaaEdD5864FEef9aBAf763bA",
+			DnsConf:       "0xfCaD0039d54E6034588bF28Bfa3d869b6FAf7baB",
+			DnsAccountant: "0xE7Ef2FC9B298CAd19184613fc39F93a79e9ff25B",
+			ColdBoot:      "0x22871b977AAe43d44FE50dF03f632134c3e3e490",
 		},
 		SConf: &SysConf{
 			DBPath: "ldb",
@@ -54,14 +56,14 @@ func (rc *RConfig) GetDBPath() string {
 }
 
 func (rc *RConfig) GetRPCEndPoint() string {
-	return rc.Cconf.RpcEndPoint + rc.Cconf.RpcEndPointID
+	return rc.Cconf.RpcEndPoint + rc.Cconf.RpcEndPointID[rand.Intn(len(rc.Cconf.RpcEndPointID))]
 }
 func (rc *RConfig) GetMainRPCEndPoint() string {
-	return rc.Cconf.RpcMainEndPoint + rc.Cconf.RpcEndPointID
+	return rc.Cconf.RpcMainEndPoint + rc.Cconf.RpcEndPointID[rand.Intn(len(rc.Cconf.RpcEndPointID))]
 }
 
 func (rc *RConfig) GetWsRPCENDPoint() string {
-	return rc.Cconf.WsRPCEndPoint + rc.Cconf.RpcEndPointID
+	return rc.Cconf.WsRPCEndPoint + rc.Cconf.RpcEndPointID[rand.Intn(len(rc.Cconf.RpcEndPointID))]
 }
 
 func GetRConf() *RConfig {
@@ -139,7 +141,7 @@ type ContractConf struct {
 	ChainName            string
 	RpcEndPoint          string
 	WsRPCEndPoint        string
-	RpcEndPointID        string
+	RpcEndPointID        []string
 	RpcMainEndPoint      string
 	OANNContract         string
 	BasRootContract      string

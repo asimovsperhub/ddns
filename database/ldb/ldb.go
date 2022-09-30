@@ -230,8 +230,7 @@ func (db *Ldb) SaveContractList(ct []string) error {
 
 func (db *Ldb) GetAddressList(address string) ([]string, error) {
 	var ret []string
-	k := fmt.Sprintf(dnsAddress, address)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(dnsAddress+address), nil); err != nil {
 		return nil, err
 	} else {
 		err = json.Unmarshal(v, &ret)
@@ -245,8 +244,7 @@ func (db *Ldb) GetAddressList(address string) ([]string, error) {
 
 func (db *Ldb) SaveAddressList(address string, ct []string) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsAddress, address)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(dnsAddress+address), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 	return nil
@@ -254,8 +252,7 @@ func (db *Ldb) SaveAddressList(address string, ct []string) error {
 
 func (db *Ldb) GetRootEarnings(address string) (*AddressEarnings, error) {
 	var ret *AddressEarnings
-	k := fmt.Sprintf(dnsRootEarnings, address)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(dnsRootEarnings+address), nil); err != nil {
 		return nil, err
 	} else {
 		err = json.Unmarshal(v, &ret)
@@ -269,8 +266,7 @@ func (db *Ldb) GetRootEarnings(address string) (*AddressEarnings, error) {
 
 func (db *Ldb) SaveRootEarnings(address string, ct *AddressEarnings) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsRootEarnings, address)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(dnsRootEarnings+address), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 	return nil
@@ -278,8 +274,7 @@ func (db *Ldb) SaveRootEarnings(address string, ct *AddressEarnings) error {
 
 func (db *Ldb) GetAddressCash(address string) (*AddressCash, error) {
 	var ret *AddressCash
-	k := fmt.Sprintf(dnsAddressCash, address)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(dnsAddressCash+address), nil); err != nil {
 		return nil, err
 	} else {
 		err = json.Unmarshal(v, &ret)
@@ -293,16 +288,14 @@ func (db *Ldb) GetAddressCash(address string) (*AddressCash, error) {
 
 func (db *Ldb) SaveAddressCash(address string, ct *AddressCash) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsAddressCash, address)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(dnsAddressCash+address), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (db *Ldb) GetContractAddr(contract string) (string, error) {
-	k := fmt.Sprintf(dnsContractAddr, contract)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(dnsContractAddr+contract), nil); err != nil {
 		return "", err
 	} else {
 		return string(v), nil
@@ -310,8 +303,7 @@ func (db *Ldb) GetContractAddr(contract string) (string, error) {
 }
 
 func (db *Ldb) SaveContractAddr(contract string, addr string) error {
-	k := fmt.Sprintf(dnsContractAddr, contract)
-	if err := db.db.Put([]byte(k), []byte(addr), &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(dnsContractAddr+contract), []byte(addr), &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	} else {
 		return nil
@@ -320,8 +312,7 @@ func (db *Ldb) SaveContractAddr(contract string, addr string) error {
 
 func (db *Ldb) GetConfNameHashList(conftype string) ([]string, error) {
 	var ret []string
-	k := fmt.Sprintf(dnsConf, conftype)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(dnsConf+conftype), nil); err != nil {
 		return nil, err
 	} else {
 		err = json.Unmarshal(v, &ret)
@@ -335,8 +326,7 @@ func (db *Ldb) GetConfNameHashList(conftype string) ([]string, error) {
 
 func (db *Ldb) SaveConfNameHashList(conftype string, ct []string) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsConf, conftype)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(dnsConf+conftype), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 	return nil
@@ -344,8 +334,7 @@ func (db *Ldb) SaveConfNameHashList(conftype string, ct []string) error {
 
 func (db *Ldb) GetContractTokenIdName(contract string) (*ContractTokenIdName, error) {
 	var ret *ContractTokenIdName
-	k := fmt.Sprintf(dnsContractTokenIdName, contract)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(dnsContractTokenIdName+contract), nil); err != nil {
 		return nil, err
 	} else {
 		err = json.Unmarshal(v, &ret)
@@ -359,8 +348,7 @@ func (db *Ldb) GetContractTokenIdName(contract string) (*ContractTokenIdName, er
 
 func (db *Ldb) SaveContractTokenIdName(contract string, ct *ContractTokenIdName) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsContractTokenIdName, contract)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(dnsContractTokenIdName+contract), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 	return nil
@@ -392,8 +380,7 @@ func (db *Ldb) SaveS3(ct *S3) error {
 
 func (db *Ldb) GetNftPass(owner string) ([]*NftPass, error) {
 	var ret []*NftPass
-	k := fmt.Sprintf(dnsNftPass, owner)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(dnsNftPass+owner), nil); err != nil {
 		return nil, err
 	} else {
 		err = json.Unmarshal(v, &ret)
@@ -407,8 +394,7 @@ func (db *Ldb) GetNftPass(owner string) ([]*NftPass, error) {
 
 func (db *Ldb) SaveNftPass(owner string, ct []*NftPass) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(dnsNftPass, owner)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(dnsNftPass+owner), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 	return nil
@@ -417,8 +403,7 @@ func (db *Ldb) SaveNftPass(owner string, ct []*NftPass) error {
 //NftPassTokenIdName
 func (db *Ldb) GetNftPassTokenIdName(owner string) (*NftPassTokenIdName, error) {
 	var ret *NftPassTokenIdName
-	k := fmt.Sprintf(PassTokenIdName, owner)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(PassTokenIdName+owner), nil); err != nil {
 		return nil, err
 	} else {
 		err = json.Unmarshal(v, &ret)
@@ -432,16 +417,14 @@ func (db *Ldb) GetNftPassTokenIdName(owner string) (*NftPassTokenIdName, error) 
 
 func (db *Ldb) SaveNftPassTokenIdName(owner string, ct *NftPassTokenIdName) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(PassTokenIdName, owner)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(PassTokenIdName+owner), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 	return nil
 }
 func (db *Ldb) GetSignMintCallParams(name string) (*SignMintCallParams, error) {
 	var ret *SignMintCallParams
-	k := fmt.Sprintf(SignMintCall, name)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(SignMintCall+name), nil); err != nil {
 		return nil, err
 	} else {
 		err = json.Unmarshal(v, &ret)
@@ -455,8 +438,7 @@ func (db *Ldb) GetSignMintCallParams(name string) (*SignMintCallParams, error) {
 
 func (db *Ldb) SaveSignMintCallParams(name string, ct *SignMintCallParams) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(SignMintCall, name)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(SignMintCall+name), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 	return nil
@@ -464,8 +446,7 @@ func (db *Ldb) SaveSignMintCallParams(name string, ct *SignMintCallParams) error
 
 func (db *Ldb) GetSignLock(name string) (*SignLock, error) {
 	var ret *SignLock
-	k := fmt.Sprintf(SignLockP, name)
-	if v, err := db.db.Get([]byte(k), nil); err != nil {
+	if v, err := db.db.Get([]byte(SignLockP+name), nil); err != nil {
 		return nil, err
 	} else {
 		err = json.Unmarshal(v, &ret)
@@ -479,8 +460,7 @@ func (db *Ldb) GetSignLock(name string) (*SignLock, error) {
 
 func (db *Ldb) SaveSignLock(name string, ct *SignLock) error {
 	v, _ := json.Marshal(ct)
-	k := fmt.Sprintf(SignLockP, name)
-	if err := db.db.Put([]byte(k), v, &opt.WriteOptions{Sync: true}); err != nil {
+	if err := db.db.Put([]byte(SignLockP+name), v, &opt.WriteOptions{Sync: true}); err != nil {
 		return err
 	}
 	return nil

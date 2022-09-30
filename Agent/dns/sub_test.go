@@ -23,12 +23,12 @@ func TestSubPassCard(t *testing.T) {
 	if err != nil {
 		log.Println(err)
 	}
-	isuseds, err := subC.PassCardUsed(nil, 1662)
+	isuseds, err := subC.PassCardUsed(nil, 10407)
 	if err != nil {
 		log.Println(err)
 	}
 	log.Println(isuseds)
-	// dnsowner, errown := NewDnsOwnerClient(cli)
+	//dnsowner, errown := NewDnsOwnerClient(cli)
 	//defer cli.Close()
 	//if errown != nil {
 	//	log.Println("NewDnsOwnerClient", errown)
@@ -36,16 +36,21 @@ func TestSubPassCard(t *testing.T) {
 	//}
 	//item, _ := subC.FilterEvMintSubName(nil)
 	//data := map[string][]string{}
+	//count := 0
 	//for item.Next() {
 	//	ev := item.Event
-	//	// nameHash := byte32(crypto.Keccak256([]byte(ev.EntireName)))
+	//	count += 1
+	//	nameHash := byte32(crypto.Keccak256([]byte(ev.EntireName)))
 	//	//nameHashStr := hex.EncodeToString(nameHash[:])
-	//	if data[ev.EntireName] == nil {
-	//		data[ev.EntireName] = []string{}
-	//	} else {
-	//		data[ev.EntireName] = append(data[ev.EntireName], ev.EntireName)
+	//	owner, err1 := dnsowner.DnsOwners(nil, *nameHash)
+	//	if err1 != nil {
+	//		log.Println("BatchNewRoot DnsOwners", err1)
 	//	}
+	//	data[owner.DnsOwner.String()] = append(data[owner.DnsOwner.String()], ev.EntireName)
 	//}
+	//log.Println(len(data), data, count)
+
+	// WriteHash("sub.txt", data)
 	//for k, v := range data {
 	//	if len(v) > 1 {
 	//		log.Println(k)

@@ -1029,7 +1029,7 @@ func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 	pageNumber := "0"
-	pageSize := "10"
+	pageSize := "2000"
 	coinbase := ""
 	query := request.URL.Query()
 	log.Println("GetMyPassCardList query ", query)
@@ -1073,61 +1073,69 @@ func (a *Api) GetMyPassCardList(writer http.ResponseWriter, request *http.Reques
 		} else {
 			data = nil
 		}
-		//todo 遍历data 查是否使用
+		// 遍历data 查是否使用
 		rootC, cli, _ := dns.NewRootClient()
+		subC, cli, _ := dns.NewSubClient("0x111cFbc15FC56AD0aC8C7536BcA3347a558a0012")
 		defer cli.Close()
-		subC, _, _ := dns.NewSubClient("0x111cFbc15FC56AD0aC8C7536BcA3347a558a0012")
 		for _, tkid := range data {
-			u64tk, _ := strconv.ParseUint(tkid.TokenId.String(), 10, 32)
-			isusedr, _ := rootC.PassCardUsed(nil, uint32(u64tk))
-			isuseds, _ := subC.PassCardUsed(nil, uint32(u64tk))
-			if isusedr {
-				tkid.RemainingTimes = 1
-				if addrpass[tkid.Owner.String()] != "" && addrpass[tkid.Owner.String()] == tkid.TokenId.String() {
-					tklen := len(tkid.TokenId.String())
-					tkid.RemainingTimes = 0
-					tkid.ExtTokenId = "10000"[:5-tklen] + tkid.TokenId.String()
-					u64tk2, _ := strconv.ParseUint(tkid.ExtTokenId, 10, 32)
-					isusedr2, _ := rootC.PassCardUsed(nil, uint32(u64tk2))
-					isuseds2, _ := subC.PassCardUsed(nil, uint32(u64tk2))
-					if isusedr2 {
-						tkid.RemainingTimes = 1
-					}
-					if isuseds2 {
-						tkid.RemainingTimes = 1
+			if tkid.RemainingTimes != 1 {
+				u64tk, _ := strconv.ParseUint(tkid.TokenId.String(), 10, 32)
+				isusedr, _ := rootC.PassCardUsed(nil, uint32(u64tk))
+				isuseds, _ := subC.PassCardUsed(nil, uint32(u64tk))
+				if isusedr {
+					tkid.RemainingTimes = 1
+					if addrpass[tkid.TokenId.String()] != "" {
+						tklen := len(tkid.TokenId.String())
+						tkid.RemainingTimes = 0
+						tkid.ExtTokenId = "10000"[:5-tklen] + tkid.TokenId.String()
+						u64tk2, _ := strconv.ParseUint(tkid.ExtTokenId, 10, 32)
+						isusedr2, _ := rootC.PassCardUsed(nil, uint32(u64tk2))
+						isuseds2, _ := subC.PassCardUsed(nil, uint32(u64tk2))
+						if isusedr2 {
+							tkid.RemainingTimes = 1
+						}
+						if isuseds2 {
+							tkid.RemainingTimes = 1
+						}
+
 					}
 
 				}
-
-			}
-			if isuseds {
-				tkid.RemainingTimes = 1
-				if addrpass[tkid.Owner.String()] != "" && addrpass[tkid.Owner.String()] == tkid.TokenId.String() {
-					tklen := len(tkid.TokenId.String())
-					tkid.RemainingTimes = 0
-					tkid.ExtTokenId = "10000"[:5-tklen] + tkid.TokenId.String()
-					u64tk2, _ := strconv.ParseUint(tkid.ExtTokenId, 10, 32)
-					isusedr2, _ := rootC.PassCardUsed(nil, uint32(u64tk2))
-					isuseds2, _ := subC.PassCardUsed(nil, uint32(u64tk2))
-					if isusedr2 {
-						tkid.RemainingTimes = 1
-					}
-					if isuseds2 {
-						tkid.RemainingTimes = 1
+				if isuseds {
+					tkid.RemainingTimes = 1
+					if addrpass[tkid.TokenId.String()] != "" {
+						tklen := len(tkid.TokenId.String())
+						tkid.RemainingTimes = 0
+						tkid.ExtTokenId = "10000"[:5-tklen] + tkid.TokenId.String()
+						u64tk2, _ := strconv.ParseUint(tkid.ExtTokenId, 10, 32)
+						isusedr2, _ := rootC.PassCardUsed(nil, uint32(u64tk2))
+						isuseds2, _ := subC.PassCardUsed(nil, uint32(u64tk2))
+						if isusedr2 {
+							tkid.RemainingTimes = 1
+						}
+						if isuseds2 {
+							tkid.RemainingTimes = 1
+						}
 					}
 				}
 			}
 		}
-		// db.SaveNftPass(strings.ToLower(coinbase), data)
+		db.SaveNftPass(strings.ToLower(coinbase), data)
 		addrtoplistdata := &AddrTopListData{Total: len(data), PageNumber: number, PageSize: size, Items: data}
 		addrtoplist := &Res{Code: 1, Message: "ok", Data: addrtoplistdata}
 		resbyte, _ := json.Marshal(addrtoplist)
 		if err == nil {
 			msg = string(resbyte)
+			writer.WriteHeader(200)
+			writer.Write([]byte(msg))
+			return
 		}
+	} else {
+		res_ := NotDataRes(msg)
+		writer.WriteHeader(200)
+		writer.Write([]byte(res_))
+		return
 	}
-	writer.WriteHeader(200)
-	writer.Write([]byte(msg))
 
 }
 
@@ -1254,6 +1262,7 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 			}
 		}
 	}
+	cctoken := ""
 	if token_id != "9999" {
 		PassList, _ := db.GetNftPass(strings.ToLower(msg_sender))
 		if PassList == nil {
@@ -1263,6 +1272,10 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 			return
 		} else {
 			in := false
+			if len(token_id) == 5 {
+				tk, _ := strconv.Atoi(token_id)
+				cctoken, token_id = token_id, strconv.Itoa(tk-10000)
+			}
 			for _, pass := range PassList {
 				if pass.TokenId.String() == token_id {
 					in = true
@@ -1291,7 +1304,9 @@ func (a *Api) PostSignMint(writer http.ResponseWriter, request *http.Request) {
 			}
 		}
 	}
-
+	if cctoken != "" {
+		token_id = cctoken
+	}
 	result := encodePacked(
 		encodeBytesString(hex.EncodeToString([]byte(name))),
 		encodeUint256(year)[32-1:],
